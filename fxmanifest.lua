@@ -10,7 +10,7 @@ lua54 "yes"
 
 files {
 	"source/index.html",
-	"source/penis.js",
+	"source/script.js",
 	"source/style.css",
     "source/user.jpg"
 }
