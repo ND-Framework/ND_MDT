@@ -487,7 +487,9 @@ body {
     transition: .1s ease-in-out;
 }
 .liveChatMessage {
-    padding: 3% 2.5% 1% 2.5%;
+    display: grid;
+    grid-template-columns: 10% 1fr;
+    padding: 2% 2.5% 2% 2.5%;
     width: 95%;
     margin: 1.5% 0;
     height: auto;
@@ -495,20 +497,18 @@ body {
     border-radius: 15px;
 }
 .liveChatImageContainer {
-    display: inline-flex;
-    margin: 0 1% 0 0;
+    user-select: none;
     width: 45px;
     height: 45px;
 }
 .liveChatImage {
+    user-select: none;
     background-color: #ccc;
     width: auto;
     height: 100%;
     border-radius: 50px;
 }
 .liveChatNameAndMessage {
-    display: inline-block;
-    margin: 0;
     width: 90%;
     height: 100%;
 }
@@ -518,6 +518,22 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color: #ccc;
     font-weight: bolder;
+}
+.hintCallSignAndDept {
+    display: inline;
+    visibility: hidden;
+    position: relative;
+    top: -15%;
+    width: 20%;
+    height: 3vh;
+    padding: 0.8% 1.2%;
+    font-size: 0.8em;
+    background-color: rgb(58, 58, 58);
+    color: white;
+    border-radius: 10px;
+}
+.liveChatMessageName:hover .hintCallSignAndDept {
+    visibility: visible;
 }
 .liveChatMessageText {
     margin: 0;

@@ -133,7 +133,7 @@ $(function() {
     }
 
     // sends a chat message in the mdt live chat.
-    function createLiveChatMessage(imageURL, username, text) {
+    function createLiveChatMessage(callsign, dept, imageURL, username, text) {
         $(".rightPanelLiveChatBox").animate({ scrollTop: $(document).height() + $(window).height() }, "slow");
         $(".rightPanelLiveChatBox").append(`
             <div class="liveChatMessage">
@@ -141,12 +141,12 @@ $(function() {
                     <img class="liveChatImage" src="${imageURL}">
                 </div>
                 <div class="liveChatNameAndMessage">
-                    <p class="liveChatMessageName">${escapeHtml(username)}</p>
+                    <div class="liveChatMessageName">${escapeHtml(username)} <div class="hintCallSignAndDept">${escapeHtml(callsign)} [${escapeHtml(dept)}]</div></div>
                     <p class="liveChatMessageText">${escapeHtml(text)}</p>
                 </div>
             </div>
         `);
-    }
+    };
 
     // Event listener for nui messages.
     window.addEventListener("message", function(event) {
@@ -174,7 +174,7 @@ $(function() {
         }
 
         if (item.type === "addLiveChatMessage") {
-            createLiveChatMessage(item.img, item.unit, item.text);
+            createLiveChatMessage(item.callsign, item.dept, item.img, item.name, item.text);
         }
 
         if (item.type === "updateUnitNumber") {
