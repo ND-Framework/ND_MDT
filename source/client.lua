@@ -70,17 +70,21 @@ end)
 
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
+    ped = PlayerPedId()
+    local veh = GetVehiclePedIsIn(ped)
+    if veh == 0 then return end
+    if GetVehicleClass(veh) ~= 18 then return end
     if id == 0 then
         TriggerServerEvent("ND_MDT:getUnitStatus")
         TriggerServerEvent("ND_MDT:get911Calls")
     end
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
     if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
-    ped = PlayerPedId()
     if ped ~= newPed then
         newPed = PlayerPedId()
         img = GetMugShotBase64(newPed, true)
     end
+    local veh = GetVehiclePedIsIn(ped)
     display = true
     SetNuiFocus(true, true)
     SendNUIMessage({
@@ -91,8 +95,7 @@ RegisterCommand("+mdt", function()
         name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
         unitNumber = unitNumber
     })
-    PlaySoundFrontend(-1, "DELETE","HUD_DEATHMATCH_SOUNDSET", 1)
-    print("^1[^4ND_MDT^1] ^0created by ^4Andyyy#7666^0, for support join the discord server: ^4https://discord.gg/Z9Mxu72zZ6^0.")
+    PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end, false)
 RegisterCommand("-mdt", function()end, false)
 RegisterKeyMapping("+mdt", "Open the ND MDT", "keyboard", "b")
@@ -145,11 +148,12 @@ end)
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     local liveChatImg = GetMugShotBase64(PlayerPedId(), true)
-    local unitIdentifier = unitNumber .. " " .. selectedCharacter.firstName .. " " .. selectedCharacter.lastName .. " [" .. selectedCharacter.job .. "]"
     SendNUIMessage({
         type = "addLiveChatMessage",
+        callsign = unitNumber,
+        dept = selectedCharacter.job,
         img = liveChatImg,
-        unit = unitIdentifier,
+        name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
         text = data.text
     })
     TriggerServerEvent("ND_MDT:sendLiveChat", liveChatImg, unitIdentifier, data.text)
@@ -294,7 +298,7 @@ AddEventHandler("ND_MDT:returnIdVehicles", function(result)
 end)
 
 -- triggers a server event with the 911 call information.
-RegisterCommand("test", function(source, args, rawCommand)
+RegisterCommand("911", function(source, args, rawCommand)
     local callDescription = table.concat(args, " ")
     local caller = selectedCharacter.firstName .. " " .. selectedCharacter.lastName
     local coords = GetEntityCoords(PlayerPedId())
@@ -347,3 +351,4 @@ TriggerEvent("chat:addSuggestion", "/911-", "Make a detailed 911 call.", {
     {name="What's your nearest postal?", help="To skip write -"},
     {name="Describe your situation.", help="What's happening, do you need Police, Ambulance?"}
 })
+print("^1[^4ND_MDT^1] ^0for support join the discord server: ^4https://discord.gg/Z9Mxu72zZ6^0.")
