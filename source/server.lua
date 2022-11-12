@@ -5,51 +5,45 @@ local emeregencyCalls = {}
 local activeUnits = {}
 
 -- retrive characters from the database based on client searches.
-RegisterNetEvent("ND_MDT:nameSearch")
-AddEventHandler("ND_MDT:nameSearch", function(first, last)
+lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
     local player = source
     local players = NDCore.Functions.GetPlayers()
     local profiles = {}
-    if config.policeAccess[players[player].job] then
-        if first and first ~= "" then
-            exports.oxmysql:query("SELECT * FROM characters WHERE first_name RLIKE(?);", {first}, function(result)
-                if result then  
-                    for i=1, #result do
-                        local item = result[i]
-                        local playerId = false
-                        for id, info in pairs(players) do
-                            if players[id].id == item.character_id then
-                                playerId = id
-                                break
-                            end
-                        end
-                        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, id = playerId}
+    if not config.policeAccess[players[player].job] then return false end
+
+    if first and first ~= "" then
+        local result = MySQL.query.await("SELECT * FROM characters WHERE first_name RLIKE(?)", {first})
+        if result then  
+            for i=1, #result do
+                local item = result[i]
+                local playerId = false
+                for id, info in pairs(players) do
+                    if players[id].id == item.character_id then
+                        playerId = id
+                        break
                     end
                 end
-            end)
+                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, id = playerId}
+            end
         end
-        if last and last ~= "" then
-            exports.oxmysql:query("SELECT * FROM characters WHERE last_name RLIKE(?);", {last}, function(result)
-                if result then
-                    for i=1, #result do
-                        local item = result[i]
-                        local playerId = false
-                        for id, info in pairs(players) do
-                            if players[id].id == item.character_id then
-                                playerId = id
-                                break
-                            end
-                        end
-                        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, id = playerId}
-                    end
-                end
-            end)
-        end
-        Citizen.Wait(200)
-        TriggerClientEvent("ND_MDT:returnNameSearch", player, profiles)
-    else
-        TriggerClientEvent("ND_MDT:returnNameSearch", player, false)
     end
+    if last and last ~= "" then
+        local result = MySQL.query.await("SELECT * FROM characters WHERE last_name RLIKE(?)", {last})
+        if result then
+            for i=1, #result do
+                local item = result[i]
+                local playerId = false
+                for id, info in pairs(players) do
+                    if players[id].id == item.character_id then
+                        playerId = id
+                        break
+                    end
+                end
+                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, id = playerId}
+            end
+        end
+    end
+    return profiles
 end)
 
 -- get all active units on serer and send it to client.

@@ -135,13 +135,48 @@ end)
 -- triggers a server event to retrive names based on search.
 RegisterNUICallback("nameSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    TriggerServerEvent("ND_MDT:nameSearch", data.first, data.last)
+
+    -- returns retrived names and character information from the server and adds it on the ui.
+    lib.callback("ND_MDT:nameSearch", false, function(result)
+        print(json.encode(result))
+        if not result then return end
+        if not next(result) then
+            SendNUIMessage({
+                type = "nameSearch",
+                found = false
+            })
+            return
+        end
+        for character, info in pairs(result) do
+            local imgFromName = false
+            if info.id then
+                imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
+            else
+                imgFromName = "user.jpg"
+            end
+            SendNUIMessage({
+                type = "nameSearch",
+                found = true,
+                img = imgFromName,
+                characterId = character,
+                firstName = info.first_name,
+                lastName = info.last_name,
+                dob = info.dob,
+                gender = info.gender
+            })
+        end
+    end, data.first, data.last)
 end)
 
 -- triggers a server event to retrive vehicles based on character id.
 RegisterNUICallback("viewVehicles", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     TriggerServerEvent("ND_MDT:viewVehicles", data.id)
+end)
+
+RegisterNUICallback("viewRecords", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    TriggerServerEvent("ND_MDT:viewRecords", data.id)
 end)
 
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.
@@ -226,43 +261,6 @@ AddEventHandler("ND_MDT:update911Calls", function(emeregencyCalls)
             callDescription = info.callDescription,
             attachedUnits = attachedUnits,
             isAttached = isAttached
-        })
-    end
-end)
-
--- returns retrived names and character information from the server and adds it on the ui.
-RegisterNetEvent("ND_MDT:returnNameSearch")
-AddEventHandler("ND_MDT:returnNameSearch", function(result)
-    local results = 0
-    if not result then
-        return
-    end
-    for _ in pairs(result) do
-        results = results + 1
-    end
-    if results == 0 then
-        SendNUIMessage({
-            type = "nameSearch",
-            found = false
-        })
-        return
-    end
-    for character, info in pairs(result) do
-        local imgFromName = false
-        if info.id then
-            imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
-        else
-            imgFromName = "user.jpg"
-        end
-        SendNUIMessage({
-            type = "nameSearch",
-            found = true,
-            img = imgFromName,
-            characterId = character,
-            firstName = info.first_name,
-            lastName = info.last_name,
-            dob = info.dob,
-            gender = info.gender
         })
     end
 end)

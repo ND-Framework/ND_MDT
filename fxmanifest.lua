@@ -17,8 +17,12 @@ files {
 
 ui_page "source/index.html"
 
-shared_script "config.lua"
+shared_scripts {
+    "@ox_lib/init.lua",
+    "config.lua"
+}
 server_scripts {
+    "@oxmysql/lib/MySQL.lua",
     "source/server.lua"
 }
 client_scripts {
