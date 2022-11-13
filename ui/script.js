@@ -135,9 +135,9 @@ $(function() {
         });
     }
 
-    function vehicleTextEntry(text) {
+    function vehicleText(text) {
         let txt = text
-        if (txt == "NULL") {
+        if (txt == "NULL" || !txt) {
             txt = "Not found";
         };
         return txt;
@@ -148,54 +148,36 @@ $(function() {
         $(".rightPanelPlateSearchResponses").empty();
         $("#searchPlateDefault").text("");
         for (const [key, value] of Object.entries(data)) {
-            if (key) {
+            if (key && value) {
                 $(".rightPanelPlateSearchResponses").append(`
                     <div class="plateSearchResult">
                         <div class="plateSearchResultGrid">
                             <div class="plateSearchResultInfo">
                                 <p class="plateSearchResultProperty">Owner:</p>
                                 <p class="plateSearchResultValue">${escapeHtml(value.character.firstName)} ${escapeHtml(value.character.lastName)}</p>
+                                <p class="plateSearchResultProperty">Make:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.make))}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
                                 <p class="plateSearchResultProperty">Plate:</p>
                                 <p class="plateSearchResultValue">${escapeHtml(value.plate)}</p>
-                            </div>
-                            <div class="plateSearchResultInfo">
-                                <p class="plateSearchResultProperty">Date of Birth:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(value.character.dob)}</p>
-                                <p class="plateSearchResultProperty">color:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(value.color)}</p>
-                            </div>
-                            <div class="plateSearchResultInfo">
-                                <p class="plateSearchResultProperty">Gender:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(value.character.gender)}</p>
-                                <p class="plateSearchResultProperty">Make:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(vehicleTextEntry(value.make))}</p>
-                            </div>
-                            <div class="plateSearchResultInfo">
-                                <p class="plateSearchResultProperty">Date of Birth:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(value.character.dob)}</p>
                                 <p class="plateSearchResultProperty">Model:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(vehicleTextEntry(value.model))}</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.model))}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Color:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.color)}</p>
+                                <p class="plateSearchResultProperty">Status:</p>
+                                <p class="plateSearchResultValue">value.status</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Class:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.class)}</p>
                             </div>
                         </div>
-                        <Button id="plateSearchResultButton${value.character.characterId}" class="plateSearchResultButton">Search citizen</Button>
+                        <Button id="plateSearchResultButton" data-first="${value.character.firstName}" data-last="${value.character.lastName}" class="plateSearchResultButton">Search citizen</Button>
                     </div>
                 `);
-                $(`#plateSearchResultButton${value.character.characterId}`).click(function() {
-                    $(".rightPanelNameSearchResponses").empty();
-                    $(".rightPanelNameSearchResponses").show();
-                    $("#searchNameDefault").text("");
-                    $("#nameLoader").fadeIn("fast");
-                    $("body").css("cursor", "progress")
-                    $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
-                        first: value.character.firstName, 
-                        last: value.character.lastName
-                    }));
-
-                    hideAllPages();
-                    $(".rightPanelNameSearch").fadeIn("fast");
-                    $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
-                    return false;
-                });
             };
         };
     }

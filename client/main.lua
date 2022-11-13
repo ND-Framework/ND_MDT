@@ -225,10 +225,17 @@ RegisterNUICallback("viewVehicles", function(data)
     -- retrived vehicles from the server and adds it on the ui.
     lib.callback("ND_MDT:viewVehicles", false, function(result)
         if not result or not next(result) then
-            SendNUIMessage({
-                type = "viewVehicles",
-                found = "No vehicles found registered to this citizen."
-            })
+            if vehPage then
+                SendNUIMessage({
+                    type = "viewVehicles",
+                    found = "No vehicles found registered to this citizen."
+                })
+            else
+                SendNUIMessage({
+                    type = "viewVehicles",
+                    found = "No vehicles found with this plate."
+                })
+            end
             return
         end
         for vehicle, info in pairs(result) do
