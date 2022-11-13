@@ -389,6 +389,20 @@ $(function() {
         return false;
     });
 
+    // Submit the plate search and reset the search bar.
+    $("#plateSearch").submit(function() {
+        $(".rightPanelPlateSearchResponses").show();
+        $("#searchPlateDefault").text("");
+        $("#plateLoader").fadeIn("fast");
+        $("body").css("cursor", "progress")
+        $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
+            search: $("#plateSearchBar").val(),
+            searchBy: "plate"
+        }));
+        this.reset();
+        return false;
+    });
+
     // Submit chat and send it.
     let timeBetweenMessages = [];
     let cumilativeTimeBetweenMessages;
