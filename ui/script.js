@@ -135,6 +135,14 @@ $(function() {
         });
     }
 
+    function vehicleTextEntry(text) {
+        let txt = text
+        if (txt == "NULL") {
+            txt = "Not found";
+        };
+        return txt;
+    };
+
     // display vehicle information on the vehicle search panel.
     function createVehicleSearchResult(data) {
         $(".rightPanelPlateSearchResponses").empty();
@@ -160,13 +168,13 @@ $(function() {
                                 <p class="plateSearchResultProperty">Gender:</p>
                                 <p class="plateSearchResultValue">${escapeHtml(value.character.gender)}</p>
                                 <p class="plateSearchResultProperty">Make:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(value.make)}</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleTextEntry(value.make))}</p>
                             </div>
                             <div class="plateSearchResultInfo">
                                 <p class="plateSearchResultProperty">Date of Birth:</p>
                                 <p class="plateSearchResultValue">${escapeHtml(value.character.dob)}</p>
                                 <p class="plateSearchResultProperty">Model:</p>
-                                <p class="plateSearchResultValue">${escapeHtml(value.model)}</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleTextEntry(value.model))}</p>
                             </div>
                         </div>
                         <Button id="plateSearchResultButton${value.character.characterId}" class="plateSearchResultButton">Search citizen</Button>
