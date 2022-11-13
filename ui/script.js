@@ -28,8 +28,6 @@ $(function() {
         document.addEventListener("mousemove", onMouseMove);
   
         $(".background").get(-1).onmouseup = function(e) {
-            console.log($(".background").css("left"));
-            console.log($(".background").css("top"));
             document.removeEventListener("mousemove", onMouseMove);
             $(".background").get(-1).onmouseup = null;
         };
@@ -204,47 +202,45 @@ $(function() {
 
         // update all the 911 calls on the dashboard.
         if (item.type === "update911Calls") {
-            if (item.action === "clear") {
-                $(".rightPanelDashboard911Calls").empty();
-            }
-            if (item.action === "add") {
-                if (item.isAttached) {
+            $(".rightPanelDashboard911Calls").empty();
+            JSON.parse(item.callData).forEach((call) => {
+                if (call.isAttached) {
                     $(".rightPanelDashboard911Calls").prepend(`
                         <div class="rightPanelDashboard911CallsItem">
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> Caller:</p>
-                            <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(item.caller)}</p>
+                            <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> Location:</p>
-                            <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${item.location}</p>
+                            <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-comment-alt"></i> Description:</p>
-                            <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(item.callDescription)}</p>
+                            <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.callDescription)}</p>
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-route"></i> Responding Units:</p>
-                            <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(item.attachedUnits)}</p>
-                            <button class="rightPanelDashboard911CallsItemRespond" style="background-color: rgb(201, 38, 38);">Detach from call [call id: ${item.callId}]</button>
+                            <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(call.attachedUnits)}</p>
+                            <button class="rightPanelDashboard911CallsItemRespond" data-call="${call.callId}" style="background-color: rgb(201, 38, 38);">Detach from call [call id: ${call.callId}]</button>
                         </div>
                     `);
                 } else {
                     $(".rightPanelDashboard911Calls").prepend(`
                         <div class="rightPanelDashboard911CallsItem">
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> Caller:</p>
-                            <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(item.caller)}</p>
+                            <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> Location:</p>
-                            <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${item.location}</p>
+                            <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-comment-alt"></i> Description:</p>
-                            <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(item.callDescription)}</p>
+                            <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.callDescription)}</p>
                             <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-route"></i> Responding Units:</p>
-                            <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(item.attachedUnits)}</p>
-                            <button class="rightPanelDashboard911CallsItemRespond" >Attach to call [call id: ${item.callId}]</button>
+                            <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(call.attachedUnits)}</p>
+                            <button class="rightPanelDashboard911CallsItemRespond" data-call="${call.callId}" >Attach to call [call id: ${call.callId}]</button>
                         </div>
                     `);
                 }
-                
-                // Detach/attach to call button.
-                $(".rightPanelDashboard911CallsItemRespond").click(function() {
-                    $.post(`https://${GetParentResourceName()}/unitRespondToCall`, JSON.stringify({
-                        id: $(this).text()
-                    }));
-                });
-            }
+            });
+            
+            // Detach/attach to call button.
+            $(".rightPanelDashboard911CallsItemRespond").click(function() {
+                $.post(`https://${GetParentResourceName()}/unitRespondToCall`, JSON.stringify({
+                    id: $(this).data("call")
+                }));
+            });
         }
 
         // display all found citizens or show error message.

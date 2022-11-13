@@ -96,8 +96,9 @@ RegisterCommand("+mdt", function()
         lib.callback("ND_MDT:getUnitStatus", false, function(units)
             displayUnits(units)
         end)
-
-        TriggerServerEvent("ND_MDT:get911Calls")
+        lib.callback("ND_MDT:get911Calls", false, function(emeregencyCalls)
+            displayUnits(emeregencyCalls)
+        end)
     end
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
     if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
@@ -145,12 +146,7 @@ end)
 -- sets the unit attached or detached from a call.
 RegisterNUICallback("unitRespondToCall", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    local id = data.id
-    id = string.gsub(id, "%[", "")
-    id = string.gsub(id, "%]", "")
-    local i, j = string.find(id, ":")
-    id = string.gsub(id, tostring(string.sub(id, 1, j + 1)), "")
-    TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(id), unitNumber)
+    TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(data.id), unitNumber)
 end)
 
 -- triggers a server event to retrive names based on search.
@@ -229,40 +225,8 @@ AddEventHandler("ND_MDT:receiveLiveChat", function(chatInfo)
 end)
 
 -- returns all 911 calls from the server and updates them on the ui.
-RegisterNetEvent("ND_MDT:update911Calls")
-AddEventHandler("ND_MDT:update911Calls", function(emeregencyCalls)
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
-    local isAttached = false
-    local unitIdentifier = tostring(unitNumber) .. " " .. selectedCharacter.firstName .. " " .. selectedCharacter.lastName
-    SendNUIMessage({
-        type = "update911Calls",
-        action = "clear"
-    })
-    for callId, info in pairs(emeregencyCalls) do
-        local attachedUnits = info.attachedUnits
-        if #attachedUnits == 0 then
-            attachedUnits = "*No units attached to call*"
-        else
-            for _, unit in pairs(attachedUnits) do
-                if unit == unitIdentifier then
-                    isAttached = true
-                    break
-                end
-            end
-            attachedUnits = table.concat(info.attachedUnits, ", ")
-        end
-        SendNUIMessage({
-            type = "update911Calls",
-            action = "add",
-            callId = callId,
-            caller = info.caller,
-            location = info.location,
-            callDescription = info.callDescription,
-            attachedUnits = attachedUnits,
-            isAttached = isAttached
-        })
-    end
+RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls)
+    display911Calls(emeregencyCalls)
 end)
 
 -- returns all active units from the server and updates the status on the ui.

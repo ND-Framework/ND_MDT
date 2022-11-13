@@ -75,35 +75,32 @@ AddEventHandler("playerDropped", function()
 end)
 
 -- Create 911 call in emeregencyCalls.
-RegisterNetEvent("ND_MDT:Create911Call")
-AddEventHandler("ND_MDT:Create911Call", function(callInfo)
+RegisterNetEvent("ND_MDT:Create911Call", function(callInfo)
     callId = callId + 1
     emeregencyCalls[callId] = callInfo
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
--- This will just send all the current calls to the client.
-RegisterNetEvent("ND_MDT:get911Calls")
-AddEventHandler("ND_MDT:get911Calls", function()
-    local player = source
-    TriggerClientEvent("ND_MDT:update911Calls", source, emeregencyCalls)
-end)
-
--- This will check if the client is already attached to the call if not then it will attach them and send it to the client.
-RegisterNetEvent("ND_MDT:unitRespondToCall")
-AddEventHandler("ND_MDT:unitRespondToCall", function(id, unitNumber)
-    local player = source
-    local players = NDCore.Functions.GetPlayers()
-    local call = id
-    local unitIdentifier = unitNumber .. " " .. players[player].firstName .. " " .. players[player].lastName
+function isUnitResponding(call, unitIdentifier)
     for unit, name in pairs(emeregencyCalls[call].attachedUnits) do
         if name == unitIdentifier then
-            emeregencyCalls[call].attachedUnits[unit] = nil
-            TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
-            return
+            return true, unit
         end
     end
-    table.insert(emeregencyCalls[call].attachedUnits, unitIdentifier)
+    return false
+end
+
+-- This will check if the client is already attached to the call if not then it will attach them and send it to the client.
+RegisterNetEvent("ND_MDT:unitRespondToCall", function(call, unitNumber)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    local unitIdentifier = unitNumber .. " " .. player.firstName .. " " .. player.lastName
+    local responding, unit = isUnitResponding(call, unitIdentifier)
+    if responding then
+        emeregencyCalls[call].attachedUnits[unit] = nil
+    else
+        table.insert(emeregencyCalls[call].attachedUnits, unitIdentifier)
+    end
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
