@@ -54,15 +54,15 @@ lib.callback.register("ND_MDT:getUnitStatus", function(source)
     return activeUnits
 end)
 
--- sets unit status in active units table and sends it to client.
-lib.callback.register("ND_MDT:setUnitStatus", function(source, unitNumber, unitStatus)
+-- sets unit status in active units table and sends it to all clients.
+RegisterNetEvent("ND_MDT:setUnitStatus", function(unitNumber, unitStatus)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     if unitStatus == "10-7" then
         activeUnits[src] = nil
     else
-        activeUnits[src] = {unit = unitNumber .. " " .. player.firstName .. " " .. player.lastName .. " [" .. playerDepartment .. "]", status = unitStatus}
+        activeUnits[src] = {unit = unitNumber .. " " .. player.firstName .. " " .. player.lastName .. " [" .. player.job .. "]", status = unitStatus}
     end
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
 end)
@@ -70,8 +70,15 @@ end)
 -- remove unit froma activeunits if they leave the server forgeting to go 10-7.
 AddEventHandler("playerDropped", function()
     local player = source
+    if not activeUnits[player] then return end
     activeUnits[player] = nil
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
+end)
+
+-- This will just send all the current calls to the client.
+lib.callback.register("ND_MDT:getUnitStatus", function(source)
+    local src = source
+    return emeregencyCalls
 end)
 
 -- Create 911 call in emeregencyCalls.
@@ -104,26 +111,42 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call, unitNumber)
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
--- retrive vehicles from the database based on characterId.
-RegisterNetEvent("ND_MDT:viewVehicles")
-AddEventHandler("ND_MDT:viewVehicles", function(id)
-    local player = source
-    local players = NDCore.Functions.GetPlayers()
-    local vehicles = {}
-    if config.policeAccess[players[player].job] then
-        exports.oxmysql:query("SELECT * FROM characters_vehicles WHERE character = ?;", {id}, function(result)
-            if result then  
-                for i=1, #result do
-                    local item = result[i]
-                    vehicles[item.v_id] = {color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class}
-                end
-            end
-        end)
-        Citizen.Wait(200)
-        TriggerClientEvent("ND_MDT:returnIdVehicles", player, vehicles)
-    else
-        TriggerClientEvent("ND_MDT:returnIdVehicles", player, false)
+function getVehicleCharacter(owner)
+    local result = MySQL.query.await("SELECT * FROM characters WHERE character_id LIMIT 1", {owner})
+    if result then
+        for i=1, #result do
+            local item = result[i]
+            return {firstName = item.first_name, lastName = item.last_name, dob = item.dob, gender = item.gender, characterId = item.character_id}
+        end
     end
+end
+
+-- retrive vehicles from the database based on characterId.
+lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] then return false end
+    local vehicles = {}
+    if searchBy == "plate" then
+        local result = MySQL.query.await("SELECT * FROM characters_vehicles WHERE plate = ?", {data})
+        if result then
+            for i=1, #result do
+                local item = result[i]
+                local character = getVehicleCharacter(item.vehicle_owner)
+                vehicles[item.v_id] = {color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, character = character}
+            end
+        end
+    elseif searchBy == "owner" then
+        local result = MySQL.query.await("SELECT * FROM characters_vehicles WHERE vehicle_owner = ?", {data})
+        if result then
+            local character = getVehicleCharacter(data)
+            for i=1, #result do
+                local item = result[i]
+                vehicles[item.v_id] = {color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, character = character}
+            end
+        end
+    end
+    return vehicles
 end)
 
 RegisterNetEvent("ND_MDT:sendLiveChat")

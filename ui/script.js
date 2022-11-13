@@ -125,13 +125,71 @@ $(function() {
             return false;
         });
         $(`#nameSearchResultButtonVehicles${characterId}`).click(function() {
-            $("#nameLoader").fadeIn("fast");
+            $("#plateLoader").fadeIn("fast");
             $("body").css("cursor", "progress")
             $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
-                id: characterId
+                search: characterId,
+                searchBy: "owner"
             }));
             return false;
         });
+    }
+
+    // display vehicle information on the vehicle search panel.
+    function createVehicleSearchResult(data) {
+        $(".rightPanelPlateSearchResponses").empty();
+        $("#searchPlateDefault").text("");
+        for (const [key, value] of Object.entries(data)) {
+            if (key) {
+                $(".rightPanelPlateSearchResponses").append(`
+                    <div class="plateSearchResult">
+                        <div class="plateSearchResultGrid">
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Owner:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.character.firstName)} ${escapeHtml(value.character.lastName)}</p>
+                                <p class="plateSearchResultProperty">Plate:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.plate)}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Date of Birth:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.character.dob)}</p>
+                                <p class="plateSearchResultProperty">color:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.color)}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Gender:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.character.gender)}</p>
+                                <p class="plateSearchResultProperty">Make:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.make)}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Date of Birth:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.character.dob)}</p>
+                                <p class="plateSearchResultProperty">Model:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.model)}</p>
+                            </div>
+                        </div>
+                        <Button id="plateSearchResultButton${value.character.characterId}" class="plateSearchResultButton">Search citizen</Button>
+                    </div>
+                `);
+                $(`#plateSearchResultButton${value.character.characterId}`).click(function() {
+                    $(".rightPanelNameSearchResponses").empty();
+                    $(".rightPanelNameSearchResponses").show();
+                    $("#searchNameDefault").text("");
+                    $("#nameLoader").fadeIn("fast");
+                    $("body").css("cursor", "progress")
+                    $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
+                        first: value.character.firstName, 
+                        last: value.character.lastName
+                    }));
+
+                    hideAllPages();
+                    $(".rightPanelNameSearch").fadeIn("fast");
+                    $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
+                    return false;
+                });
+            };
+        };
     }
 
     // sends a chat message in the mdt live chat.
@@ -254,15 +312,20 @@ $(function() {
             }
         }
 
-        // display all found citizens or show error message.
+        // display all found citizens vehicles or show error message.
         if (item.type === "viewVehicles") {
-            $("#nameLoader").fadeOut("fast");
-            $("body").css("cursor", "default")
-            if (item.found) {
-                
+            $("#plateLoader").fadeOut("fast");
+            $("body").css("cursor", "default");
+            if (item.vehPage) {
+                hideAllPages();
+                $(".rightPanelPlateSearch").fadeIn("fast");
+                $("#leftPanelButtonPlateSearch").css("background-color", "#3a3b3c");
+            };
+            if (item.found == true) {
+                createVehicleSearchResult(JSON.parse(item.data));
             } else {
-                //$("#searchNameDefault").text("No vehicles found registered to this citizen.");
-            }
+                $("#searchPlateDefault").text(item.found);
+            };
         }
     });
 

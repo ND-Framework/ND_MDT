@@ -85,6 +85,40 @@ function displayUnits(units)
     end
 end
 
+function display911Calls(emeregencyCalls)
+    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
+    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local unitIdentifier = tostring(unitNumber) .. " " .. selectedCharacter.firstName .. " " .. selectedCharacter.lastName
+    local data = {}
+    for callId, info in pairs(emeregencyCalls) do
+        local isAttached = false
+        local attachedUnits = info.attachedUnits
+        if #attachedUnits == 0 then
+            attachedUnits = "*No units attached to call*"
+        else
+            for _, unit in pairs(attachedUnits) do
+                if unit == unitIdentifier then
+                    isAttached = true
+                    break
+                end
+            end
+            attachedUnits = table.concat(info.attachedUnits, ", ")
+        end
+        data[#data+1] = {
+            callId = callId,
+            caller = info.caller,
+            location = info.location,
+            callDescription = info.callDescription,
+            attachedUnits = attachedUnits,
+            isAttached = isAttached
+        }
+    end
+    SendNUIMessage({
+        type = "update911Calls",
+        callData = json.encode(data)
+    })
+end
+
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
     ped = PlayerPedId()
@@ -183,10 +217,29 @@ RegisterNUICallback("nameSearch", function(data)
     end, data.first, data.last)
 end)
 
--- triggers a server event to retrive vehicles based on character id.
 RegisterNUICallback("viewVehicles", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    TriggerServerEvent("ND_MDT:viewVehicles", data.id)
+    local vehPage = false
+    if data.searchBy == "owner" then vehPage = true end
+
+    -- retrived vehicles from the server and adds it on the ui.
+    lib.callback("ND_MDT:viewVehicles", false, function(result)
+        if not result or not next(result) then
+            SendNUIMessage({
+                type = "viewVehicles",
+                found = "No vehicles found registered to this citizen."
+            })
+            return
+        end
+        for vehicle, info in pairs(result) do
+            SendNUIMessage({
+                type = "viewVehicles",
+                found = true,
+                vehPage = vehPage,
+                data = json.encode(result)
+            })
+        end
+    end, data.searchBy, data.search)
 end)
 
 RegisterNUICallback("viewRecords", function(data)
@@ -232,36 +285,6 @@ end)
 -- returns all active units from the server and updates the status on the ui.
 RegisterNetEvent("ND_MDT:updateUnitStatus", function(units)
     displayUnits(units)
-end)
-
--- returns retrived vehicles from the server and adds it on the ui.
-RegisterNetEvent("ND_MDT:returnIdVehicles")
-AddEventHandler("ND_MDT:returnIdVehicles", function(result)
-    local results = 0
-    for _ in pairs(result) do
-        results = results + 1
-    end
-    if not result then
-        return
-    elseif results == 0 then
-        SendNUIMessage({
-            type = "viewVehicles",
-            found = false
-        })
-        return
-    end
-    for vehicle, info in pairs(result) do
-        SendNUIMessage({
-            type = "viewVehicles",
-            found = true,
-            vehicleId = vehicle,
-            color = info.color,
-            make = info.make,
-            model = info.model,
-            plate = info.plate,
-            class = info.class
-        })
-    end
 end)
 
 -- triggers a server event with the 911 call information.
