@@ -91,44 +91,48 @@ $(function() {
     }
 
     // display character information on the name search panel.
-    function createNameSearchResult(characterId, img, firstName, lastName, dob, gender) {
-        $(".rightPanelNameSearchResponses").append(`
-            <div class="nameSearchResult">
-                <div class="nameSearchResultImageContainer">
-                    <img class="nameSearchResultImage" src="${img}">
-                </div>
-                <div class="nameSearchResultNames">
-                    <p class="nameSearchResultProperty">First Name:</p>
-                    <p class="nameSearchResultValue">${escapeHtml(firstName)}</p>
-                    <p class="nameSearchResultProperty">Last Name:</p>
-                    <p class="nameSearchResultValue">${escapeHtml(lastName)}</p>
-                </div>
-                <div class="nameSearchResultInfo">
-                    <p class="nameSearchResultProperty">Date of Birth:</p>
-                    <p class="nameSearchResultValue">${escapeHtml(dob)}</p>
-                    <p class="nameSearchResultProperty">Gender:</p>
-                    <p class="nameSearchResultValue">${escapeHtml(gender)}</p>
-                </div>
-                <div class="nameSearchResultButtons">
-                    <Button id="nameSearchResultButtonRecords${characterId}" class="nameSearchResultButton">View Records</Button>
-                    <br>
-                    <Button id="nameSearchResultButtonVehicles${characterId}" class="nameSearchResultButton">View Vehicles</Button>
-                </div>
-            </div>
-        `);
-        $(`#nameSearchResultButtonRecords${characterId}`).click(function() {
+    function createNameSearchResult(data) {
+        for (const [key, value] of Object.entries(data)) {
+            if (key && value) {
+                $(".rightPanelNameSearchResponses").append(`
+                    <div class="nameSearchResult">
+                        <div class="nameSearchResultImageContainer">
+                            <img class="nameSearchResultImage" src="${value.img}">
+                        </div>
+                        <div class="nameSearchResultNames">
+                            <p class="nameSearchResultProperty">First Name:</p>
+                            <p class="nameSearchResultValue">${escapeHtml(value.firstName)}</p>
+                            <p class="nameSearchResultProperty">Last Name:</p>
+                            <p class="nameSearchResultValue">${escapeHtml(value.lastName)}</p>
+                        </div>
+                        <div class="nameSearchResultInfo">
+                            <p class="nameSearchResultProperty">Date of Birth:</p>
+                            <p class="nameSearchResultValue">${escapeHtml(value.dob)}</p>
+                            <p class="nameSearchResultProperty">Gender:</p>
+                            <p class="nameSearchResultValue">${escapeHtml(value.gender)}</p>
+                        </div>
+                        <div class="nameSearchResultButtons">
+                            <Button id="nameSearchResultButtonRecords" data-character="${value.characterId}" class="nameSearchResultButton">View Records</Button>
+                            <br>
+                            <Button id="nameSearchResultButtonVehicles" data-character="${value.characterId}" class="nameSearchResultButton">View Vehicles</Button>
+                        </div>
+                    </div>
+                `);
+            };
+        };
+        $("#nameSearchResultButtonRecords").click(function() {
             $("#nameLoader").fadeIn("fast");
             $("body").css("cursor", "progress")
             $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
-                id: characterId
+                id: $(this).data("character")
             }));
             return false;
         });
-        $(`#nameSearchResultButtonVehicles${characterId}`).click(function() {
+        $("#nameSearchResultButtonVehicles").click(function() {
             $("#plateLoader").fadeIn("fast");
             $("body").css("cursor", "progress")
             $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
-                search: characterId,
+                search: $(this).data("character"),
                 searchBy: "owner"
             }));
             return false;
@@ -180,6 +184,22 @@ $(function() {
                 `);
             };
         };
+        $("#plateSearchResultButton").click(function() {
+            $(".rightPanelNameSearchResponses").show();
+            $(".rightPanelNameSearchResponses").empty();
+            $("#searchNameDefault").text("");
+            $("#nameLoader").fadeIn("fast");
+            $("body").css("cursor", "progress")
+            $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
+                first: $(this).data("first"), 
+                last: $(this).data("last")
+            }));
+
+            hideAllPages();
+            $(".rightPanelNameSearch").fadeIn("fast");
+            $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
+            return false;
+        });
     }
 
     // sends a chat message in the mdt live chat.
@@ -296,7 +316,7 @@ $(function() {
             $("#nameLoader").fadeOut("fast");
             $("body").css("cursor", "default")
             if (item.found) {
-                createNameSearchResult(item.characterId, item.img, item.firstName, item.lastName, item.dob, item.gender);
+                createNameSearchResult(JSON.parse(item.data));
             } else {
                 $("#searchNameDefault").text("No citizen found with this name.");
             }
@@ -382,6 +402,7 @@ $(function() {
     // Submit the plate search and reset the search bar.
     $("#plateSearch").submit(function() {
         $(".rightPanelPlateSearchResponses").show();
+        $(".rightPanelPlateSearchResponses").empty();
         $("#searchPlateDefault").text("");
         $("#plateLoader").fadeIn("fast");
         $("body").css("cursor", "progress")

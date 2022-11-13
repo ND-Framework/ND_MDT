@@ -196,6 +196,7 @@ RegisterNUICallback("nameSearch", function(data)
             })
             return
         end
+        local data = {}
         for character, info in pairs(result) do
             local imgFromName = false
             if info.id then
@@ -203,17 +204,20 @@ RegisterNUICallback("nameSearch", function(data)
             else
                 imgFromName = "user.jpg"
             end
-            SendNUIMessage({
-                type = "nameSearch",
-                found = true,
+            data[#data+1] = {
                 img = imgFromName,
                 characterId = character,
                 firstName = info.first_name,
                 lastName = info.last_name,
                 dob = info.dob,
                 gender = info.gender
-            })
+            }
         end
+        SendNUIMessage({
+            type = "nameSearch",
+            found = true,
+            data = json.encode(data)
+        })
     end, data.first, data.last)
 end)
 
