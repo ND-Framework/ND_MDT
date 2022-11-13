@@ -68,6 +68,23 @@ AddEventHandler("onResourceStop", function(resourceName)
     end
 end)
 
+function displayUnits(units)
+    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
+    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    SendNUIMessage({
+        type = "updateUnitStatus",
+        action = "clear"
+    })
+    for _, info in pairs(units) do
+        SendNUIMessage({
+            type = "updateUnitStatus",
+            action = "add",
+            unit = info.unit,
+            status = info.status
+        })
+    end
+end
+
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
     ped = PlayerPedId()
@@ -75,7 +92,11 @@ RegisterCommand("+mdt", function()
     if veh == 0 then return end
     if GetVehicleClass(veh) ~= 18 then return end
     if id == 0 then
-        TriggerServerEvent("ND_MDT:getUnitStatus")
+        -- returns all active units from the server and updates the status on the ui.
+        lib.callback("ND_MDT:getUnitStatus", false, function(units)
+            displayUnits(units)
+        end)
+
         TriggerServerEvent("ND_MDT:get911Calls")
     end
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
@@ -138,9 +159,7 @@ RegisterNUICallback("nameSearch", function(data)
 
     -- returns retrived names and character information from the server and adds it on the ui.
     lib.callback("ND_MDT:nameSearch", false, function(result)
-        print(json.encode(result))
-        if not result then return end
-        if not next(result) then
+        if not result or not next(result) then
             SendNUIMessage({
                 type = "nameSearch",
                 found = false
@@ -209,25 +228,6 @@ AddEventHandler("ND_MDT:receiveLiveChat", function(chatInfo)
     })
 end)
 
--- returns all active units from the server and updates the status on the ui.
-RegisterNetEvent("ND_MDT:updateUnitStatus")
-AddEventHandler("ND_MDT:updateUnitStatus", function(units)
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
-    SendNUIMessage({
-        type = "updateUnitStatus",
-        action = "clear"
-    })
-    for _, info in pairs(units) do
-        SendNUIMessage({
-            type = "updateUnitStatus",
-            action = "add",
-            unit = info.unit,
-            status = info.status
-        })
-    end
-end)
-
 -- returns all 911 calls from the server and updates them on the ui.
 RegisterNetEvent("ND_MDT:update911Calls")
 AddEventHandler("ND_MDT:update911Calls", function(emeregencyCalls)
@@ -263,6 +263,11 @@ AddEventHandler("ND_MDT:update911Calls", function(emeregencyCalls)
             isAttached = isAttached
         })
     end
+end)
+
+-- returns all active units from the server and updates the status on the ui.
+RegisterNetEvent("ND_MDT:updateUnitStatus", function(units)
+    displayUnits(units)
 end)
 
 -- returns retrived vehicles from the server and adds it on the ui.

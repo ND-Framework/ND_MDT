@@ -120,6 +120,10 @@ $(function() {
         `);
         $(`#nameSearchResultButtonRecords${characterId}`).click(function() {
             $("#nameLoader").fadeIn("fast");
+            $("body").css("cursor", "progress")
+            $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
+                id: characterId
+            }));
             return false;
         });
         $(`#nameSearchResultButtonVehicles${characterId}`).click(function() {

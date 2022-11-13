@@ -9,13 +9,13 @@ game "gta5"
 lua54 "yes"
 
 files {
-	"source/index.html",
-	"source/script.js",
-	"source/style.css",
-    "source/user.jpg"
+	"ui/index.html",
+	"ui/script.js",
+	"ui/style.css",
+    "ui/user.jpg"
 }
 
-ui_page "source/index.html"
+ui_page "ui/index.html"
 
 shared_scripts {
     "@ox_lib/init.lua",
@@ -23,8 +23,8 @@ shared_scripts {
 }
 server_scripts {
     "@oxmysql/lib/MySQL.lua",
-    "source/server.lua"
+    "server/main.lua"
 }
 client_scripts {
-    "source/client.lua"
+    "client/main.lua"
 }

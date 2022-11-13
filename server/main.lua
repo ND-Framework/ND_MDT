@@ -47,26 +47,22 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
 end)
 
 -- get all active units on serer and send it to client.
-RegisterNetEvent("ND_MDT:getUnitStatus")
-AddEventHandler("ND_MDT:getUnitStatus", function()
-    local player = source
-    local players = NDCore.Functions.GetPlayers()
-    local playerDepartment = players[player].job
-    if not config.policeAccess[playerDepartment] and not config.fireAccess[playerDepartment] then return end
-    TriggerClientEvent("ND_MDT:updateUnitStatus", player, activeUnits)
+lib.callback.register("ND_MDT:getUnitStatus", function(source)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    return activeUnits
 end)
 
 -- sets unit status in active units table and sends it to client.
-RegisterNetEvent("ND_MDT:setUnitStatus")
-AddEventHandler("ND_MDT:setUnitStatus", function(unitNumber, unitStatus)
-    local player = source
-    local players = NDCore.Functions.GetPlayers()
-    local playerDepartment = players[player].job
-    if not config.policeAccess[playerDepartment] and not config.fireAccess[playerDepartment] then return end
+lib.callback.register("ND_MDT:setUnitStatus", function(source, unitNumber, unitStatus)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     if unitStatus == "10-7" then
-        activeUnits[player] = nil
+        activeUnits[src] = nil
     else
-        activeUnits[player] = {unit = unitNumber .. " " .. players[player].firstName .. " " .. players[player].lastName .. " [" .. playerDepartment .. "]", status = unitStatus}
+        activeUnits[src] = {unit = unitNumber .. " " .. player.firstName .. " " .. player.lastName .. " [" .. playerDepartment .. "]", status = unitStatus}
     end
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
 end)
