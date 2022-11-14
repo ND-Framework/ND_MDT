@@ -253,7 +253,23 @@ end)
 
 RegisterNUICallback("viewRecords", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    TriggerServerEvent("ND_MDT:viewRecords", data.id)
+
+    -- retrive records from the server and adds it on the ui.
+    lib.callback("ND_MDT:viewRecords", false, function(result)
+        print(json.encode(result))
+        if not result or not next(result) then
+            SendNUIMessage({
+                type = "viewRecords",
+                found = false
+            })
+            return
+        end
+        SendNUIMessage({
+            type = "viewRecords",
+            found = true,
+            data = json.encode(result)
+        })
+    end, data.id)
 end)
 
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.

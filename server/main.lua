@@ -149,6 +149,17 @@ lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
     return vehicles
 end)
 
+lib.callback.register("ND_MDT:viewRecords", function(source, characterToSearch)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] then return false end
+
+    local result = MySQL.query.await("SELECT records FROM nd_mdt WHERE `character` = ? LIMIT 1", {characterToSearch})
+    if not result then return end
+    
+    return json.decode(result[1])
+end)
+
 RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)

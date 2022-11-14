@@ -121,6 +121,7 @@ $(function() {
             };
         };
         $("#nameSearchResultButtonRecords").click(function() {
+            $(".rightPanelNameSearchResponses").empty();
             $("#nameLoader").fadeIn("fast");
             $("body").css("cursor", "progress")
             $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
