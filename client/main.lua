@@ -242,14 +242,12 @@ RegisterNUICallback("viewVehicles", function(data)
             end
             return
         end
-        for vehicle, info in pairs(result) do
-            SendNUIMessage({
-                type = "viewVehicles",
-                found = true,
-                vehPage = vehPage,
-                data = json.encode(result)
-            })
-        end
+        SendNUIMessage({
+            type = "viewVehicles",
+            found = true,
+            vehPage = vehPage,
+            data = json.encode(result)
+        })
     end, data.searchBy, data.search)
 end)
 
