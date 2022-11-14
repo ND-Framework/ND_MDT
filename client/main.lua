@@ -259,31 +259,27 @@ end)
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
     local liveChatImg = GetMugShotBase64(PlayerPedId(), true)
-    SendNUIMessage({
+    local chatInfo = {
         type = "addLiveChatMessage",
         callsign = unitNumber,
         dept = selectedCharacter.job,
         img = liveChatImg,
         name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
         text = data.text
-    })
-    TriggerServerEvent("ND_MDT:sendLiveChat", liveChatImg, unitIdentifier, data.text)
+    }
+    SendNUIMessage(chatInfo)
+    TriggerServerEvent("ND_MDT:sendLiveChat", chatInfo)
 end)
 
 -- If the client didn't send the message then it will add it when this event is triggered.
 RegisterNetEvent("ND_MDT:receiveLiveChat")
 AddEventHandler("ND_MDT:receiveLiveChat", function(chatInfo)
+    if chatInfo.id == GetPlayerServerId(PlayerId()) then return end
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
     if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
-    local info = chatInfo
-    if info.id == GetPlayerServerId(PlayerId()) then return end
-    SendNUIMessage({
-        type = "addLiveChatMessage",
-        img = info.liveChatImg,
-        unit = info.unit,
-        text = info.text
-    })
+    SendNUIMessage(chatInfo)
 end)
 
 -- returns all 911 calls from the server and updates them on the ui.

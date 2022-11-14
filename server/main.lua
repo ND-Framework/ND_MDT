@@ -149,14 +149,11 @@ lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
     return vehicles
 end)
 
-RegisterNetEvent("ND_MDT:sendLiveChat")
-AddEventHandler("ND_MDT:sendLiveChat", function(liveChatImg, unitIdentifier, messageText)
-    local player = source
-    local senderInfo = {
-        id = player,
-        liveChatImg = liveChatImg,
-        unit = unitIdentifier,
-        text = messageText
-    }
-    TriggerClientEvent("ND_MDT:receiveLiveChat", -1, senderInfo)
+RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] then return false end
+    info.id = src
+    info.dept = player.job
+    TriggerClientEvent("ND_MDT:receiveLiveChat", -1, info)
 end)
