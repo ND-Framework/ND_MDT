@@ -116,7 +116,7 @@ function getVehicleCharacter(owner)
     if result then
         for i=1, #result do
             local item = result[i]
-            return {firstName = item.first_name, lastName = item.last_name, dob = item.dob, gender = item.gender, characterId = item.character_id}
+            return {firstName = item.first_name, lastName = item.last_name, characterId = item.character_id}
         end
     end
 end
