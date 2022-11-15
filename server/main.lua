@@ -149,15 +149,29 @@ lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
     return vehicles
 end)
 
+function getProperties(id)
+    local addresses = {}
+    local result = MySQL.query.await("SELECT address FROM nd_properties WHERE owner = ?", {id})
+    if not result or not result[1] then return addresses end
+    for _, adrs in pairs(result) do
+        addresses[#addresses+1] = adrs.address
+    end
+    return addresses
+end
+
 lib.callback.register("ND_MDT:viewRecords", function(source, characterToSearch)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
     local result = MySQL.query.await("SELECT records FROM nd_mdt WHERE `character` = ? LIMIT 1", {characterToSearch})
-    if not result then return end
-    
-    return json.decode(result[1])
+    if not result then return {} end
+
+    local records = {
+        records = json.decode(result[1]),
+        properties = getProperties(characterToSearch)
+    }
+    return records
 end)
 
 RegisterNetEvent("ND_MDT:sendLiveChat", function(info)

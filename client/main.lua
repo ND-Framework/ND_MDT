@@ -10,6 +10,8 @@ local MugshotsCache = {}
 local Answers = {}
 local selectedCharacter
 
+local citizenData = {}
+
 function GetMugShotBase64(Ped, Tasparent)
 	if not Ped then return end
 	id = id + 1 
@@ -204,7 +206,7 @@ RegisterNUICallback("nameSearch", function(data)
             else
                 imgFromName = "user.jpg"
             end
-            data[#data+1] = {
+            local citizen = {
                 img = imgFromName,
                 characterId = character,
                 firstName = info.first_name,
@@ -213,6 +215,8 @@ RegisterNUICallback("nameSearch", function(data)
                 gender = info.gender,
                 phone = info.phone
             }
+            citizenData[character] = citizen
+            data[#data+1] = citizen
         end
         SendNUIMessage({
             type = "nameSearch",
@@ -257,17 +261,9 @@ RegisterNUICallback("viewRecords", function(data)
 
     -- retrive records from the server and adds it on the ui.
     lib.callback("ND_MDT:viewRecords", false, function(result)
-        print(json.encode(result))
-        if not result or not next(result) then
-            SendNUIMessage({
-                type = "viewRecords",
-                found = false
-            })
-            return
-        end
+        result.citizen = citizenData[data.id]
         SendNUIMessage({
             type = "viewRecords",
-            found = true,
             data = json.encode(result)
         })
     end, data.id)
