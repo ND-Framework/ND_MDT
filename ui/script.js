@@ -13,7 +13,7 @@ $(function() {
         function moveAt(pageX, pageY) {
             $(".background").get(-1).style.left = pageX - shiftX + "px";
             $(".background").get(-1).style.top = pageY - shiftY + "px";
-        }
+        };
   
         function onMouseMove(event) {
             moveAt(event.pageX, event.pageY);
@@ -23,7 +23,7 @@ $(function() {
             $(".background").get(-1).hidden = false;
   
             if (!elemBelow) return;
-        }
+        };
   
         document.addEventListener("mousemove", onMouseMove);
   
@@ -39,7 +39,7 @@ $(function() {
 
     const escapeHtml = (unsafe) => {
         return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
-    }
+    };
 
     function getBase64Image(src, callback, outputFormat) {
         const img = new Image();
@@ -58,20 +58,20 @@ $(function() {
         if (img.complete || img.complete === undefined) {
             img.src = "user.jpg";
             img.src = src;
-        }
-    }
+        };
+    };
     function Convert(pMugShotTxd, id) {
         let tempUrl = "https://nui-img/" + pMugShotTxd + "/" + pMugShotTxd + "?t=" + String(Math.round(new Date().getTime() / 1000));
         if (pMugShotTxd == "none") {
             tempUrl = "user.jpg";
-        }
+        };
         getBase64Image(tempUrl, function(dataUrl) {
             $.post(`https://${GetParentResourceName()}/Answer`, JSON.stringify({
                 Answer: dataUrl,
                 Id: id,
             }));
         });
-    }
+    };
 
     // Hide all pages but the dashboard on start.
     $(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings").hide();
@@ -80,7 +80,7 @@ $(function() {
     function hideAllPages() {
         $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings").hide();
         $(".leftPanelButtons").css("background-color", "transparent");
-    }
+    };
 
     // Reset all unit status buttons highlight on the dashboard. This is used to reset all of them then highlight another one (the active one).
     function resetStatus() {
@@ -88,7 +88,14 @@ $(function() {
             "color":"#ccc",
             "opacity":"0.5"
         });
-    }
+    };
+
+    function isPhoneNumber(number) {
+        if (number) {
+            return `<div class="nameSearchResultInfo"><p class="nameSearchResultProperty">Phone number:</p><p class="nameSearchResultValue">${escapeHtml(number)}</p></div>`;
+        };
+        return "";
+    };
 
     // display character information on the name search panel.
     function createNameSearchResult(data) {
@@ -99,7 +106,7 @@ $(function() {
                         <div class="nameSearchResultImageContainer">
                             <img class="nameSearchResultImage" src="${value.img}">
                         </div>
-                        <div class="nameSearchResultNames">
+                        <div class="nameSearchResultInfo">
                             <p class="nameSearchResultProperty">First Name:</p>
                             <p class="nameSearchResultValue">${escapeHtml(value.firstName)}</p>
                             <p class="nameSearchResultProperty">Last Name:</p>
@@ -111,6 +118,7 @@ $(function() {
                             <p class="nameSearchResultProperty">Gender:</p>
                             <p class="nameSearchResultValue">${escapeHtml(value.gender)}</p>
                         </div>
+                        ${isPhoneNumber(value.phone)}
                         <div class="nameSearchResultButtons">
                             <Button id="nameSearchResultButtonRecords" data-character="${value.characterId}" class="nameSearchResultButton">View Records</Button>
                             <br>
@@ -121,7 +129,6 @@ $(function() {
             };
         };
         $("#nameSearchResultButtonRecords").click(function() {
-            $(".rightPanelNameSearchResponses").empty();
             $("#nameLoader").fadeIn("fast");
             $("body").css("cursor", "progress")
             $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
@@ -138,7 +145,7 @@ $(function() {
             }));
             return false;
         });
-    }
+    };
 
     function vehicleText(text) {
         let txt = text
@@ -241,16 +248,16 @@ $(function() {
                 $(".leftPanelPlayerInfoName").text(escapeHtml(item.name));
             } else if (item.action === "close") {
                 $(".background").fadeOut("fast");
-            }
-        }
+            };
+        };
 
         if (item.type === "addLiveChatMessage") {
             createLiveChatMessage(item.callsign, item.dept, item.img, item.name, item.text);
-        }
+        };
 
         if (item.type === "updateUnitNumber") {
 
-        }
+        };
 
         // update all the units status on the dashboard.
         if (item.type === "updateUnitStatus") {
@@ -310,7 +317,7 @@ $(function() {
                     id: $(this).data("call")
                 }));
             });
-        }
+        };
 
         // display all found citizens or show error message.
         if (item.type === "nameSearch") {
@@ -320,8 +327,8 @@ $(function() {
                 createNameSearchResult(JSON.parse(item.data));
             } else {
                 $("#searchNameDefault").text("No citizen found with this name.");
-            }
-        }
+            };
+        };
 
         // display all found citizens vehicles or show error message.
         if (item.type === "viewVehicles") {

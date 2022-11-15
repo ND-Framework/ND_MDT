@@ -210,7 +210,8 @@ RegisterNUICallback("nameSearch", function(data)
                 firstName = info.first_name,
                 lastName = info.last_name,
                 dob = info.dob,
-                gender = info.gender
+                gender = info.gender,
+                phone = info.phone
             }
         end
         SendNUIMessage({
