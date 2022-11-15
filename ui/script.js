@@ -210,6 +210,14 @@ $(function() {
         });
     }
 
+    // Creates a records page for a citizen with options to give citation and all that.
+    function createRecordsPage(found, data) {
+        $(".recordsReturn").click(function() {
+            $(".recordsPage").hide();
+            $("#nameSearch").show();
+        });
+    };
+
     // sends a chat message in the mdt live chat.
     function createLiveChatMessage(callsign, dept, imageURL, username, text) {
         $(".rightPanelLiveChatBox").animate({ scrollTop: $(document).height() + $(window).height() }, "slow");
@@ -344,7 +352,16 @@ $(function() {
             } else {
                 $("#searchPlateDefault").text(item.found);
             };
-        }
+        };
+
+        // Show all records.
+        if (item.type === "viewRecords") {
+            $("#nameLoader").fadeOut("fast");
+            $("body").css("cursor", "default")
+            $("#nameSearch").hide();
+            $(".recordsPage").fadeIn("fast");
+            createRecordsPage(item.found, item.data);
+        };
     });
 
     // Set the unit status based on the button pressed.
