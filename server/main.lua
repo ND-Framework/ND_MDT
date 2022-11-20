@@ -159,18 +159,24 @@ function getProperties(id)
     return addresses
 end
 
+function getRecords(id)
+    local result = MySQL.query.await("SELECT records FROM nd_mdt WHERE `character` = ? LIMIT 1", {id})
+    if not result or not result[1] then
+        return {}, false
+    end
+    return json.decode(result[1].records), true
+end
+
 lib.callback.register("ND_MDT:viewRecords", function(source, characterToSearch)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
-    local result = MySQL.query.await("SELECT records FROM nd_mdt WHERE `character` = ? LIMIT 1", {characterToSearch})
-    if not result then return {} end
-
     local records = {
-        records = json.decode(result[1]),
-        properties = getProperties(characterToSearch)
+        properties = getProperties(characterToSearch),
+        records = getRecords(characterToSearch)
     }
+
     return records
 end)
 
@@ -181,4 +187,19 @@ RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     info.id = src
     info.dept = player.job
     TriggerClientEvent("ND_MDT:receiveLiveChat", -1, info)
+end)
+
+RegisterNetEvent("ND_MDT:saveRecords", function(data)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    local records, update = getRecords(data.characterId)
+    records.notes = data.notes
+
+    if update then
+        MySQL.query.await("UPDATE nd_mdt SET records = ? WHERE `character` = ?", {json.encode(records), data.characterId})
+        return
+    end
+    MySQL.query("INSERT INTO nd_mdt (`character`, records) VALUES (?, ?)", {data.characterId, json.encode(records)})
 end)

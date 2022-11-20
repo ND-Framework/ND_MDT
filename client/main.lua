@@ -269,6 +269,17 @@ RegisterNUICallback("viewRecords", function(data)
     end, data.id)
 end)
 
+RegisterNUICallback("saveRecords", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    
+    local data = {
+        characterId = data.character,
+        notes = data.notes
+    }
+
+    TriggerServerEvent("ND_MDT:saveRecords", data)
+end)
+
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)

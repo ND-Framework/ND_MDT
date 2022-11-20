@@ -210,13 +210,60 @@ $(function() {
         });
     }
 
+    function recordsCheckPhone(number) {
+        if (!number) {
+            return "";
+        };
+        return `<p class="recordsCitizenProperty">Phone number:</p><p class="recordsCitizenValue">${escapeHtml(number)}</p>`
+    };
+
     // Creates a records page for a citizen with options to give citation and all that.
-    function createRecordsPage(found, data) {
+    function createRecordsPage(data) {
         $(".recordsReturn").click(function() {
             $(".recordsPage").hide();
             $("#nameSearch").show();
         });
+
+        if (!data || !data.citizen) {
+            return;
+        };
+
+        $(".recordsCitizen").empty();
+        $(".recordsCitizen").append(`
+            <div class="recordsCitizenImageContainer">
+                <img class="recordsCitizenImage" src="${data.citizen.img || "user.jpg"}">
+            </div>
+            <div class="recordsCitizenInfo">
+                <p class="recordsCitizenProperty">First name:</p>
+                <p class="recordsCitizenValue">${escapeHtml(data.citizen.firstName)}</p>
+                <p class="recordsCitizenProperty">Last name:</p>
+                <p class="recordsCitizenValue">${escapeHtml(data.citizen.lastName)}</p>
+                ${recordsCheckPhone(data.citizen.phone)}
+            </div>
+            <div class="recordsCitizenInfo">
+                <p class="recordsCitizenProperty">Date of Birth:</p>
+                <p class="recordsCitizenValue">${escapeHtml(data.citizen.dob)}</p>
+                <p class="recordsCitizenProperty">Gender:</p>
+                <p class="recordsCitizenValue">${escapeHtml(data.citizen.gender)}</p>
+            </div>
+            <div class="recordsCitizenNotes">
+                <p class="recordsCitizenNotesTitle">Notes:</p>
+                <textarea id="recordsCitizenNotesText" data-character="${data.citizen.characterId}"></textarea>
+            </div>
+        `);
+        
+        if (data.records.notes) {
+            $("#recordsCitizenNotesText").val(escapeHtml(data.records.notes));
+        };
+
     };
+
+    $(".recordsCitizenSave").click(function() {
+        $.post(`https://${GetParentResourceName()}/saveRecords`, JSON.stringify({
+            character: $("#recordsCitizenNotesText").data("character"),
+            notes: $("#recordsCitizenNotesText").val()
+        }));
+    });
 
     // sends a chat message in the mdt live chat.
     function createLiveChatMessage(callsign, dept, imageURL, username, text) {
@@ -360,7 +407,7 @@ $(function() {
             $("body").css("cursor", "default")
             $("#nameSearch").hide();
             $(".recordsPage").fadeIn("fast");
-            createRecordsPage(item.found, item.data);
+            createRecordsPage(JSON.parse(item.data));
         };
     });
 
