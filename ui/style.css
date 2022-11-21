@@ -727,3 +727,19 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
+
+.recordsPropertiesInfo {
+    height: 85%;
+    overflow-y: scroll;
+}
+.recordsPropertiesItem {
+    padding: 0.1% 1%;
+    margin: 1.5%;
+    width: 95%;
+    border-radius: 5px;
+    background-color: #2a2c2e;
+}
+.recordsPropertoesAddress {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ccc;
+}

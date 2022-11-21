@@ -224,11 +224,12 @@ $(function() {
             $("#nameSearch").show();
         });
 
+        $(".recordsCitizen, .recordsPropertiesInfo").empty();
+
         if (!data || !data.citizen) {
             return;
         };
 
-        $(".recordsCitizen").empty();
         $(".recordsCitizen").append(`
             <div class="recordsCitizenImageContainer">
                 <img class="recordsCitizenImage" src="${data.citizen.img || "user.jpg"}">
@@ -254,6 +255,16 @@ $(function() {
         
         if (data.records.notes) {
             $("#recordsCitizenNotesText").val(escapeHtml(data.records.notes));
+        };
+
+        if (data.properties) {
+            for (let i = 0; i < data.properties.length; i++) {
+                $(".recordsPropertiesInfo").prepend(`
+                    <div class="recordsPropertiesItem">
+                        <p class="recordsPropertoesAddress">${data.properties[i]}</p>
+                    </div>
+                `);
+            };
         };
 
     };
