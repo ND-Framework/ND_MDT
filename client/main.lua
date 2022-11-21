@@ -123,6 +123,8 @@ end
 
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
+    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
+    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
     ped = PlayerPedId()
     local veh = GetVehiclePedIsIn(ped)
     if veh == 0 then return end
@@ -136,8 +138,6 @@ RegisterCommand("+mdt", function()
             displayUnits(emeregencyCalls)
         end)
     end
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
     if ped ~= newPed then
         newPed = PlayerPedId()
         img = GetMugShotBase64(newPed, true)
