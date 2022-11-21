@@ -425,26 +425,41 @@ $(function() {
 
     // switch between pages.
     $("#leftPanelButtonDashboard").click(function() {
+        if ($(".rightPanelDashboard").css("display") == "block") {
+            return;
+        };
         hideAllPages();
         $(".rightPanelDashboard").fadeIn("fast");
         $(this).css("background-color", "#3a3b3c");
     });
     $("#leftPanelButtonNameSearch").click(function() {
+        if ($(".rightPanelNameSearch").css("display") == "block") {
+            return;
+        };
         hideAllPages();
         $(".rightPanelNameSearch").fadeIn("fast");
         $(this).css("background-color", "#3a3b3c");
     });
     $("#leftPanelButtonPlateSearch").click(function() {
+        if ($(".rightPanelPlateSearch").css("display") == "block") {
+            return;
+        };
         hideAllPages();
         $(".rightPanelPlateSearch").fadeIn("fast");
         $(this).css("background-color", "#3a3b3c");
     });
     $("#leftPanelButtonLiveChat").click(function() {
+        if ($(".rightPanelLiveChat").css("display") == "block") {
+            return;
+        };
         hideAllPages();
         $(".rightPanelLiveChat").fadeIn("fast");
         $(this).css("background-color", "#3a3b3c");
     });
     $("#leftPanelButtonSettings").click(function() {
+        if ($(".rightPanelSettings").css("display") == "block") {
+            return;
+        };
         hideAllPages();
         $(".rightPanelSettings").fadeIn("fast");
         $(this).css("background-color", "#3a3b3c");
@@ -477,7 +492,7 @@ $(function() {
         $(".rightPanelPlateSearchResponses").empty();
         $("#searchPlateDefault").text("");
         $("#plateLoader").fadeIn("fast");
-        $("body").css("cursor", "progress")
+        $("body").css("cursor", "progress");
         $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
             search: $("#plateSearchBar").val(),
             searchBy: "plate"
@@ -503,9 +518,9 @@ $(function() {
             }
         }
         if (Math.floor(cumilativeTimeBetweenMessages / 1000) < 5) {
-            $(".liveChatRateLimit").fadeIn("fast")
+            $(".liveChatRateLimit").fadeIn("fast");
             setTimeout(function() {
-                $(".liveChatRateLimit").fadeOut("slow")
+                $(".liveChatRateLimit").fadeOut("slow");
             }, 5000);
             return false;
         }
@@ -525,14 +540,14 @@ $(function() {
                 if (index !== 2) {
                     event.preventDefault();
                     $(`[data-index="` + (index + 1).toString() + `"]`).focus();
-                }
-                break
+                };
+                break;
             case 8:
                 if (index !== 1 && this.value.length === 0) {
                     event.preventDefault();
                     $(`[data-index="` + (index - 1).toString() + `"]`).focus();
-                }
-        }
+                };
+        };
     });
 
     // Set the unit number for the user and show the main page.
@@ -551,6 +566,6 @@ $(function() {
             $(".background").fadeOut("fast");
             $.post(`https://${GetParentResourceName()}/close`);
             return;
-        }
+        };
     };
 });
