@@ -113,6 +113,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color: #ccc;
     user-select: none;
+    width: 70%;
 }
 .topBarText:hover {
     cursor: move;
@@ -169,8 +170,12 @@ body {
     color: #ccc;
 }
 .leftPanelButtons {
+    display: grid;
+    grid-template-columns: 0.25fr 1fr;
+    grid-template-rows: 1fr;
+
     outline: none;
-    margin: 0 0 5% 5%;
+    margin: 0 0 3% 5%;
     text-align: left;
     font-size: large;
     font-family: Arial, Helvetica, sans-serif;
@@ -213,24 +218,28 @@ body {
 
 .rightPanel {
     position: absolute;
-    right: 3%;
-    padding: 2.5% 2%;
-    width: 70%;
-    height: 95%;
+    right: 0;
+    padding: 2.2% 2%;
+    width: 75.75%;
+    height: 93%;
 }
 .rightPanelDashboard {
     height: 100%;
     width: 100%;
 }
 .rightPanelDashboardButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-column-gap: 2.5%;
+    grid-row-gap: 20%;
     outline: none;
     height: auto;
     width: 100%;
 }
 .rightPanelDashboardButtonsStatus {
     outline: none;
-    margin: 1% 2.3%;
-    width: 20%;
+    width: 100%;
     height: 3vh;
     border: none;
     border-radius: 5px;
@@ -246,45 +255,24 @@ body {
     cursor: pointer;
     opacity: 0.8 !important;
 }
-.rightPanelDashboardActiveUnitsTitle {
-    position: absolute;
-    margin: auto;
-    left: 5%;
-    bottom: 75%;
-    width: 42.5%;
+
+.rightPanelDashboardDisplays {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-column-gap: 3%;
+    height: 85%;
+    margin-top: 4%;
+}
+.rightPanelDashboardDisplayTitle {
+    margin: 2%;
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bolder;
     color: #ccc;
 }
-.rightPanelDashboard911CallsTitle {
-    position: absolute;
-    margin: auto;
-    right: 5%;
-    bottom: 75%;
-    width: 42.5%;
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bolder;
-    color: #ccc;
-}
-.rightPanelDashboardActiveUnits {
-    position: absolute;
-    left: 5%;
-    bottom: 5%;
-    width: 42.5%;
-    height: 70%;
-    border-radius: 15px;
-    background-color: #242526;
-    overflow-y: scroll;
-}
-.rightPanelDashboard911Calls {
-    position: absolute;
-    right: 5%;
-    bottom: 5%;
-    width: 42.5%;
-    height: 70%;
-    border-radius: 15px;
+.rightPanelDashboardDisplayItems {
+    border-radius: 8px;
     background-color: #242526;
     overflow-y: scroll;
 }
@@ -305,7 +293,7 @@ body {
 .rightPanelDashboard911CallsItemRespond {
     width: auto;
     height: 2vh;
-    padding: 15px;
+    padding: 8px;
     text-align: center;
     line-height: 0;
     font-weight: bolder;
@@ -327,31 +315,31 @@ body {
     margin-right: 0.5%;
     width: 42%;
     height: 5%;
-    border-radius: 15px;
+    border-radius: 8px;
     border: none;
-    padding: 2%;
+    padding: 1.5% 2%;
     background-color: #2F3133;
     color: #ccc;
 }
-.plateNumberSearchBar {
+.plateNumberSearchBar, .weaponNumberSearchBar {
     outline: none;
     margin-right: 0.5%;
     width: 88.5%;
     height: 5%;
-    border-radius: 15px;
+    border-radius: 8px;
     border: none;
-    padding: 2%;
+    padding: 1.5% 2%;
     background-color: #2F3133;
     color: #ccc;
 }
 .searchBarButton {
     outline: none;
     cursor: pointer;
-    width: 7%;
+    width: 6.5%;
     height: 5%;
-    border-radius: 15px;
+    border-radius: 8px;
     border: none;
-    padding: 2%;
+    padding: 1.5% 2%;
     background-color: #2F3133;
     color: #ccc;
     transition: .1s ease-in-out;
@@ -360,15 +348,15 @@ body {
     transition: .1s ease-in-out;
     color: white;
 }
-.rightPanelNameSearchResponses, .rightPanelPlateSearchResponses {
+.rightPanelNameSearchResponses, .rightPanelPlateSearchResponses, .rightPanelWeaponSearchResponses {
     position: absolute;
     margin: auto;
-    bottom: 7%;
-    height: 75%;
+    bottom: 4%;
+    height: 80%;
     padding: 2%;
-    width: 90.5%;
+    width: 90.6%;
     border: none;
-    border-radius: 15px;
+    border-radius: 8px;
     background-color: #2F3133;
     overflow-y: scroll;
 }
@@ -378,7 +366,7 @@ body {
     margin: 1.5% 0;
     height: auto;
     background-color: #242526;
-    border-radius: 15px;
+    border-radius: 8px;
 }
 .nameSearchResultImageContainer {
     display: inline-block;
@@ -424,7 +412,7 @@ body {
     border-radius: 5px;
     transition: .1s ease-in-out;
 }
-.nameSearchResultButton:hover, .plateSearchResultButton:hover {
+.nameSearchResultButton:hover, .plateSearchResultButton:hover, .weaponSearchResultButton:hover {
     transition: .1s ease-in-out;
     cursor: pointer;
     opacity: 0.8;
@@ -446,7 +434,7 @@ body {
     margin: 1.5% 0;
     height: auto;
     background-color: #242526;
-    border-radius: 15px;
+    border-radius: 8px;
 }
 .plateSearchResultGrid {
     display: grid;
@@ -490,40 +478,39 @@ body {
 .rightPanelLiveChatBox {
     position: absolute;
     margin: auto;
-    height: 76%;
+    height: 80%;
     padding: 2%;
-    width: 90.5%;
+    width: 90.6%;
     border: none;
-    border-radius: 15px;
+    border-radius: 8px;
     background-color: #2F3133;
     overflow-y: scroll;
 }
 #liveChatForm {
     position: absolute;
     margin: auto;
-    bottom: 8%;
+    bottom: 5%;
     height: 5%;
     width: 100%;
 }
 #liveChatTextField {
     outline: none;
     margin-right: 0.5%;
-    width: 83%;
+    width: 85.1%;
     height: 40%;
-    border-radius: 15px;
+    border-radius: 8px;
     border: none;
-    padding: 2%;
+    padding: 1.5% 2%;
     background-color: #2F3133;
     color: #ccc;
 }
 .liveChatSendButton {
     outline: none;
     cursor: pointer;
-    width: 7%;
-    height: 130%;
-    border-radius: 15px;
+    width: 5%;
+    border-radius: 8px;
     border: none;
-    padding: 2%;
+    padding: 1.5% 2%;
     background-color: #2F3133;
     color: #ccc;
     transition: .1s ease-in-out;
@@ -536,7 +523,7 @@ body {
     margin: 1.5% 0;
     height: auto;
     background-color: #242526;
-    border-radius: 15px;
+    border-radius: 8px;
 }
 .liveChatImageContainer {
     user-select: none;
@@ -587,7 +574,7 @@ body {
 .liveChatRateLimit {
     display: none;
     position: absolute;
-    bottom: 2vh;
+    bottom: 0;
     color: red;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -596,12 +583,11 @@ body {
     display: none;
     position: absolute;
     margin: auto;
-    bottom: 7%;
-    height: 85%;
+    height: 87.25%;
     padding: 2%;
     width: 90.5%;
     border: none;
-    border-radius: 15px;
+    border-radius: 8px;
     background-color: #2F3133;
     overflow-y: scroll;
 }
@@ -717,7 +703,6 @@ body {
     border-radius: 5px;
     background-color: #242526;
 }
-
 .recordsPropertiesTitle, .recordsLicensesTitle {
     position: relative;
     top: 0;
@@ -727,10 +712,9 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
-
 .recordsPropertiesInfo {
     height: 85%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 .recordsPropertiesItem {
     padding: 0.1% 1%;
