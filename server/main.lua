@@ -216,12 +216,11 @@ lib.callback.register("ND_MDT:viewRecords", function(source, characterToSearch)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] then return false end
-
     local records = {
         properties = getProperties(characterToSearch),
-        records = getRecords(characterToSearch)
+        records = getRecords(characterToSearch),
+        licenses = player.data.licences or {}
     }
-
     return records
 end)
 
@@ -239,12 +238,36 @@ RegisterNetEvent("ND_MDT:saveRecords", function(data)
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
+    for identifier, newStatus in pairs(data.changedLicences) do
+        print(data.characterId, identifier, newStatus)
+        NDCore.Functions.EditPlayerLicense(data.characterId, identifier, {
+            status = newStatus
+        })
+    end
+
     local records, update = getRecords(data.characterId)
     records.notes = data.notes
 
     if update then
-        MySQL.query.await("UPDATE nd_mdt SET records = ? WHERE `character` = ?", {json.encode(records), data.characterId})
+        MySQL.query.await("UPDATE nd_mdt_records SET records = ? WHERE `character` = ?", {json.encode(records), data.characterId})
         return
     end
-    MySQL.query("INSERT INTO nd_mdt (`character`, records) VALUES (?, ?)", {data.characterId, json.encode(records)})
+    MySQL.query("INSERT INTO nd_mdt_records (`character`, records) VALUES (?, ?)", {data.characterId, json.encode(records)})
+end)
+
+-- retrive weapons based on serial number.
+lib.callback.register("ND_MDT:weaponSerialSearch", function(source, serial)
+    local player = source
+    local players = NDCore.Functions.GetPlayers()
+    local weapons = {}
+    if not config.policeAccess[players[player].job] or not serial then return false end
+    
+    local result = MySQL.query.await("SELECT * FROM nd_mdt_weapons WHERE serial RLIKE(?)", {serial})
+    if result then
+        for i=1, #result do
+            local item = result[i]
+            weapons[#weapons+1] = {characterId = item.character, weapon = item.weapon, serial = item.serial, ownerName = item.owner_name}
+        end
+    end
+    return weapons
 end)

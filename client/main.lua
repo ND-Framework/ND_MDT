@@ -10,7 +10,9 @@ local MugshotsCache = {}
 local Answers = {}
 local selectedCharacter
 
+local myimg = nil
 local citizenData = {}
+local changedLicences = {}
 
 function GetMugShotBase64(Ped, Tasparent)
 	if not Ped then return end
@@ -70,6 +72,14 @@ AddEventHandler("onResourceStop", function(resourceName)
     end
 end)
 
+function getLocalPlayerImage(ped)
+    if not myimg or PlayerPedId() ~= ped then
+        myimg = GetMugShotBase64(ped, true)
+        return myimg
+    end
+    return myimg
+end
+
 function displayUnits(units)
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
     if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
@@ -121,6 +131,17 @@ function display911Calls(emeregencyCalls)
     })
 end
 
+function getRankName(character)
+    if not character.data.groups then return "" end
+    local job = selectedCharacter.job:lower()
+    for name, groupInfo in pairs(character.data.groups) do
+        if name:lower() == job then
+            return groupInfo.rankName
+        end
+    end
+    return ""
+end
+
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
@@ -138,10 +159,7 @@ RegisterCommand("+mdt", function()
             displayUnits(emeregencyCalls)
         end)
     end
-    if ped ~= newPed then
-        newPed = PlayerPedId()
-        img = GetMugShotBase64(newPed, true)
-    end
+    local img = getLocalPlayerImage(ped)
     local veh = GetVehiclePedIsIn(ped)
     display = true
     SetNuiFocus(true, true)
@@ -150,6 +168,7 @@ RegisterCommand("+mdt", function()
         action = "open",
         img = img,
         department = selectedCharacter.job,
+        rank = getRankName(selectedCharacter),
         name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
         unitNumber = unitNumber
     })
@@ -184,6 +203,39 @@ RegisterNUICallback("unitRespondToCall", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(data.id), unitNumber)
 end)
+
+function nameSearched(result)
+    if not result or not next(result) then
+        SendNUIMessage({
+            type = "nameSearch",
+            found = false
+        })
+        return
+    end
+    local data = {}
+    for character, info in pairs(result) do
+        local imgFromName = "user.jpg"
+        if info.id then
+            imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
+        end
+        local citizen = {
+            img = imgFromName,
+            characterId = character,
+            firstName = info.first_name,
+            lastName = info.last_name,
+            dob = info.dob,
+            gender = info.gender,
+            phone = info.phone
+        }
+        citizenData[character] = citizen
+        data[#data+1] = citizen
+    end
+    SendNUIMessage({
+        type = "nameSearch",
+        found = true,
+        data = json.encode(data)
+    })
+end
 
 -- triggers a server event to retrive names based on search.
 RegisterNUICallback("nameSearch", function(data)
@@ -233,6 +285,7 @@ end)
 
 RegisterNUICallback("viewRecords", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    changedLicences = {}
 
     -- retrive records from the server and adds it on the ui.
     lib.callback("ND_MDT:viewRecords", false, function(result)
@@ -243,23 +296,29 @@ RegisterNUICallback("viewRecords", function(data)
         })
     end, data.id)
 end)
+RegisterNUICallback("licenseDropDownChange", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    changedLicences[data.identifier] = data.value
+end)
 
 RegisterNUICallback("saveRecords", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     
     local data = {
         characterId = data.character,
-        notes = data.notes
+        notes = data.notes,
+        changedLicences = changedLicences
     }
 
     TriggerServerEvent("ND_MDT:saveRecords", data)
+    changedLicences = {}
 end)
 
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    local liveChatImg = GetMugShotBase64(PlayerPedId(), true)
+    local liveChatImg = getLocalPlayerImage(PlayerPedId())
     local chatInfo = {
         type = "addLiveChatMessage",
         callsign = unitNumber,

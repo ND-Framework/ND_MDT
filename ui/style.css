@@ -760,6 +760,42 @@ body {
     border-radius: 5px;
     background-color: #242526;
 }
+.recordsLicensesInfo {
+    height: 85%;
+    overflow-y: auto;
+}
+.recordsLicensesItem {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 0.1% 1%;
+    margin: 3% 1.5%;
+    width: 95%;
+    border-radius: 5px;
+    background-color: #2a2c2e;
+}
+.recordsLicenseContainer {
+    margin: 4% 0;
+}
+.recordsLicenseBig {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+}
+.recordsLicenseSmall {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ccc;
+}
+.recordsLicenseSmallDropDown {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ccc;
+    background-color: #2a2c2e;
+    outline: none;
+    border-radius: 5px;
+}
+
 .recordsProperties {
     display: block;
     float: right;

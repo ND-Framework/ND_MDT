@@ -74,11 +74,11 @@ $(function() {
     };
 
     // Hide all pages but the dashboard on start.
-    $(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings").hide();
+    $(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings, .rightPanelWeaponSearch").hide();
 
     // This function will hide all pages and reset the background-color for the menu buttons. This is used when changing pages to display another page.
     function hideAllPages() {
-        $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings").hide();
+        $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings, .rightPanelWeaponSearch").hide();
         $(".leftPanelButtons").css("background-color", "transparent");
     };
 
@@ -253,7 +253,7 @@ $(function() {
             $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
             return false;
         });
-    }
+    };
 
     function recordsCheckPhone(number) {
         if (!number) {
@@ -274,7 +274,7 @@ $(function() {
             $("#nameSearch").show();
         });
 
-        $(".recordsCitizen, .recordsPropertiesInfo").empty();
+        $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo").empty();
 
         if (!data || !data.citizen) {
             return;
@@ -317,6 +317,43 @@ $(function() {
             };
         };
 
+        if (data.licenses) {
+            for (let i = 0; i < data.licenses.length; i++) {
+                $(".recordsLicensesInfo").prepend(`
+                    <div class="recordsLicensesItem">
+                        <div class="recordsLicenseContainer">
+                            <p class="recordsLicenseBig">Type:</p>
+                            <p class="recordsLicenseSmall">${data.licenses[i].type}</p>
+                        </div>
+                        <div class="recordsLicenseContainer">
+                            <p class="recordsLicenseBig">Status:</p>
+                            <select id="recordsLicenseSelect${i}" class="recordsLicenseSmallDropDown" data-id="${data.licenses[i].identifier}">
+                                <option value="valid">Valid</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
+                        <div class="recordsLicenseContainer">
+                            <p class="recordsLicenseBig">Issued:</p>
+                            <p class="recordsLicenseSmall">${formatDate(data.licenses[i].issued)}</p>
+                        </div>
+                        <div class="recordsLicenseContainer">
+                            <p class="recordsLicenseBig">Expires:</p>
+                            <p class="recordsLicenseSmall">${formatDate(data.licenses[i].expires)}</p>
+                        </div>
+                    </div>
+                `);
+                $(`#recordsLicenseSelect${i}`).val(data.licenses[i].status);
+            };
+        };
+
+        $(".recordsLicenseSmallDropDown").change(function() {
+            $.post(`https://${GetParentResourceName()}/licenseDropDownChange`, JSON.stringify({
+                identifier: $(this).data("id"),
+                value: $(this).val()
+            }));
+        });
+
     };
 
     $(".recordsCitizenSave").click(function() {
@@ -358,7 +395,7 @@ $(function() {
                     $(".overlay").hide();
                     $("setUnitNumberFirstTime").show();
                 }
-                $(".topBarText").html(`<i class="fas fa-laptop"></i> MOBILE DATA TERMINAL | ${item.department}`);
+                $(".topBarText").html(`<i class="fas fa-laptop"></i> MOBILE DATA TERMINAL | ${item.department} ${item.rank}`);
                 $(".leftPanelPlayerInfoImage").attr("src", item.img);
                 $(".leftPanelPlayerInfoUnitNumber").text(item.unitNumber);
                 $(".leftPanelPlayerInfoName").text(escapeHtml(item.name));
