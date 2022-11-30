@@ -476,10 +476,31 @@ $(function() {
         $(this).css("background-color", "#3a3b3c");
     });
 
+    // close ui when - is clicked
+    $(".minimizeOverlay").click(function() {
+        $(".background").fadeOut("fast");
+        $.post(`https://${GetParentResourceName()}/close`);
+    });
+
     // close the whole ui when the X square is clicked.
     $(".closeOverlay").click(function() {
         $(".background").fadeOut("fast");
         $.post(`https://${GetParentResourceName()}/close`);
+        setTimeout(() => {
+            $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .rightPanelWeaponSearchResponses, .rightPanelPlateSearchResponses, .rightPanelNameSearchResponses").empty();
+            $("#searchNameDefault").text("Search citizen by name.");
+            $("#searchWeaponDefault").text("Search weapon by serial number.");
+            $("#searchPlateDefault").text("Search vehicle by plate number.");
+            $(".recordsPage").hide();
+            $("#nameSearch").show();
+            $(".background").css({
+                "left": "20%",
+                "top": "15%"
+            });
+            hideAllPages();
+            $(".rightPanelDashboard").fadeIn("fast");
+            $("#leftPanelButtonDashboard").css("background-color", "#3a3b3c");
+        }, 300);
     });
 
     // Submit the name search and reset the search bar.

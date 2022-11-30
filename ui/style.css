@@ -82,6 +82,26 @@ body {
     height: 95%;
     background-color: #18191a;
 }
+.minimizeOverlay {
+    position: absolute;
+    top: 0;
+    right: 4.3%;
+    color: #ccc;
+    border: none;
+    text-align: center;
+    height: 5%;
+    width: 50px;
+    background-color: transparent;
+    font-size: 120%;
+    transition: .1s ease-in-out;
+}
+.minimizeOverlay:hover {
+    transition: .1s ease-in-out;
+    color: white;
+    cursor: pointer;
+    background-color: #3a3b3c;
+    font-size: 140%;
+}
 .closeOverlay {
     position: absolute;
     top: 0;
