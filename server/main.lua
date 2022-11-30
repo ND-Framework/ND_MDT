@@ -3,6 +3,37 @@ NDCore = exports["ND_Core"]:GetCoreObject()
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
+local inventoryWeaponHook = nil
+
+-- store weapons in database when bought legally.
+function registerWeapon(characterId, weaponName, serial, citizenName)
+    MySQL.insert("INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)", {characterId, weaponName, serial, citizenName})
+end
+
+function weaponHook()
+    inventoryWeaponHook = exports.ox_inventory:registerHook("createItem", function(payload)
+        local metadata = payload.metadata
+        if payload.item.weapon then
+            local character = NDCore.Functions.GetPlayer(payload.inventoryId)
+            registerWeapon(character.id, payload.item.label, metadata.serial, metadata.registered)
+        end
+        return metadata
+    end)
+end
+
+local inventoryStared = exports["ND_Core"]:isResourceStarted("ox_inventory", function(started)
+    inventoryStared = started
+    if started and not inventoryWeaponHook then
+        weaponHook()
+    elseif started and inventoryWeaponHook then
+        exports.ox_inventory:removeHooks(inventoryWeaponHook)
+        weaponHook()
+    end
+end)
+
+if inventoryStared then
+    weaponHook()
+end
 
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
@@ -42,6 +73,20 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
                 profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId}
             end
         end
+    end
+    return profiles
+end)
+
+lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, characterSearched)
+    local player = source
+    local players = NDCore.Functions.GetPlayer()
+    local profiles = {}
+    if not config.policeAccess[players.job] then return false end
+
+    local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {characterSearched})
+    if result and result[1] then  
+        local item = result[1]
+        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId}
     end
     return profiles
 end)
@@ -160,9 +205,9 @@ function getProperties(id)
 end
 
 function getRecords(id)
-    local result = MySQL.query.await("SELECT records FROM nd_mdt WHERE `character` = ? LIMIT 1", {id})
+    local result = MySQL.query.await("SELECT records FROM nd_mdt_records WHERE `character` = ? LIMIT 1", {id})
     if not result or not result[1] then
-        return {}, false
+        return {}
     end
     return json.decode(result[1].records), true
 end

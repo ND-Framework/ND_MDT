@@ -190,40 +190,15 @@ RegisterNUICallback("nameSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 
     -- returns retrived names and character information from the server and adds it on the ui.
-    lib.callback("ND_MDT:nameSearch", false, function(result)
-        if not result or not next(result) then
-            SendNUIMessage({
-                type = "nameSearch",
-                found = false
-            })
-            return
-        end
-        local data = {}
-        for character, info in pairs(result) do
-            local imgFromName = false
-            if info.id then
-                imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
-            else
-                imgFromName = "user.jpg"
-            end
-            local citizen = {
-                img = imgFromName,
-                characterId = character,
-                firstName = info.first_name,
-                lastName = info.last_name,
-                dob = info.dob,
-                gender = info.gender,
-                phone = info.phone
-            }
-            citizenData[character] = citizen
-            data[#data+1] = citizen
-        end
-        SendNUIMessage({
-            type = "nameSearch",
-            found = true,
-            data = json.encode(data)
-        })
-    end, data.first, data.last)
+    if not data.id then
+        lib.callback("ND_MDT:nameSearch", false, function(result)
+            nameSearched(result)
+        end, data.first, data.last)
+        return
+    end
+    lib.callback("ND_MDT:ByCharacter", false, function(result)
+        nameSearched(result)
+    end, data.id)
 end)
 
 RegisterNUICallback("viewVehicles", function(data)
@@ -314,6 +289,26 @@ end)
 -- returns all active units from the server and updates the status on the ui.
 RegisterNetEvent("ND_MDT:updateUnitStatus", function(units)
     displayUnits(units)
+end)
+
+RegisterNUICallback("weaponSerialSearch", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+
+    -- returns retrived names and character information from the server and adds it on the ui.
+    lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
+        if not result or not next(result) then
+            SendNUIMessage({
+                type = "weaponSerialSearch",
+                found = "No weapons found matching this serial number."
+            })
+            return
+        end
+        SendNUIMessage({
+            type = "weaponSerialSearch",
+            found = true,
+            data = json.encode(result)
+        })
+    end, data.serial)
 end)
 
 -- triggers a server event with the 911 call information.

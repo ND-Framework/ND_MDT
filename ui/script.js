@@ -82,6 +82,51 @@ $(function() {
         $(".leftPanelButtons").css("background-color", "transparent");
     };
 
+    // display vehicle information on the vehicle search panel.
+    function createWeaponSearchResult(data) {
+        $(".rightPanelWeaponSearchResponses").empty();
+        $("#searchWeaponDefault").text("");
+        for (const [key, value] of Object.entries(data)) {
+            if (key && value) {
+                $(".rightPanelWeaponSearchResponses").append(`
+                    <div class="plateSearchResult">
+                        <div class="plateSearchResultGrid">
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Owner:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.ownerName)}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Weapon type:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.weapon))}</p>
+                            </div>
+                            <div class="plateSearchResultInfo">
+                                <p class="plateSearchResultProperty">Serial number:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.serial)}</p>
+                            </div>
+                        </div>
+                        <Button id="plateSearchResultButton" data-id="${value.characterId}" class="plateSearchResultButton">Search citizen</Button>
+                    </div>
+                `);
+            };
+        };
+
+        $("#plateSearchResultButton").click(function() {
+            $(".rightPanelNameSearchResponses").show();
+            $(".rightPanelNameSearchResponses").empty();
+            $("#searchNameDefault").text("");
+            $("#nameLoader").fadeIn("fast");
+            $("body").css("cursor", "progress")
+            $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
+                id: $(this).data("id")
+            }));
+
+            hideAllPages();
+            $(".rightPanelNameSearch").fadeIn("fast");
+            $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
+            return false;
+        });
+    };
+
     // Reset all unit status buttons highlight on the dashboard. This is used to reset all of them then highlight another one (the active one).
     function resetStatus() {
         $(".rightPanelDashboardButtonsStatus").css({
@@ -215,6 +260,11 @@ $(function() {
             return "";
         };
         return `<p class="recordsCitizenProperty">Phone number:</p><p class="recordsCitizenValue">${escapeHtml(number)}</p>`
+    };
+
+    function formatDate(timeStamp) {
+        const date = new Date(timeStamp*1000);
+        return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
     };
 
     // Creates a records page for a citizen with options to give citation and all that.
@@ -396,6 +446,17 @@ $(function() {
             };
         };
 
+        // display all found weapons that match the serial number search for.
+        if (item.type === "weaponSerialSearch") {
+            $("#weaponLoader").fadeOut("fast");
+            $("body").css("cursor", "default")
+            if (item.found == true) {
+                createWeaponSearchResult(JSON.parse(item.data));
+            } else {
+                $("#searchWeaponDefault").text(item.found);
+            };
+        };
+
         // display all found citizens vehicles or show error message.
         if (item.type === "viewVehicles") {
             $("#plateLoader").fadeOut("fast");
@@ -457,6 +518,14 @@ $(function() {
         };
         hideAllPages();
         $(".rightPanelPlateSearch").fadeIn("fast");
+        $(this).css("background-color", "#3a3b3c");
+    });
+    $("#leftPanelButtonWeaponSearch").click(function() {
+        if ($(".rightPanelWeaponSearch").css("display") == "block") {
+            return;
+        };
+        hideAllPages();
+        $(".rightPanelWeaponSearch").fadeIn("fast");
         $(this).css("background-color", "#3a3b3c");
     });
     $("#leftPanelButtonLiveChat").click(function() {
@@ -528,6 +597,19 @@ $(function() {
         $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
             search: $("#plateSearchBar").val(),
             searchBy: "plate"
+        }));
+        this.reset();
+        return false;
+    });
+
+    $("#weaponSearch").submit(function() {
+        $(".rightPanelWeaponSearchResponses").show();
+        $(".rightPanelWeaponSearchResponses").empty();
+        $("#searchWeaponDefault").text("");
+        $("#weaponLoader").fadeIn("fast");
+        $("body").css("cursor", "progress");
+        $.post(`https://${GetParentResourceName()}/weaponSerialSearch`, JSON.stringify({
+            serial: $("#weaponSearchBar").val()
         }));
         this.reset();
         return false;
