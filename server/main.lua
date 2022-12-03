@@ -3,37 +3,6 @@ NDCore = exports["ND_Core"]:GetCoreObject()
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
-local inventoryWeaponHook = nil
-
--- store weapons in database when bought legally.
-function registerWeapon(characterId, weaponName, serial, citizenName)
-    MySQL.insert("INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)", {characterId, weaponName, serial, citizenName})
-end
-
-function weaponHook()
-    inventoryWeaponHook = exports.ox_inventory:registerHook("createItem", function(payload)
-        local metadata = payload.metadata
-        if payload.item.weapon then
-            local character = NDCore.Functions.GetPlayer(payload.inventoryId)
-            registerWeapon(character.id, payload.item.label, metadata.serial, metadata.registered)
-        end
-        return metadata
-    end)
-end
-
-local inventoryStared = exports["ND_Core"]:isResourceStarted("ox_inventory", function(started)
-    inventoryStared = started
-    if started and not inventoryWeaponHook then
-        weaponHook()
-    elseif started and inventoryWeaponHook then
-        exports.ox_inventory:removeHooks(inventoryWeaponHook)
-        weaponHook()
-    end
-end)
-
-if inventoryStared then
-    weaponHook()
-end
 
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
@@ -253,6 +222,24 @@ RegisterNetEvent("ND_MDT:saveRecords", function(data)
         return
     end
     MySQL.query("INSERT INTO nd_mdt_records (`character`, records) VALUES (?, ?)", {data.characterId, json.encode(records)})
+end)
+
+-- store weapons in database when bought legally.
+function registerWeapon(characterId, weaponName, serial, citizenName)
+    MySQL.insert("INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)", {characterId, weaponName, serial, citizenName})
+end
+
+-- check if ox inventory is started.
+exports["ND_Core"]:isResourceStarted("ox_inventory", function(started)
+    if not started then return end
+    exports.ox_inventory:registerHook("createItem", function(payload)
+        local metadata = payload.metadata
+        if payload.item.weapon then
+            local character = NDCore.Functions.GetPlayer(payload.inventoryId)
+            registerWeapon(character.id, payload.item.label, metadata.serial, metadata.registered)
+        end
+        return metadata
+    end)
 end)
 
 -- retrive weapons based on serial number.
