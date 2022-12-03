@@ -47,10 +47,9 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
 end)
 
 lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, characterSearched)
-    local player = source
-    local players = NDCore.Functions.GetPlayer()
+    local player = NDCore.Functions.GetPlayer(source)
     local profiles = {}
-    if not config.policeAccess[players.job] then return false end
+    if not config.policeAccess[player.job] then return false end
 
     local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {characterSearched})
     if result and result[1] then  
