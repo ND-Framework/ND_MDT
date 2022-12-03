@@ -62,8 +62,7 @@ end)
 
 -- get all active units on serer and send it to client.
 lib.callback.register("ND_MDT:getUnitStatus", function(source)
-    local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = NDCore.Functions.GetPlayer(source)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     return activeUnits
 end)
