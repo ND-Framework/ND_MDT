@@ -248,7 +248,7 @@ RegisterNUICallback("nameSearch", function(data)
         end, data.first, data.last)
         return
     end
-    lib.callback("ND_MDT:ByCharacter", false, function(result)
+    lib.callback("ND_MDT:nameSearchByCharacter", false, function(result)
         nameSearched(result)
     end, data.id)
 end)
