@@ -55,7 +55,7 @@ lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, character
     local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {characterSearched})
     if result and result[1] then  
         local item = result[1]
-        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId}
+        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = source}
     end
     return profiles
 end)
