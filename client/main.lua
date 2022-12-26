@@ -205,6 +205,7 @@ RegisterNUICallback("unitRespondToCall", function(data)
 end)
 
 function nameSearched(result)
+    print(json.encode(result, {indent = true}))
     if not result or not next(result) then
         SendNUIMessage({
             type = "nameSearch",
@@ -353,8 +354,17 @@ end)
 RegisterNUICallback("weaponSerialSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 
+    if not data.serial or data.serial == "" then
+        SendNUIMessage({
+            type = "weaponSerialSearch",
+            found = "No weapons found matching this serial number."
+        })
+        return
+    end
+
     -- returns retrived names and character information from the server and adds it on the ui.
     lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
+        print(json.encode(result,{indent=true}))
         if not result or not next(result) then
             SendNUIMessage({
                 type = "weaponSerialSearch",

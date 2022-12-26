@@ -213,6 +213,31 @@ body {
     transition: .1s ease-in-out;
     background-color: #3a3b3c5e !important;
 }
+
+#leftPanelPanicButton {
+    position: absolute;
+    padding: 2% 0;
+    margin-left: 5%;
+    bottom: 6.5%;
+    width: 90%;
+    height: 5%;
+    background-color: rgba(255, 0, 0, 0.09);
+    color: rgb(224, 49, 49);
+    font-size: 2ch;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border-radius: 8px;
+    border: rgba(255, 0, 0, 0) 2px solid;
+    text-align: center;
+    outline: none;
+    transition: 0.2s;
+}
+#leftPanelPanicButton:hover {
+    transition: 0.3s;
+    cursor: pointer;
+    border: rgb(224, 49, 49) 2px solid;
+}
+
 .leftPanelTenCodes {
     padding: 2% 0;
     margin-left: 5%;
@@ -235,6 +260,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #2F3133;
 }
+
 
 .rightPanel {
     position: absolute;
@@ -416,11 +442,6 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
-.nameSearchResultValue {
-    margin: 1% 0 10% 0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ccc;
-}
 .nameSearchResultButton {
     font-family: Arial, Helvetica, sans-serif;
     background-color: #2656c9;;
@@ -472,7 +493,7 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
-.plateSearchResultValue {
+.recordsCitizenValue, .weaponSearchResultValue, .nameSearchResultValue, .plateSearchResultValue {
     margin: 1% 0 10% 0;
     font-family: Arial, Helvetica, sans-serif;
     color: #ccc;
@@ -635,11 +656,6 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
-.weaponSearchResultValue {
-    margin: 1% 0 10% 0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ccc;
-}
 
 
 
@@ -663,11 +679,6 @@ body {
     color: #ccc;
     transition: color 0.3s;
 }
-.recordsReturn:hover {
-    transition: color 0.1s;
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-}
 .recordsCitizenSave {
     position: absolute;
     top: 2%;
@@ -678,7 +689,7 @@ body {
     color: #ccc;
     transition: color 0.3s;
 }
-.recordsCitizenSave:hover {
+.recordsCitizenSave:hover, .recordsReturn:hover {
     transition: color 0.1s;
     color: rgb(255, 255, 255);
     cursor: pointer;
@@ -712,11 +723,6 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
-.recordsCitizenValue {
-    margin: 1% 0 10% 0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ccc;
-}
 .recordsCitizenNotes {
     display: block;
     float: right;
@@ -726,15 +732,7 @@ body {
     border-radius: 5px;
     background-color: #242526;
 }
-.recordsCitizenNotesTitle {
-    position: relative;
-    top: 0;
-    margin: 1% 0;
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bolder;
-    color: rgb(255, 255, 255);
-}
+
 #recordsCitizenNotesText {
     margin: 0 2.5%;
     width: 95%;
@@ -752,6 +750,7 @@ body {
     width: 100%;
     height: 60%;
 }
+
 .recordsLicenses {
     display: inline-block;
     vertical-align: top;
@@ -759,10 +758,6 @@ body {
     height: 50%;
     border-radius: 5px;
     background-color: #242526;
-}
-.recordsLicensesInfo {
-    height: 85%;
-    overflow-y: auto;
 }
 .recordsLicensesItem {
     display: grid;
@@ -796,6 +791,10 @@ body {
     border-radius: 5px;
 }
 
+.recordsPropertiesAddress {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ccc;
+}
 .recordsProperties {
     display: block;
     float: right;
@@ -804,7 +803,57 @@ body {
     border-radius: 5px;
     background-color: #242526;
 }
-.recordsPropertiesTitle, .recordsLicensesTitle {
+.recordsPropertiesItem {
+    padding: 0.1% 1%;
+    margin: 1.5%;
+    width: 95%;
+    border-radius: 5px;
+    background-color: #2a2c2e;
+}
+
+.recordsMain {
+    margin-top: 2.5%;
+    padding-top: 0.2%;
+    width: 100%;
+    height: 50%;
+    border-radius: 5px;
+    background-color: #242526;
+}
+.recordsMainItem {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    padding: 0.5vh 1%;
+    margin: 1.5%;
+    width: 95%;
+    border-radius: 5px;
+    background-color: #2a2c2e;
+}
+.recordsMainInfraction {
+    width: 100%;
+}
+.recordsMainInfractionTitle {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: #ccc;
+}
+.recordsMainInfractionValue {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #ccc;
+}
+.recordsMainType {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: rgb(255, 173, 22);
+}
+
+.recordsLicensesInfo, .recordsPropertiesInfo, .recordsMainInfo {
+    height: 85%;
+    overflow-y: auto;
+}
+.recordsCitizenNotesTitle, .recordsPropertiesTitle, .recordsLicensesTitle {
     position: relative;
     top: 0;
     margin: 1% 0;
@@ -813,18 +862,12 @@ body {
     font-weight: bolder;
     color: rgb(255, 255, 255);
 }
-.recordsPropertiesInfo {
-    height: 85%;
-    overflow-y: auto;
-}
-.recordsPropertiesItem {
-    padding: 0.1% 1%;
-    margin: 1.5%;
-    width: 95%;
-    border-radius: 5px;
-    background-color: #2a2c2e;
-}
-.recordsPropertoesAddress {
+.recordsMainTitle {
+    position: relative;
+    top: 0;
+    margin: 0.5% 0;
+    text-align: center;
     font-family: Arial, Helvetica, sans-serif;
-    color: #ccc;
+    font-weight: bolder;
+    color: rgb(255, 255, 255);
 }

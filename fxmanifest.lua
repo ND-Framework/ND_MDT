@@ -18,6 +18,7 @@ files {
 ui_page "ui/index.html"
 
 shared_scripts {
+    "@ND_Core/shared/import.lua",
     "@ox_lib/init.lua",
     "config.lua"
 }

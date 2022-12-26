@@ -103,6 +103,7 @@ $(function() {
                                 <p class="plateSearchResultProperty">Serial number:</p>
                                 <p class="plateSearchResultValue">${escapeHtml(value.serial)}</p>
                             </div>
+                            ${value.stolen && `<div class="plateSearchResultInfo"><p class="plateSearchResultProperty">Status:</p><p class="plateSearchResultValue" style="color: red;">Stolen</p></div>` || ""}
                         </div>
                         <Button id="plateSearchResultButton" data-id="${value.characterId}" class="plateSearchResultButton">Search citizen</Button>
                     </div>
@@ -311,7 +312,7 @@ $(function() {
             for (let i = 0; i < data.properties.length; i++) {
                 $(".recordsPropertiesInfo").prepend(`
                     <div class="recordsPropertiesItem">
-                        <p class="recordsPropertoesAddress">${data.properties[i]}</p>
+                        <p class="recordsPropertiesAddress">${data.properties[i]}</p>
                     </div>
                 `);
             };
@@ -529,6 +530,18 @@ $(function() {
         });
         $.post(`https://${GetParentResourceName()}/unitStatus`, JSON.stringify({
             status: $(this).text()
+        }));
+    });
+
+    // panic button click.
+    $("#leftPanelPanicButton").click(function() {
+        resetStatus()
+        $("#rightPanelDashboardPanicButton").css({
+            "color":"white",
+            "opacity":"1"
+        });
+        $.post(`https://${GetParentResourceName()}/unitStatus`, JSON.stringify({
+            status: "10-99 (PANIC)"
         }));
     });
 

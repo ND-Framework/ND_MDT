@@ -1,5 +1,3 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
-
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
@@ -251,7 +249,7 @@ lib.callback.register("ND_MDT:weaponSerialSearch", function(source, serial)
     if result then
         for i=1, #result do
             local item = result[i]
-            weapons[#weapons+1] = {characterId = item.character, weapon = item.weapon, serial = item.serial, ownerName = item.owner_name}
+            weapons[#weapons+1] = {characterId = item.character, weapon = item.weapon, serial = item.serial, ownerName = item.owner_name, stolen = item.stolen}
         end
     end
     return weapons
