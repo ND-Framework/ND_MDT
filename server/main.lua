@@ -254,3 +254,10 @@ lib.callback.register("ND_MDT:weaponSerialSearch", function(source, serial)
     end
     return weapons
 end)
+
+RegisterNetEvent("ND_MDT:weaponStolenStatus", function(serial, stolen)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    MySQL.query("UPDATE nd_mdt_weapons SET stolen = ? WHERE serial = ?", {stolen and 1 or 0, serial})
+end)

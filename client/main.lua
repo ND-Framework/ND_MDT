@@ -351,6 +351,12 @@ RegisterNetEvent("ND_MDT:updateUnitStatus", function(units)
     displayUnits(units)
 end)
 
+RegisterNUICallback("weaponStatus", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    print(data.serial, data.stolen)
+    TriggerServerEvent("ND_MDT:weaponStolenStatus", data.serial, data.stolen)
+end)
+
 RegisterNUICallback("weaponSerialSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 

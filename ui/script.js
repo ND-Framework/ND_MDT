@@ -101,13 +101,38 @@ function createWeaponSearchResult(data) {
                             <p class="plateSearchResultProperty">Serial number:</p>
                             <p class="plateSearchResultValue">${escapeHtml(value.serial)}</p>
                         </div>
-                        ${value.stolen && `<div class="plateSearchResultInfo"><p class="plateSearchResultProperty">Status:</p><p class="plateSearchResultValue" style="color: red;">Stolen</p></div>` || ""}
+                        ${value.stolen && `<div class="plateSearchResultInfo"><p class="plateSearchResultProperty">Stolen status:</p><p class="plateSearchResultValue weapon_${value.serial}" style="color: red;">Stolen</p></div>` || `<div class="plateSearchResultInfo"><p class="plateSearchResultProperty">Stolen status:</p><p class="plateSearchResultValue weapon_${value.serial}">Not stolen</p></div>`}
                     </div>
-                    <Button id="plateSearchResultButton" data-id="${value.characterId}" class="plateSearchResultButton">Search citizen</Button>
+                    <div class="weaponSearchButtons">
+                        <Button id="plateSearchResultButton" data-id="${value.characterId}">Search citizen</Button>${value.stolen && `<Button style="background-color: #269e2a;" id="setWeaponStolen" data-serial="${value.serial}">Mark found</Button>` || `<Button style="background-color: rgb(202, 25, 25);" id="setWeaponStolen" data-serial="${value.serial}">Mark stolen</Button>`}
+                    </div>
                 </div>
             `);
         };
     };
+
+    $("#setWeaponStolen").click(function() {
+        const e = $(this);
+        const serial = e.data("serial");
+        const stolen = e.text() == "Mark stolen"
+        const status = $(`.weapon_${serial}`);
+        $.post(`https://${GetParentResourceName()}/weaponStatus`, JSON.stringify({
+            serial: serial,
+            stolen: stolen
+        }));
+        if (stolen) {
+            e.text("Mark found");
+            e.css("background-color", "#269e2a");
+            status.text("Stolen");
+            status.css("color", "red");
+        } else {
+            e.text("Mark stolen");
+            e.css("background-color", "rgb(202, 25, 25)");
+            status.text("Not stolen");
+            status.css("color", "#ccc");
+        }
+        return false;
+    });
 
     $("#plateSearchResultButton").click(function() {
         $(".rightPanelNameSearchResponses").show();
