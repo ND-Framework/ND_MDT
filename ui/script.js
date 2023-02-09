@@ -101,17 +101,21 @@ function createWeaponSearchResult(data) {
                             <p class="plateSearchResultProperty">Serial number:</p>
                             <p class="plateSearchResultValue">${escapeHtml(value.serial)}</p>
                         </div>
-                        ${value.stolen && `<div class="plateSearchResultInfo"><p class="plateSearchResultProperty">Stolen status:</p><p class="plateSearchResultValue weapon_${value.serial}" style="color: red;">Stolen</p></div>` || `<div class="plateSearchResultInfo"><p class="plateSearchResultProperty">Stolen status:</p><p class="plateSearchResultValue weapon_${value.serial}">Not stolen</p></div>`}
+                        <div class="plateSearchResultInfo">
+                            <p class="plateSearchResultProperty">Stolen status:</p>
+                            ${value.stolen && `<p class="plateSearchResultValue weapon_${value.serial}" style="color: red;">Stolen</p>` || `<p class="plateSearchResultValue weapon_${value.serial}">Not stolen</p>`}
+                        </div>
                     </div>
-                    <div class="weaponSearchButtons">
-                        <Button id="plateSearchResultButton" data-id="${value.characterId}">Search citizen</Button>${value.stolen && `<Button style="background-color: #269e2a;" id="setWeaponStolen" data-serial="${value.serial}">Mark found</Button>` || `<Button style="background-color: rgb(202, 25, 25);" id="setWeaponStolen" data-serial="${value.serial}">Mark stolen</Button>`}
+                    <div class="searchButtons">
+                        <Button class="weaponSearchResultButton" data-id="${value.characterId}">Search citizen</Button>
+                        ${value.stolen && `<Button style="background-color: #494e59;" class="setWeaponStolen" data-serial="${value.serial}">Mark found</Button>` || `<Button style="background-color: #2656c9" class="setWeaponStolen" data-serial="${value.serial}">Mark stolen</Button>`}
                     </div>
                 </div>
             `);
         };
     };
 
-    $("#setWeaponStolen").click(function() {
+    $(".setWeaponStolen").click(function() {
         const e = $(this);
         const serial = e.data("serial");
         const stolen = e.text() == "Mark stolen"
@@ -122,19 +126,19 @@ function createWeaponSearchResult(data) {
         }));
         if (stolen) {
             e.text("Mark found");
-            e.css("background-color", "#269e2a");
+            e.css("background-color", "#494e59");
             status.text("Stolen");
             status.css("color", "red");
         } else {
             e.text("Mark stolen");
-            e.css("background-color", "rgb(202, 25, 25)");
+            e.css("background-color", "#2656c9");
             status.text("Not stolen");
             status.css("color", "#ccc");
         }
         return false;
     });
 
-    $("#plateSearchResultButton").click(function() {
+    $(".weaponSearchResultButton").click(function() {
         $(".rightPanelNameSearchResponses").show();
         $(".rightPanelNameSearchResponses").empty();
         $("#searchNameDefault").text("");
@@ -171,7 +175,7 @@ function createNameSearchResult(data) {
     for (const [key, value] of Object.entries(data)) {
         if (key && value) {
             $(".rightPanelNameSearchResponses").append(`
-                <div class="nameSearchResult">
+                <div class="nameSearchResult" data-character="${value.characterId}">
                     <div class="nameSearchResultImageContainer">
                         <img class="nameSearchResultImage" src="${value.img}">
                     </div>
@@ -189,15 +193,15 @@ function createNameSearchResult(data) {
                     </div>
                     ${isPhoneNumber(value.phone)}
                     <div class="nameSearchResultButtons">
-                        <Button id="nameSearchResultButtonRecords" data-character="${value.characterId}" class="nameSearchResultButton">View Records</Button>
+                        <Button class="nameSearchResultButtonWeapons nameSearchResultButton" data-character="${value.characterId}">View Weapons</Button>
                         <br>
-                        <Button id="nameSearchResultButtonVehicles" data-character="${value.characterId}" class="nameSearchResultButton">View Vehicles</Button>
+                        <Button class="nameSearchResultButtonVehicles nameSearchResultButton" data-character="${value.characterId}">View Vehicles</Button>
                     </div>
                 </div>
             `);
         };
     };
-    $("#nameSearchResultButtonRecords").click(function() {
+    $(".nameSearchResult").click(function() {
         $("#nameLoader").fadeIn("fast");
         $("body").css("cursor", "progress")
         $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
@@ -205,7 +209,16 @@ function createNameSearchResult(data) {
         }));
         return false;
     });
-    $("#nameSearchResultButtonVehicles").click(function() {
+    $(".nameSearchResultButtonWeapons").click(function() {
+        $("#weaponLoader").fadeIn("fast");
+        $("body").css("cursor", "progress")
+        $.post(`https://${GetParentResourceName()}/viewWeapons`, JSON.stringify({
+            search: $(this).data("character"),
+            searchBy: "owner"
+        }));
+        return false;
+    });
+    $(".nameSearchResultButtonVehicles").click(function() {
         $("#plateLoader").fadeIn("fast");
         $("body").css("cursor", "progress")
         $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
@@ -248,20 +261,47 @@ function createVehicleSearchResult(data) {
                         <div class="plateSearchResultInfo">
                             <p class="plateSearchResultProperty">Color:</p>
                             <p class="plateSearchResultValue">${escapeHtml(value.color)}</p>
-                            <p class="plateSearchResultProperty">Status:</p>
-                            <p class="plateSearchResultValue">value.status</p>
+                            <p class="plateSearchResultProperty">Stolen status:</p>
+                            ${value.stolen && `<p class="plateSearchResultValue vehicle_${value.id}" style="color: red;">Stolen</p>` || `<p class="plateSearchResultValue vehicle_${value.id}">Not stolen</p>`}
                         </div>
                         <div class="plateSearchResultInfo">
                             <p class="plateSearchResultProperty">Class:</p>
                             <p class="plateSearchResultValue">${escapeHtml(value.class)}</p>
                         </div>
                     </div>
-                    <Button id="plateSearchResultButton" data-first="${value.character.firstName}" data-last="${value.character.lastName}" class="plateSearchResultButton">Search citizen</Button>
+                    <div class="searchButtons">
+                        <Button class="plateSearchResultButton" data-first="${value.character.firstName}" data-last="${value.character.lastName}">Search citizen</Button>
+                        ${value.stolen && `<Button style="background-color: #494e59;" class="setVehicleStolen" data-id="${value.id}">Mark found</Button>` || `<Button style="background-color: #2656c9" class="setVehicleStolen" data-id="${value.id}">Mark stolen</Button>`}
+                    </div>
                 </div>
             `);
         };
     };
-    $("#plateSearchResultButton").click(function() {
+
+    $(".setVehicleStolen").click(function() {
+        const e = $(this);
+        const id = e.data("id");
+        const stolen = e.text() == "Mark stolen"
+        const status = $(`.vehicle_${id}`);
+        $.post(`https://${GetParentResourceName()}/vehicleStatus`, JSON.stringify({
+            id: id,
+            stolen: stolen
+        }));
+        if (stolen) {
+            e.text("Mark found");
+            e.css("background-color", "#494e59");
+            status.text("Stolen");
+            status.css("color", "red");
+        } else {
+            e.text("Mark stolen");
+            e.css("background-color", "#2656c9");
+            status.text("Not stolen");
+            status.css("color", "#ccc");
+        }
+        return false;
+    });
+
+    $(".plateSearchResultButton").click(function() {
         $(".rightPanelNameSearchResponses").show();
         $(".rightPanelNameSearchResponses").empty();
         $("#searchNameDefault").text("");
@@ -511,6 +551,11 @@ window.addEventListener("message", function(event) {
     if (item.type === "weaponSerialSearch") {
         $("#weaponLoader").fadeOut("fast");
         $("body").css("cursor", "default")
+        if (item.weaponPage) {
+            hideAllPages();
+            $(".rightPanelWeaponSearch").fadeIn("fast");
+            $("#leftPanelButtonWeaponSearch").css("background-color", "#3a3b3c");
+        };
         if (item.found == true) {
             createWeaponSearchResult(JSON.parse(item.data));
         } else {
@@ -682,7 +727,7 @@ $("#weaponSearch").submit(function() {
     $("#weaponLoader").fadeIn("fast");
     $("body").css("cursor", "progress");
     $.post(`https://${GetParentResourceName()}/weaponSerialSearch`, JSON.stringify({
-        serial: $("#weaponSearchBar").val()
+        search: $("#weaponSearchBar").val()
     }));
     this.reset();
     return false;

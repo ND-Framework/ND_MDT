@@ -143,7 +143,7 @@ lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
             for i=1, #result do
                 local item = result[i]
                 local character = getVehicleCharacter(item.vehicle_owner)
-                vehicles[item.v_id] = {color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, character = character}
+                vehicles[item.v_id] = {id = item.v_id, color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, stolen = item.stolen == 1, character = character}
             end
         end
     elseif searchBy == "owner" then
@@ -152,7 +152,7 @@ lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
             local character = getVehicleCharacter(data)
             for i=1, #result do
                 local item = result[i]
-                vehicles[item.v_id] = {color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, character = character}
+                vehicles[item.v_id] = {id = item.v_id, color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, stolen = item.stolen == 1, character = character}
             end
         end
     end
@@ -239,19 +239,25 @@ exports["ND_Core"]:isResourceStarted("ox_inventory", function(started)
 end)
 
 -- retrive weapons based on serial number.
-lib.callback.register("ND_MDT:weaponSerialSearch", function(source, serial)
+lib.callback.register("ND_MDT:weaponSerialSearch", function(source, searchBy, search)
     local player = source
     local players = NDCore.Functions.GetPlayers()
     local weapons = {}
-    if not config.policeAccess[players[player].job] or not serial then return false end
+    if not config.policeAccess[players[player].job] or not search then return false end
     
-    local result = MySQL.query.await("SELECT * FROM nd_mdt_weapons WHERE serial RLIKE(?)", {serial})
+    local query = "SELECT * FROM nd_mdt_weapons WHERE serial RLIKE(?)"
+    if searchBy == "owner" then
+        query = "SELECT * FROM nd_mdt_weapons WHERE `character` = ?"
+    end
+
+    local result = MySQL.query.await(query, {search})
     if result then
         for i=1, #result do
             local item = result[i]
             weapons[#weapons+1] = {characterId = item.character, weapon = item.weapon, serial = item.serial, ownerName = item.owner_name, stolen = item.stolen}
         end
     end
+
     return weapons
 end)
 
@@ -260,4 +266,11 @@ RegisterNetEvent("ND_MDT:weaponStolenStatus", function(serial, stolen)
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     MySQL.query("UPDATE nd_mdt_weapons SET stolen = ? WHERE serial = ?", {stolen and 1 or 0, serial})
+end)
+
+RegisterNetEvent("ND_MDT:vehicleStolenStatus", function(id, stolen)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    MySQL.query("UPDATE characters_vehicles SET stolen = ? WHERE v_id = ?", {stolen and 1 or 0, id})
 end)

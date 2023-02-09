@@ -413,6 +413,7 @@ body {
     height: auto;
     background-color: #242526;
     border-radius: 8px;
+    cursor: pointer;
 }
 .nameSearchResultImageContainer {
     display: inline-block;
@@ -453,7 +454,7 @@ body {
     border-radius: 5px;
     transition: .1s ease-in-out;
 }
-.nameSearchResultButton:hover, .plateSearchResultButton:hover, .weaponSearchResultButton:hover, .weaponSearchButtons > button:hover {
+.nameSearchResultButton:hover, .plateSearchResultButton:hover, .weaponSearchResultButton:hover, .searchButtons > button:hover {
     transition: .1s ease-in-out;
     cursor: pointer;
     opacity: 0.8;
@@ -872,14 +873,14 @@ body {
     color: rgb(255, 255, 255);
 }
 
-.weaponSearchButtons {
+.searchButtons {
     width: 100%;
     height: 3vh;
     display: grid;
     grid-template-columns: 50% 50%;
     grid-column-gap: 1%;
 }
-.weaponSearchButtons > button {
+.searchButtons > button {
     width: 100%;
     height: 100%;
     color: white;

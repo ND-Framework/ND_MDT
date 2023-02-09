@@ -254,6 +254,38 @@ RegisterNUICallback("nameSearch", function(data)
     end, data.id)
 end)
 
+RegisterNUICallback("viewWeapons", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    local weaponPage = false
+    if data.searchBy == "owner" then weaponPage = true end
+
+    -- returns retrived names and character information from the server and adds it on the ui.
+    lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
+        print(json.encode(result,{indent=true}))
+        if not result or not next(result) then
+            if weaponPage then
+                SendNUIMessage({
+                    type = "weaponSerialSearch",
+                    found = "No weapons found registered to this citizen."
+                })
+            else
+                SendNUIMessage({
+                    type = "weaponSerialSearch",
+                    found = "No weapons found matching this serial number."
+                })
+            end
+
+            return
+        end
+        SendNUIMessage({
+            type = "weaponSerialSearch",
+            found = true,
+            weaponPage = weaponPage,
+            data = json.encode(result)
+        })
+    end, data.searchBy, data.search)
+end)
+
 RegisterNUICallback("viewVehicles", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     local vehPage = false
@@ -261,6 +293,7 @@ RegisterNUICallback("viewVehicles", function(data)
 
     -- retrived vehicles from the server and adds it on the ui.
     lib.callback("ND_MDT:viewVehicles", false, function(result)
+        print(json.encode(result, {indent = true}))
         if not result or not next(result) then
             if vehPage then
                 SendNUIMessage({
@@ -351,9 +384,13 @@ RegisterNetEvent("ND_MDT:updateUnitStatus", function(units)
     displayUnits(units)
 end)
 
+RegisterNUICallback("vehicleStatus", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+    TriggerServerEvent("ND_MDT:vehicleStolenStatus", data.id, data.stolen)
+end)
+
 RegisterNUICallback("weaponStatus", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    print(data.serial, data.stolen)
     TriggerServerEvent("ND_MDT:weaponStolenStatus", data.serial, data.stolen)
 end)
 
