@@ -88,22 +88,24 @@ function createWeaponSearchResult(data) {
         if (key && value) {
             $(".rightPanelWeaponSearchResponses").append(`
                 <div class="plateSearchResult">
-                    <div class="plateSearchResultGrid">
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Owner:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(value.ownerName)}</p>
-                        </div>
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Weapon type:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.weapon))}</p>
-                        </div>
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Serial number:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(value.serial)}</p>
-                        </div>
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Stolen status:</p>
-                            ${value.stolen && `<p class="plateSearchResultValue weapon_${value.serial}" style="color: red;">Stolen</p>` || `<p class="plateSearchResultValue weapon_${value.serial}">Not stolen</p>`}
+                    <div class="plateSearchResultContainer">
+                        <div class="weaponSearchResultGrid">
+                            <div>
+                                <p class="plateSearchResultProperty">Owner:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.ownerName)}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Weapon type:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.weapon))}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Serial number:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.serial)}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Stolen status:</p>
+                                ${value.stolen && `<p class="plateSearchResultValue weapon_${value.serial}" style="color: red;">Stolen</p>` || `<p class="plateSearchResultValue weapon_${value.serial}">Not stolen</p>`}
+                            </div>
                         </div>
                     </div>
                     <div class="searchButtons">
@@ -245,31 +247,39 @@ function createVehicleSearchResult(data) {
         if (key && value) {
             $(".rightPanelPlateSearchResponses").append(`
                 <div class="plateSearchResult">
-                    <div class="plateSearchResultGrid">
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Owner:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(value.character.firstName)} ${escapeHtml(value.character.lastName)}</p>
-                            <p class="plateSearchResultProperty">Make:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.make))}</p>
-                        </div>
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Plate:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(value.plate)}</p>
-                            <p class="plateSearchResultProperty">Model:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.model))}</p>
-                        </div>
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Color:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(value.color)}</p>
-                            <p class="plateSearchResultProperty">Stolen status:</p>
-                            ${value.stolen && `<p class="plateSearchResultValue vehicle_${value.id}" style="color: red;">Stolen</p>` || `<p class="plateSearchResultValue vehicle_${value.id}">Not stolen</p>`}
-                        </div>
-                        <div class="plateSearchResultInfo">
-                            <p class="plateSearchResultProperty">Class:</p>
-                            <p class="plateSearchResultValue">${escapeHtml(value.class)}</p>
+                    <div class="plateSearchResultContainer">
+                        <div class="plateSearchResultGrid">
+                            <div>
+                                <p class="plateSearchResultProperty">Owner:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.character.firstName)} ${escapeHtml(value.character.lastName)}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Plate:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.plate)}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Color:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.color)}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Stolen status:</p>
+                                ${value.stolen && `<p class="plateSearchResultValue vehicle_${value.id}" style="color: red;">Stolen</p>` || `<p class="plateSearchResultValue vehicle_${value.id}">Not stolen</p>`}
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Make:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.make))}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Model:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(vehicleText(value.model))}</p>
+                            </div>
+                            <div>
+                                <p class="plateSearchResultProperty">Class:</p>
+                                <p class="plateSearchResultValue">${escapeHtml(value.class)}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="searchButtons">
+                    <div class="searchButtons" style="margin-top: 3.5%">
                         <Button class="plateSearchResultButton" data-first="${value.character.firstName}" data-last="${value.character.lastName}">Search citizen</Button>
                         ${value.stolen && `<Button style="background-color: #494e59;" class="setVehicleStolen" data-id="${value.id}">Mark found</Button>` || `<Button style="background-color: #2656c9" class="setVehicleStolen" data-id="${value.id}">Mark stolen</Button>`}
                     </div>
