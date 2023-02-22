@@ -12,7 +12,8 @@ files {
 	"ui/index.html",
 	"ui/script.js",
 	"ui/style.css",
-    "ui/user.jpg"
+    "ui/user.jpg",
+    "config/penal.json"
 }
 
 ui_page "ui/index.html"
@@ -20,7 +21,8 @@ ui_page "ui/index.html"
 shared_scripts {
     "@ND_Core/shared/import.lua",
     "@ox_lib/init.lua",
-    "config.lua"
+    "config/config.lua",
+    "config/penal.json"
 }
 server_scripts {
     "@oxmysql/lib/MySQL.lua",
