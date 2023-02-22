@@ -21,7 +21,7 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
                         break
                     end
                 end
-                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId}
+                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = json.decode(item.data).img}
             end
         end
     end
@@ -37,7 +37,7 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
                         break
                     end
                 end
-                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId}
+                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = json.decode(item.data).img}
             end
         end
     end
@@ -52,7 +52,7 @@ lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, character
     local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {characterSearched})
     if result and result[1] then  
         local item = result[1]
-        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = source}
+        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = source, img = json.decode(item.data).img}
     end
     return profiles
 end)
@@ -198,6 +198,13 @@ RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     TriggerClientEvent("ND_MDT:receiveLiveChat", -1, info)
 end)
 
+function getChargesJson()
+    local chargesJson = LoadResourceFile(GetCurrentResourceName(), "config/penal.json")
+    if not chargesJson then return end
+    local chargesList = json.decode(chargesJson)[1]
+    return chargesList
+end
+
 RegisterNetEvent("ND_MDT:saveRecords", function(data)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
@@ -212,6 +219,40 @@ RegisterNetEvent("ND_MDT:saveRecords", function(data)
 
     local records, update = getRecords(data.characterId)
     records.notes = data.notes
+
+    local characterCharges = records.charges or {}
+    local chargesList = getChargesJson()
+    for _, chargeInfo in pairs(data.newCharges) do
+        local charge = chargesList[chargeInfo.chargeType][chargeInfo.chargeNum+1]
+        local fine = chargeInfo.fine
+
+        if fine then
+            fine = tonumber(fine:sub(2))
+            if fine > charge.fine then
+                fine = charge.fine
+            end
+
+            -- use ND_Banking and charge person here.
+        end
+
+        characterCharges[#characterCharges+1] = {
+            crime = charge.crime,
+            fine = charge.fine,
+            sentence = charge.sentence,
+            type = chargeInfo.chargeType,
+            timestamp = os.time(),
+            id = math.random(10000, 99999)
+        }
+
+        exports["ND_Banking"]:createInvoice(fine, 7, false, {
+            name = "Government",
+            account = "0"
+        },
+        {
+            character = data.characterId,
+        })
+    end
+    records.charges = characterCharges
 
     if update then
         MySQL.query.await("UPDATE nd_mdt_records SET records = ? WHERE `character` = ?", {json.encode(records), data.characterId})
@@ -268,9 +309,41 @@ RegisterNetEvent("ND_MDT:weaponStolenStatus", function(serial, stolen)
     MySQL.query("UPDATE nd_mdt_weapons SET stolen = ? WHERE serial = ?", {stolen and 1 or 0, serial})
 end)
 
-RegisterNetEvent("ND_MDT:vehicleStolenStatus", function(id, stolen)
+local stolenPlatesCallbacks = {}
+local stolenPlatesList = {}
+
+RegisterNetEvent("ND_MDT:vehicleStolenStatus", function(id, stolen, plate)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     MySQL.query("UPDATE characters_vehicles SET stolen = ? WHERE v_id = ?", {stolen and 1 or 0, id})
+    if not plate then return end
+    stolenPlatesList[plate] = stolen and plate or nil
+    for i = 1, #stolenPlatesCallbacks do
+        stolenPlatesCallbacks[i](plate)
+    end
+end)
+
+AddEventHandler("onResourceStart", function(resourceName)
+    local result = MySQL.query.await("SELECT `plate` FROM `characters_vehicles` WHERE `stolen` = 1")
+    if not result then return end
+    for _, plate in pairs(result) do
+        stolenPlatesList[plate.plate] = plate.plate
+    end
+end)
+exports("stolenPlate", function(param)
+    local dataType = type(param)
+    if dataType == "string" then
+        return stolenPlatesList[plate]
+    elseif dataType == "function" then
+        stolenPlatesCallbacks[#stolenPlatesCallbacks+1] = param
+        return stolenPlatesList
+    end
+end)
+
+RegisterNetEvent("wk:onPlateScanned", function(cam, plate, index)
+    local src = source
+    if stolenPlatesList[plate] then
+        exports["wk_wars2x"]:TogglePlateLock(src, cam, true, true)
+    end
 end)

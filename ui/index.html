@@ -60,10 +60,10 @@
                     <Button id="leftPanelButtonWeaponSearch" class="leftPanelButtons">
                         <i class="fa-solid fa-gun"></i> <div>Weapon Search</div>
                     </Button>
-                    <Button id="leftPanelButtonWeaponSearch" class="leftPanelButtons">
+                    <Button id="leftPanelButtonBolo" class="leftPanelButtons">
                         <i class="fa-solid fa-hand"></i> <div>BOLO</div>
                     </Button>
-                    <Button id="leftPanelButtonWeaponSearch" class="leftPanelButtons">
+                    <Button id="leftPanelButtonReports" class="leftPanelButtons">
                         <i class="fa-solid fa-file"></i> <div>Reports</div>
                     </Button>
                     <Button id="leftPanelButtonLiveChat" class="leftPanelButtons">
@@ -113,7 +113,11 @@
                     <div class="rightPanelNameSearch">
                         <div class="recordsPage">
                             <i class="fa-solid fa-chevron-left recordsReturn"></i>
-                            <button class="recordsCitizenSave"><i class="fa-solid fa-check"></i> Save all changes</button>
+                            <button class="viewVehiclesButton recordsPageTopButton"><i class="fas fa-car-side"></i> View vehicles</button>
+                            <button class="viewWeaponsButton recordsPageTopButton"><i class="fa-solid fa-gun"></i> View weapons</button>
+                            <button class="boloCitizenCreateButton recordsPageTopButton"><i class="fa-solid fa-hand"></i> Create BOLO</button>
+                            <button class="recordsMainCreateButton recordsPageTopButton"><i class="fa-solid fa-file"></i> Create record</button>
+                            <button class="recordsCitizenSave recordsPageTopButton"><i class="fa-solid fa-check"></i> Save all changes</button>
                             <div class="recordsCitizen"></div>
                             <div class="recordsInfo">
                                 <div class="recordsLicenses">
@@ -126,43 +130,7 @@
                                 </div>
                                 <div class="recordsMain">
                                     <p class="recordsMainTitle">Records:</p>
-                                    <div class="recordsMainInfo">
-                                        <div class="recordsMainItem">
-                                            <div class="recordsMainInfraction">
-                                                <p class="recordsMainInfractionTitle">Infraction:</p>
-                                                <p class="recordsMainInfractionValue">Speeding violation, faliure to yield at intersection.</p>
-                                            </div>
-                                            <p class="recordsMainType">Citation</p>
-                                        </div>
-                                        <div class="recordsMainItem">
-                                            <div class="recordsMainInfraction">
-                                                <p class="recordsMainInfractionTitle">Infraction:</p>
-                                                <p class="recordsMainInfractionValue">Speeding violation, faliure to yield at intersection.</p>
-                                            </div>
-                                            <p class="recordsMainType">Citation</p>
-                                        </div>
-                                        <div class="recordsMainItem">
-                                            <div class="recordsMainInfraction">
-                                                <p class="recordsMainInfractionTitle">Infraction:</p>
-                                                <p class="recordsMainInfractionValue">Speeding violation, faliure to yield at intersection.</p>
-                                            </div>
-                                            <p class="recordsMainType">Citation</p>
-                                        </div>
-                                        <div class="recordsMainItem">
-                                            <div class="recordsMainInfraction">
-                                                <p class="recordsMainInfractionTitle">Infraction:</p>
-                                                <p class="recordsMainInfractionValue">Speeding violation, faliure to yield at intersection.</p>
-                                            </div>
-                                            <p class="recordsMainType">Citation</p>
-                                        </div>
-                                        <div class="recordsMainItem">
-                                            <div class="recordsMainInfraction">
-                                                <p class="recordsMainInfractionTitle">Infraction:</p>
-                                                <p class="recordsMainInfractionValue">Speeding violation, faliure to yield at intersection.</p>
-                                            </div>
-                                            <p class="recordsMainType">Citation</p>
-                                        </div>
-                                    </div>
+                                    <div class="recordsMainInfo"></div>
                                 </div>
                             </div>
                         </div>
@@ -200,6 +168,16 @@
                         <div id="weaponLoader" class="loader" style="display: none;"></div>
                     </div>
 
+                    <!-- BOLOs Page -->
+                    <div class="rightPanelBoloPage">
+
+                    </div>
+
+                    <!-- Reports Page -->
+                    <div class="rightPanelReportsPage">
+
+                    </div>
+
                     <!-- Live chat Page -->
                     <div class="rightPanelLiveChat">
                         <div class="rightPanelLiveChatBox">
@@ -216,6 +194,23 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="form-records">
+            <div class="form-records-bar">
+                <p>Create record</p>
+            </div>
+            <button class="form-records-close"><i class="fa-solid fa-xmark"></i></button>
+            <div class="form-records-content">
+                <select id="form-records-charges"></select>
+                <div class="form-records-description">
+                    <p class="form-records-description-value"></p>
+                </div>
+                <div class="form-records-info">
+                    <p class="form-records-fine">$2000 fine</p>
+                    <p class="form-records-sentence">Up to 2 months sentence</p>
+                </div>
+                <button id="form-records-create">Create</button>
             </div>
         </div>
     </body>

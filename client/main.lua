@@ -204,6 +204,37 @@ RegisterNUICallback("unitRespondToCall", function(data)
     TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(data.id), unitNumber)
 end)
 
+function weaponSearch(searchBy, search)
+    local weaponPage = false
+    if searchBy == "owner" then weaponPage = true end
+
+    -- returns retrived names and character information from the server and adds it on the ui.
+    lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
+        print(json.encode(result,{indent=true}))
+        if not result or not next(result) then
+            if weaponPage then
+                SendNUIMessage({
+                    type = "weaponSerialSearch",
+                    found = "No weapons found registered to this citizen."
+                })
+            else
+                SendNUIMessage({
+                    type = "weaponSerialSearch",
+                    found = "No weapons found matching this serial number."
+                })
+            end
+
+            return
+        end
+        SendNUIMessage({
+            type = "weaponSerialSearch",
+            found = true,
+            weaponPage = weaponPage,
+            data = json.encode(result)
+        })
+    end, searchBy, search)
+end
+
 function nameSearched(result)
     print(json.encode(result, {indent = true}))
     if not result or not next(result) then
@@ -215,10 +246,10 @@ function nameSearched(result)
     end
     local data = {}
     for character, info in pairs(result) do
-        local imgFromName = "user.jpg"
-        if info.id then
-            imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
-        end
+        local imgFromName = info.img or "user.jpg"
+        -- if info.id then
+        --     imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
+        -- end
         local citizen = {
             img = imgFromName,
             characterId = character,
@@ -256,34 +287,7 @@ end)
 
 RegisterNUICallback("viewWeapons", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    local weaponPage = false
-    if data.searchBy == "owner" then weaponPage = true end
-
-    -- returns retrived names and character information from the server and adds it on the ui.
-    lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
-        print(json.encode(result,{indent=true}))
-        if not result or not next(result) then
-            if weaponPage then
-                SendNUIMessage({
-                    type = "weaponSerialSearch",
-                    found = "No weapons found registered to this citizen."
-                })
-            else
-                SendNUIMessage({
-                    type = "weaponSerialSearch",
-                    found = "No weapons found matching this serial number."
-                })
-            end
-
-            return
-        end
-        SendNUIMessage({
-            type = "weaponSerialSearch",
-            found = true,
-            weaponPage = weaponPage,
-            data = json.encode(result)
-        })
-    end, data.searchBy, data.search)
+    weaponSearch(data.searchBy, data.search)
 end)
 
 RegisterNUICallback("viewVehicles", function(data)
@@ -341,7 +345,8 @@ RegisterNUICallback("saveRecords", function(data)
     local data = {
         characterId = data.character,
         notes = data.notes,
-        changedLicences = changedLicences
+        changedLicences = changedLicences,
+        newCharges = data.newCharges
     }
 
     TriggerServerEvent("ND_MDT:saveRecords", data)
@@ -386,7 +391,7 @@ end)
 
 RegisterNUICallback("vehicleStatus", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    TriggerServerEvent("ND_MDT:vehicleStolenStatus", data.id, data.stolen)
+    TriggerServerEvent("ND_MDT:vehicleStolenStatus", data.id, data.stolen, data.plate)
 end)
 
 RegisterNUICallback("weaponStatus", function(data)
@@ -396,31 +401,7 @@ end)
 
 RegisterNUICallback("weaponSerialSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-
-    if not data.serial or data.serial == "" then
-        SendNUIMessage({
-            type = "weaponSerialSearch",
-            found = "No weapons found matching this serial number."
-        })
-        return
-    end
-
-    -- returns retrived names and character information from the server and adds it on the ui.
-    lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
-        print(json.encode(result,{indent=true}))
-        if not result or not next(result) then
-            SendNUIMessage({
-                type = "weaponSerialSearch",
-                found = "No weapons found matching this serial number."
-            })
-            return
-        end
-        SendNUIMessage({
-            type = "weaponSerialSearch",
-            found = true,
-            data = json.encode(result)
-        })
-    end, data.serial)
+    weaponSearch(data.searchBy, data.search)
 end)
 
 -- triggers a server event with the 911 call information.
@@ -478,3 +459,33 @@ TriggerEvent("chat:addSuggestion", "/911-", "Make a detailed 911 call.", {
     {name="Describe your situation.", help="What's happening, do you need Police, Ambulance?"}
 })
 print("^1[^4ND_MDT^1] ^0for support join the discord server: ^4https://discord.gg/Z9Mxu72zZ6^0.")
+
+
+RegisterCommand("mdt", function(source, args, rawCommand)
+    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
+    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    ped = PlayerPedId()
+    if id == 0 then
+        -- returns all active units from the server and updates the status on the ui.
+        lib.callback("ND_MDT:getUnitStatus", false, function(units)
+            displayUnits(units)
+        end)
+        lib.callback("ND_MDT:get911Calls", false, function(emeregencyCalls)
+            displayUnits(emeregencyCalls)
+        end)
+    end
+    local img = getLocalPlayerImage(ped)
+    local veh = GetVehiclePedIsIn(ped)
+    display = true
+    SetNuiFocus(true, true)
+    SendNUIMessage({
+        type = "display",
+        action = "open",
+        img = img,
+        department = selectedCharacter.job,
+        rank = getRankName(selectedCharacter),
+        name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
+        unitNumber = unitNumber
+    })
+    PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
+end, false)

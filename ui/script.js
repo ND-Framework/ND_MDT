@@ -1,38 +1,44 @@
-$(".topBarText").mousedown(function(event) {
-    let shiftX = event.clientX - $(".background").get(-1).getBoundingClientRect().left;
-    let shiftY = event.clientY - $(".background").get(-1).getBoundingClientRect().top;
+function movePage(element) {
+    let shiftX = event.clientX - $(element).get(-1).getBoundingClientRect().left;
+    let shiftY = event.clientY - $(element).get(-1).getBoundingClientRect().top;
 
-    $(".background").get(-1).style.position = "absolute";
-    $(".background").get(-1).style.zIndex = 1000;
-    document.body.append($(".background").get(-1));
+    $(element).get(-1).style.position = "absolute";
+    $(element).get(-1).style.zIndex = 1000;
+    document.body.append($(element).get(-1));
 
     moveAt(event.pageX, event.pageY);
 
     function moveAt(pageX, pageY) {
-        $(".background").get(-1).style.left = pageX - shiftX + "px";
-        $(".background").get(-1).style.top = pageY - shiftY + "px";
+        $(element).get(-1).style.left = pageX - shiftX + "px";
+        $(element).get(-1).style.top = pageY - shiftY + "px";
     };
 
     function onMouseMove(event) {
         moveAt(event.pageX, event.pageY);
 
-        $(".background").get(-1).hidden = true;
+        $(element).get(-1).hidden = true;
         let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-        $(".background").get(-1).hidden = false;
+        $(element).get(-1).hidden = false;
 
         if (!elemBelow) return;
     };
 
     document.addEventListener("mousemove", onMouseMove);
 
-    $(".background").get(-1).onmouseup = function(e) {
+    $(element).get(-1).onmouseup = function(e) {
         document.removeEventListener("mousemove", onMouseMove);
-        $(".background").get(-1).onmouseup = null;
+        $(element).get(-1).onmouseup = null;
     };
 
-    $(".background").get(-1).ondragstart = function() {
+    $(element).get(-1).ondragstart = function() {
         return false;
     };
+}
+$(".topBarText").mousedown(function(event) {
+    movePage(".background")
+});
+$(".form-records-bar").mousedown(function(event) {
+    movePage(".form-records")
 });
 
 const escapeHtml = (unsafe) => {
@@ -72,11 +78,11 @@ function Convert(pMugShotTxd, id) {
 };
 
 // Hide all pages but the dashboard on start.
-$(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings, .rightPanelWeaponSearch").hide();
+$(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelWeaponSearch, .rightPanelBoloPage, .rightPanelReportsPage, .rightPanelLiveChat, .rightPanelSettings").hide();
 
 // This function will hide all pages and reset the background-color for the menu buttons. This is used when changing pages to display another page.
 function hideAllPages() {
-    $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelLiveChat, .rightPanelSettings, .rightPanelWeaponSearch").hide();
+    $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelWeaponSearch, .rightPanelBoloPage, .rightPanelReportsPage, .rightPanelLiveChat, .rightPanelSettings").hide();
     $(".leftPanelButtons").css("background-color", "transparent");
 };
 
@@ -281,7 +287,7 @@ function createVehicleSearchResult(data) {
                     </div>
                     <div class="searchButtons" style="margin-top: 3.5%">
                         <Button class="plateSearchResultButton" data-first="${value.character.firstName}" data-last="${value.character.lastName}">Search citizen</Button>
-                        ${value.stolen && `<Button style="background-color: #494e59;" class="setVehicleStolen" data-id="${value.id}">Mark found</Button>` || `<Button style="background-color: #2656c9" class="setVehicleStolen" data-id="${value.id}">Mark stolen</Button>`}
+                        ${value.stolen && `<Button style="background-color: #494e59;" class="setVehicleStolen" data-id="${value.id}" data-plate="${value.plate}">Mark found</Button>` || `<Button style="background-color: #2656c9" class="setVehicleStolen" data-id="${value.id}">Mark stolen</Button>`}
                     </div>
                 </div>
             `);
@@ -295,7 +301,8 @@ function createVehicleSearchResult(data) {
         const status = $(`.vehicle_${id}`);
         $.post(`https://${GetParentResourceName()}/vehicleStatus`, JSON.stringify({
             id: id,
-            stolen: stolen
+            stolen: stolen,
+            plate: e.data("plate")
         }));
         if (stolen) {
             e.text("Mark found");
@@ -341,18 +348,24 @@ function formatDate(timeStamp) {
     return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
 };
 
+let newCharges = {}
+
 // Creates a records page for a citizen with options to give citation and all that.
 function createRecordsPage(data) {
+    newCharges = {}
+
     $(".recordsReturn").click(function() {
         $(".recordsPage").hide();
         $("#nameSearch").show();
+        newCharges = {}
     });
-
-    $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo").empty();
 
     if (!data || !data.citizen) {
         return;
     };
+
+    $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .recordsMainInfo").empty();
+    $(".viewVehiclesButton, .viewWeaponsButton, .boloCitizenCreateButton, .recordsMainCreateButton").data("character", data.citizen.characterId)
 
     $(".recordsCitizen").append(`
         <div class="recordsCitizenImageContainer">
@@ -380,6 +393,22 @@ function createRecordsPage(data) {
     if (data.records.notes) {
         $("#recordsCitizenNotesText").val(escapeHtml(data.records.notes));
     };
+
+    if (data.records.charges) {
+        const charges = data.records.charges
+        for (let i = 0; i < charges.length; i++) {
+            const charge = charges[i]
+            $(".recordsMainInfo").prepend(`
+                <div class="recordsMainItem">
+                    <div class="recordsMainInfraction">
+                        <p class="recordsMainInfractionTitle">${charge.crime}:</p>
+                        <p class="recordsMainInfractionValue">Date: ${formatDate(charge.timestamp)} ${charge.fine && `| Fine: $${charge.fine}` || ""}</p>
+                    </div>
+                    <p class="recordsMainType">${charge.type == "infractions" && "Infraction" || charge.type == "misdemeanours" && "Misdemeanour" || charge.type == "felonies" && "Felony"}</p>
+                </div>
+            `)
+        };
+    }
 
     if (data.properties) {
         for (let i = 0; i < data.properties.length; i++) {
@@ -430,11 +459,116 @@ function createRecordsPage(data) {
 
 };
 
-$(".recordsCitizenSave").click(function() {
-    $.post(`https://${GetParentResourceName()}/saveRecords`, JSON.stringify({
-        character: $("#recordsCitizenNotesText").data("character"),
-        notes: $("#recordsCitizenNotesText").val()
-    }));
+// load penal codes/charges into page.
+function getCrimes(penal, type) {
+    let string = ""
+    for (const [key, value] of Object.entries(penal)) {
+        string = `${string}<option value="${key}" data-type="${type}">${value.crime}</option>`
+    }
+    return string
+}
+
+$.getJSON("../config/penal.json", function(data) {
+    const penal = data[0]
+
+    // add charges to list
+    for (const [key, value] of Object.entries(penal)) {
+        $("#form-records-charges").append(`
+            <optgroup label="${key}">
+                ${getCrimes(value, key)}
+            </optgroup>
+        `);
+    }
+
+    // set default record page
+    const first = data[0].infractions[0]
+    $(".form-records-description-value").text(first.description);
+    $(".form-records-sentence").text(first.sentence && `Up to ${first.sentence} months sentence` || "");
+    if (first.fine) {
+        const fineDivision = first.fine/4
+        $(".form-records-fine").html(`Fine: <select class="form-records-fine-select"><option>$${fineDivision*4}</option><option>$${fineDivision*3}</option><option>$${fineDivision*2}</option><option>$${fineDivision}</option></select>`);
+    } else {
+        $(".form-records-fine").text("Fine: none");
+    }
+
+    // Update record page
+    $("#form-records-charges").change(function() {
+        const e = $(this)
+        const chargeNum = e.val();
+        const chargeType = e.find(":selected").data("type")
+        const charge = penal[chargeType][chargeNum]
+        $(".form-records-description-value").text(charge.description);
+        $(".form-records-sentence").text(charge.sentence && `Up to ${charge.sentence} months sentence` || "");
+        if (charge.fine) {
+            const fineDivision = charge.fine/4
+            $(".form-records-fine").html(`Fine: <select class="form-records-fine-select"><option>$${fineDivision*4}</option><option>$${fineDivision*3}</option><option>$${fineDivision*2}</option><option>$${fineDivision}</option></select>`);
+        } else {
+            $(".form-records-fine").text("Fine: none");
+        }
+    });
+
+    // Confirm create a record
+    $("#form-records-create").click(function() {
+        const e = $("#form-records-charges")
+        const chargeNum = e.val();
+        const chargeType = e.find(":selected").data("type")
+        const fine = $(".form-records-fine-select").val()
+        const charge = penal[chargeType][chargeNum]
+        newCharges[newCharges.length+1] = {
+            chargeNum: chargeNum,
+            chargeType: chargeType,
+            fine: fine
+        }
+        const el = $(`
+            <div class="recordsMainItem" style="display: none;">
+                <div class="recordsMainInfraction">
+                    <p class="recordsMainInfractionTitle">${charge.crime}:</p>
+                    <p class="recordsMainInfractionValue">Date: ${formatDate(Math.floor(Date.now() / 1000))} ${fine && `| Fine: ${fine}` || ""}</p>
+                </div>
+                <p class="recordsMainType">${chargeType == "infractions" && "Infraction" || chargeType == "misdemeanours" && "Misdemeanour" || chargeType == "felonies" && "Felony"}</p>
+            </div>
+        `)
+        $(".recordsMainInfo").prepend(el)
+        el.slideToggle();
+    });
+});
+
+// close the whole ui when the X square is clicked.
+$(".form-records-close").click(function() {
+    $(".form-records").fadeOut();
+});
+
+$(".recordsPageTopButton").click(function() {
+    const text = $(this).text()
+    const character = $(".recordsPageTopButton").data("character")
+    
+    if (text == " View vehicles") {
+        $("#plateLoader").fadeIn("fast");
+        $("body").css("cursor", "progress")
+        $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
+            search: character,
+            searchBy: "owner"
+        }));
+    } else if (text == " View weapons") {
+        $("#weaponLoader").fadeIn("fast");
+        $("body").css("cursor", "progress")
+        $.post(`https://${GetParentResourceName()}/viewWeapons`, JSON.stringify({
+            search: character,
+            searchBy: "owner"
+        }));
+    } else if (text == " Create BOLO") {
+
+    } else if (text == " Create record") {
+        $(".form-records").fadeIn();
+    } else if (text == " Save all changes") {
+        $.post(`https://${GetParentResourceName()}/saveRecords`, JSON.stringify({
+            character: character,
+            notes: $("#recordsCitizenNotesText").val(),
+            newCharges: newCharges
+        }));
+        newCharges = {}
+    }
+
 });
 
 // sends a chat message in the mdt live chat.
@@ -656,6 +790,22 @@ $("#leftPanelButtonWeaponSearch").click(function() {
     $(".rightPanelWeaponSearch").fadeIn("fast");
     $(this).css("background-color", "#3a3b3c");
 });
+$("#leftPanelButtonBolo").click(function() {
+    if ($(".rightPanelBoloPage").css("display") == "block") {
+        return;
+    };
+    hideAllPages();
+    $(".rightPanelBoloPage").fadeIn("fast");
+    $(this).css("background-color", "#3a3b3c");
+});
+$("#leftPanelButtonReports").click(function() {
+    if ($(".rightPanelReportsPage").css("display") == "block") {
+        return;
+    };
+    hideAllPages();
+    $(".rightPanelReportsPage").fadeIn("fast");
+    $(this).css("background-color", "#3a3b3c");
+});
 $("#leftPanelButtonLiveChat").click(function() {
     if ($(".rightPanelLiveChat").css("display") == "block") {
         return;
@@ -675,12 +825,14 @@ $("#leftPanelButtonSettings").click(function() {
 
 // close ui when - is clicked
 $(".minimizeOverlay").click(function() {
+    $(".form-records").fadeOut("fast");
     $(".background").fadeOut("fast");
     $.post(`https://${GetParentResourceName()}/close`);
 });
 
 // close the whole ui when the X square is clicked.
 $(".closeOverlay").click(function() {
+    $(".form-records").fadeOut("fast");
     $(".background").fadeOut("fast");
     $.post(`https://${GetParentResourceName()}/close`);
     setTimeout(() => {
@@ -697,6 +849,10 @@ $(".closeOverlay").click(function() {
         hideAllPages();
         $(".rightPanelDashboard").fadeIn("fast");
         $("#leftPanelButtonDashboard").css("background-color", "#3a3b3c");
+        $(".form-records").css({
+            "top": "30vh",
+            "left": "40vw"
+        })
     }, 300);
 });
 
