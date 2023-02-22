@@ -1,0 +1,640 @@
+[{
+    "infractions": [
+        {
+            "crime": "Automobile equipment needing repair",
+            "fine": 25,
+            "sentence": null,
+            "description": "It is a legal obligation for motor vehicles to have specific safety equipment, including but not limited to brakes, headlights, taillights, turn signals, and mirrors, and that the functionality of the equipment must be maintained in good working condition. Any occurrence of faulty or missing equipment, such as a burned-out headlight or a broken turn signal, which can jeopardize the driver and other road users' safety, constitutes an infraction. The offense is commonly categorized as a minor traffic violation, and the degree of severity and the associated penalties depend on the particular type of equipment involved."
+        },
+        {
+            "crime": "Cell phone use while driving",
+            "fine": 20,
+            "sentence": null,
+            "description": "The use of a handheld device, such as a cell phone, while operating a motor vehicle is considered a traffic violation. This action is recognized as a distraction and can impede a driver's ability to concentrate on the road, increasing the likelihood of accidents. The infraction can include various activities such as talking on the phone, texting, emailing, or using other applications while driving."
+        },
+        {
+            "crime": "Crossing safety flares/cones",
+            "fine": 100,
+            "sentence": null,
+            "description": "Disregarding safety flares or cones is a traffic offense that transpires when a driver fails to adhere to the safety flares or cones placed on the road to signal a closed or dangerous area, placing the safety of others on the road in jeopardy. The penalty for this infraction can vary in severity, but it is typically considered a traffic violation that can lead to a fine and repeat offenders may face more stringent sanctions, such as license suspension."
+        },
+        {
+            "crime": "Disobedience to fire official",
+            "fine": 1000,
+            "sentence": null,
+            "description": "Disobedience to a fire official is a violation that occurs when an individual fails to comply with the lawful orders of a fire official during an emergency situation. Fire officials are responsible for ensuring the safety of the public and controlling hazardous situations. This violation can occur when an individual refuses to follow orders to evacuate an area, hinders or obstructs firefighting operations, or engages in other behaviors that interfere with the duties of a fire official. Disobedience to a fire official is considered a serious offense that can endanger lives and property and may result in criminal charges. The severity of the penalty for this violation varies depending on the circumstances and the degree of harm caused by the disobedience."
+        },
+        {
+            "crime": "Disregarding funeral escort officer",
+            "fine": 500,
+            "sentence": null,
+            "description": "Disregarding a funeral escort officer is a traffic violation that occurs when a driver fails to yield to a funeral procession that is being escorted by a law enforcement officer. The officer is responsible for directing traffic and ensuring that the funeral procession can move through intersections safely and without interruption. The violation occurs when a driver fails to follow the officer's instructions, thereby disrupting the procession and posing a threat to the safety of other road users. The severity of the penalty for this infraction can vary, but it is typically considered a traffic offense that can result in a fine and points on the driver's license. Repeat offenders may face more severe penalties, such as license suspension."
+        },
+        {
+            "crime": "Driving on a sidewalk",
+            "fine": 250,
+            "sentence": null,
+            "description": "Driving on a sidewalk is a traffic violation that occurs when a driver operates a motor vehicle on a sidewalk, which is a designated pedestrian pathway. This action poses a threat to the safety of pedestrians who are lawfully using the sidewalk and may result in property damage or personal injury. It is considered a serious offense that endangers the public's welfare."
+        },
+        {
+            "crime": "Driving too slow",
+            "fine": 150,
+            "sentence": null,
+            "description": "Driving too slow is an infraction that occurs when a driver operates a vehicle at a speed that is considered unreasonably slow and impedes the normal and reasonable flow of traffic. This infraction can pose a hazard to other drivers on the road, particularly when they are forced to suddenly brake or swerve to avoid the slow-moving vehicle. Drivers are required to operate their vehicles at a reasonable speed, taking into account traffic, road conditions, and any other factors that may impact their ability to safely operate the vehicle."
+        },
+        {
+            "crime": "Driving without a license",
+            "fine": 500,
+            "sentence": null,
+            "description": "Driving without a license is a traffic infraction that occurs when an individual operates a motor vehicle on a public roadway without a valid driver's license or driving privilege. It is considered a violation of state law that requires all drivers to possess a valid license or driving permit before operating a motor vehicle on public roads."
+        },
+        {
+            "crime": "Driving without insurance",
+            "fine": 450,
+            "sentence": null,
+            "description": "Driving without insurance is an infraction that occurs when a person operates a motor vehicle on a public roadway without proof of financial responsibility, such as liability insurance. The state requires drivers to carry minimum liability insurance to cover the costs of damages and injuries caused in the event of an accident. Driving without insurance can leave other drivers, passengers, and pedestrians financially responsible for damages and medical costs."
+        },
+        {
+            "crime": "Driving without proper lights or reflectors",
+            "fine": 100,
+            "sentence": null,
+            "description": "Driving without proper lights or reflectors is a traffic infraction that occurs when a driver operates a motor vehicle on a public road without the required lights or reflectors. Vehicles are required to have properly functioning headlights, tail lights, brake lights, turn signals, and reflectors to ensure visibility and safety for the driver and other road users. Failure to comply with these requirements can pose a safety risk and result in a traffic violation"
+        },
+        {
+            "crime": "Driving with a suspended license",
+            "fine": 500,
+            "sentence": null,
+            "description": "Driving with a suspended license is a traffic violation that occurs when a person operates a motor vehicle while their license is under suspension or revocation. This can result from a variety of reasons, such as unpaid fines, failure to appear in court, or certain driving offenses. Driving with a suspended license is considered a serious offense as it poses a risk to public safety and the offender has already demonstrated a disregard for traffic laws."
+        },
+        {
+            "crime": "Driving with an obstructed view",
+            "fine": 150,
+            "sentence": null,
+            "description": "Driving with an obstructed view is an infraction that occurs when a driver operates a motor vehicle with an object or condition that hinders their view of the road and surrounding environment. This obstruction may include, but is not limited to, items on the dashboard or windshield, large passengers, or cargo that exceeds the allowed dimensions of the vehicle. The act of driving with an obstructed view can impair the driver's ability to perceive and react to traffic conditions, and thus increases the risk of an accident."
+        },
+        {
+            "crime": "Dumping waste or debris on a highway",
+            "fine": 500,
+            "sentence": null,
+            "description": "Dumping waste or debris on a highway is an infraction that involves the illegal dumping or depositing of waste or debris on a public highway or street. This type of activity can pose a significant danger to other drivers and pedestrians, as well as causing environmental harm. Dumping waste or debris on a highway can include any type of material, such as garbage, construction debris, or other waste products. It is important to properly dispose of waste and debris in designated areas and to follow all regulations regarding waste management to avoid this type of infraction."
+        },
+        {
+            "crime": "Evading peace officer",
+            "fine": 2000,
+            "sentence": null,
+            "description": "Evading a peace officer is an infraction that occurs when an individual intentionally flees from a peace officer who is pursuing them in a vehicle or on foot in an attempt to evade arrest. A peace officer may include a police officer, sheriff, highway patrol officer, or any other law enforcement officer who is acting in an official capacity. The individual may be driving a motor vehicle or may be on foot. The pursuit by the peace officer must be in the performance of their official duties, and the individual must have knowledge that the person pursuing them is a peace officer."
+        },
+        {
+            "crime": "Failure to comply with lawful order of a police officer",
+            "fine": 1000,
+            "sentence": null,
+            "description": "Failure to comply with lawful order of a police officer is an infraction in which a person willfully disobeys or neglects to comply with the lawful order, signal, or direction of a peace officer. This includes refusing to stop a vehicle or to submit to inspection, as well as failing to move a vehicle as directed by a peace officer. It is an offense that is intended to ensure the safety of law enforcement officials and others on the roadways."
+        },
+        {
+            "crime": "Failure to dim lights",
+            "fine": 50,
+            "sentence": null,
+            "description": "Failure to dim lights is an infraction where a driver fails to dim their vehicle's headlights or alter the high beams while approaching or overtaking another vehicle within a specified distance, as required by law. The purpose of this regulation is to prevent temporary blindness or visual impairment of other drivers, which can result in a potential safety hazard on the road."
+        },
+        {
+            "crime": "Failure to maintain a safe distance from a bicycle",
+            "fine": 100,
+            "sentence": null,
+            "description": "Failure to maintain a safe distance from a bicycle refers to the infraction of a driver failing to keep a reasonable and prudent distance from a bicyclist while driving a vehicle on the roadway. The purpose of this infraction is to ensure the safety of cyclists who are entitled to share the road with other motor vehicles. Drivers are required to maintain a safe distance while passing a bicyclist, considering the width of the roadway, the speed of the vehicle, and the surrounding conditions. The specific distance required may vary depending on the circumstances, but the driver must maintain a safe distance to avoid collision or accident."
+        },
+        {
+            "crime": "Failure to stop at a stop sign",
+            "fine": 200,
+            "sentence": null,
+            "description": "Failure to stop at a stop sign refers to the infraction of a driver failing to bring their vehicle to a complete stop at a stop sign. Stop signs are typically used to control traffic at intersections and other points where vehicles may need to yield to one another. This infraction is considered a traffic offense and may be subject to penalties or fines, depending on the specific jurisdiction in which it occurred."
+        },
+        {
+            "crime": "Failure to use turn signals",
+            "fine": 100,
+            "sentence": null,
+            "description": "Failure to use turn signals is an infraction that occurs when a driver fails to use their turn signals when turning or changing lanes. Turn signals are an essential safety feature that helps prevent accidents by alerting other drivers of the driver's intentions. The purpose of this infraction is to promote safe driving practices and minimize the risk of collisions."
+        },
+        {
+            "crime": "Failure to wear a seatbelt",
+            "fine": 150,
+            "sentence": null,
+            "description": "Failure to wear a seatbelt is an infraction that occurs when a person who is driving or riding in a motor vehicle on a public roadway fails to wear a properly fastened seatbelt. The use of a seatbelt is required to protect the occupants of a vehicle and to reduce the severity of injuries in the event of a collision or sudden stop. This infraction may be enforced by law enforcement officials who may stop a vehicle and issue a citation for the violation."
+        },
+        {
+            "crime": "Failure to yield",
+            "fine": 250,
+            "sentence": null,
+            "description": "Failure to yield is an infraction that occurs when a driver fails to yield the right of way to another vehicle or pedestrian who has the right of way. This can occur at intersections, crosswalks, and other areas where drivers are required to yield. The specific circumstances in which a driver is required to yield vary depending on the situation, but common examples include when a pedestrian is crossing the street in a marked crosswalk or when another vehicle has entered an intersection before the driver."
+        },
+        {
+            "crime": "Failure to yield to a pedestrian",
+            "fine": 300,
+            "sentence": null,
+            "description": "Failure to yield to a pedestrian refers to the violation of a traffic law that requires drivers to yield the right-of-way to pedestrians in crosswalks and at intersections. This includes situations where a pedestrian is crossing the road in a marked or unmarked crosswalk, or is about to enter a crosswalk. Drivers are required to exercise caution and reduce their speed to avoid a collision with a pedestrian, and must come to a complete stop if necessary to allow a pedestrian to cross safely. This infraction is a serious offense that endangers the safety of pedestrians."
+        },
+        {
+            "crime": "Failure to yield to an emergency vehicle",
+            "fine": 500,
+            "sentence": null,
+            "description": "The infraction \"Failure to yield to an emergency vehicle\" refers to the violation of a traffic law that requires drivers to yield the right-of-way to emergency vehicles, such as fire trucks, ambulances, and police cars, when their sirens and/or lights are activated. This infraction can occur when a driver fails to pull over and stop, or yield the right-of-way to an emergency vehicle approaching from any direction. This infraction is considered a serious traffic violation as it can endanger the lives of both emergency responders and other motorists on the road."
+        },
+        {
+            "crime": "Following too closely",
+            "fine": 250,
+            "sentence": null,
+            "description": "Following too closely, also known as tailgating, is the act of driving a motor vehicle so closely behind another vehicle that the driver is unable to maintain a safe stopping distance, given the speed at which both vehicles are traveling. This behavior is considered dangerous and can lead to collisions, particularly if the lead vehicle has to make a sudden stop. Drivers are expected to maintain a safe distance from the vehicle in front of them."
+        },
+        {
+            "crime": "Hit and run",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Hit and run is a traffic offense that occurs when a driver involved in an accident fails to stop and provide their identifying and insurance information to the other driver or person affected by the accident. In some cases, the driver may leave the scene of the accident before the authorities arrive."
+        },
+        {
+            "crime": "Illegal U-turn",
+            "fine": 250,
+            "sentence": null,
+            "description": "An illegal U-turn is an infraction that occurs when a driver turns their vehicle in a complete 180-degree rotation in a location where a U-turn is prohibited by traffic signs, road markings, or other traffic control devices. A U-turn is also considered illegal when it is made in a manner that obstructs or interferes with the normal movement of traffic. The purpose of prohibiting U-turns in certain areas is to prevent collisions and ensure the safe and efficient flow of traffic."
+        },
+        {
+            "crime": "Illegal parking in a handicap spot",
+            "fine": 250,
+            "sentence": null,
+            "description": "Illegal parking in a handicap spot refers to the act of parking a vehicle in a designated handicap parking spot without a valid disabled parking placard or license plate. This violation is typically enforced to ensure that individuals with disabilities have access to designated parking spaces that are conveniently located near building entrances and other facilities."
+        },
+        {
+            "crime": "Improper passing",
+            "fine": 150,
+            "sentence": null,
+            "description": "The infraction of Improper passing generally refers to a violation of traffic laws related to passing another vehicle on the roadway. This can include passing on the right, passing in a no-passing zone, or passing in a dangerous or reckless manner that endangers other drivers or pedestrians."
+        },
+        {
+            "crime": "Racing on a highway",
+            "fine": 1000,
+            "sentence": 2,
+            "description": "The infraction of racing on a highway involves a driver using a vehicle to engage in a speed contest with another vehicle or participate in a motor vehicle exhibition of speed on a public highway. This infraction is considered a serious violation of traffic laws due to the potential danger it poses to drivers, passengers, and bystanders."
+        },
+        {
+            "crime": "Reckless driving",
+            "fine": 145,
+            "sentence": null,
+            "description": "Reckless driving is an infraction that involves the operation of a vehicle in a manner that demonstrates a disregard for the safety of others. It typically involves driving a vehicle in a manner that is dangerous to others, such as driving at excessive speeds, weaving in and out of traffic, or ignoring traffic signals and signs. The behavior must be willful and intentional, and show a disregard for the safety of others on the road."
+        },
+        {
+            "crime": "Running a red light",
+            "fine": 500,
+            "sentence": null,
+            "description": "Running a red light refers to the act of operating a motor vehicle and crossing an intersection when the traffic signal for the driver's direction is displaying a red light. This infraction is a violation of traffic laws and can endanger both the driver and other individuals on the road. In general, drivers must come to a complete stop at a red light and only proceed through the intersection when the traffic signal for their direction is displaying a green light or a green arrow. There are some exceptions to this rule, such as when making a right turn on red after coming to a complete stop and yielding to oncoming traffic."
+        },
+        {
+            "crime": "Safety regulation violation",
+            "fine": 250,
+            "sentence": null,
+            "description": "Violation of safety regulations refers to any action or omission that results in a violation of laws, regulations, or standards established to promote safety in the operation of vehicles, equipment, or machinery. These regulations may address a variety of safety concerns, including but not limited to equipment maintenance, load securement, driving practices, and compliance with traffic laws. A violation of safety regulations may result in a fine or penalty, and in some cases, the suspension or revocation of an individual's license."
+        },
+        {
+            "crime": "Speeding",
+            "fine": 75,
+            "sentence": null,
+            "description": "Speeding is a traffic infraction that occurs when a driver operates a motor vehicle at a speed greater than the posted speed limit or at a speed that is unsafe for the current road conditions."
+        },
+        {
+            "crime": "Transporting person in load space",
+            "fine": 250,
+            "sentence": null,
+            "description": "Speeding refers to the act of driving a vehicle at a speed exceeding the legal limit for a particular road or highway. It is a traffic offense that endangers the safety of other drivers and pedestrians, as well as the driver of the speeding vehicle. Speed limits are established to ensure safe and efficient traffic flow, and to reduce the risk of accidents and injuries. Speeding violations may be assessed based on radar, laser, or other speed detection devices."
+        },
+        {
+            "crime": "Unsafe reversing of vehicle",
+            "fine": 250,
+            "sentence": null,
+            "description": "Unsafe reversing of a vehicle refers to the act of reversing a vehicle in a manner that endangers the safety of persons or property. This could include backing up at a high speed, reversing without looking, or reversing into traffic or onto a roadway. It is a traffic violation that is intended to protect the safety of individuals and property."
+        },
+        {
+            "crime": "Unsafe/unlawfully equipped vehicle",
+            "fine": 250,
+            "sentence": null,
+            "description": "Unsafe/unlawfully equipped vehicle refers to the use of a vehicle that does not comply with the safety or equipment requirements set forth by law. This could include a vehicle with faulty brakes, defective lights, or bald tires, or a vehicle that has been modified in a way that violates state or federal regulations. The use of such a vehicle on public roads poses a risk to the safety of both the driver and other individuals on the road."
+        }
+    ],
+
+    "misdemeanours": [
+        {
+            "crime": "Animal cruelty",
+            "fine": 15000,
+            "sentence": 6,
+            "description": "Animal cruelty involves intentional or malicious mistreatment, neglect, or harm to animals. This may include depriving an animal of food, water, shelter, or necessary medical care, using animals for fighting or baiting, killing or injuring animals, or otherwise subjecting them to unnecessary pain, suffering, or cruelty."
+        },
+        {
+            "crime": "Battery",
+            "fine": null,
+            "sentence": 6,
+            "description": "Battery is a criminal offense that involves the intentional and unlawful use of force or violence upon the person of another. This can include hitting, punching, slapping, or any other act that causes physical harm to another person. In some cases, the use of a deadly weapon or the infliction of serious bodily injury may elevate the offense to aggravated battery"
+        },
+        {
+            "crime": "Brandishing a weapon",
+            "fine": null,
+            "sentence": 5,
+            "description": "Brandishing a weapon is a misdemeanor that involves the use of a weapon in a threatening manner. The act involves displaying a firearm, knife or other weapon in a manner that would cause fear in another person."
+        },
+        {
+            "crime": "Criminal threats",
+            "fine": 1000,
+            "sentence": 5,
+            "description": "Criminal threats is a misdemeanor offense that involves threatening to kill or cause great bodily injury to another person. This offense requires that the threat be made with the specific intent that the victim will fear for their safety or the safety of their family. The threat must also be such that it would reasonably cause the victim to fear for their safety under the circumstances. Criminal threats can be made verbally, in writing, or by electronic means, and can be directed towards an individual or a group of people."
+        },
+        {
+            "crime": "Criminal trespass",
+            "fine": 100,
+            "sentence": 6,
+            "description": "Criminal trespass is a misdemeanor offense that involves entering and occupying a property without permission or lawful right to do so. This offense typically requires that the perpetrator had intent to interfere with the property owner's rights or make use of the property. The property in question could be any type of real property, such as a building, land or structure, and may be open or enclosed. The severity of the offense may vary based on the circumstances of the entry and the level of threat or danger posed by the perpetrator."
+        },
+        {
+            "crime": "Disorderly conduct",
+            "fine": 500,
+            "sentence": 6,
+            "description": "Disorderly conduct is a type of misdemeanor offense involving conduct that disturbs public peace or order. It can include engaging in fighting or violent behavior, making excessive noise, using offensive language, or engaging in conduct that obstructs or interferes with others' use of public spaces. The behavior must be intentional and willful, with the intent to cause public disturbance, annoyance, or alarm, or with a reckless disregard for the potential consequences of such conduct."
+        },
+        {
+            "crime": "Disturbing the peace",
+            "fine": 250,
+            "sentence": 3,
+            "description": "Disturbing the peace refers to a misdemeanor offense that involves behavior that disturbs the public peace or causes others to become alarmed or annoyed. This can include activities like fighting, making loud noises, using offensive words, or engaging in other disruptive conduct in a public place. The purpose of this law is to maintain public order and prevent behavior that may be disruptive or threatening to the safety and welfare of others in a public space."
+        },
+        {
+            "crime": "Domestic battery",
+            "fine": 2000,
+            "sentence": 12,
+            "description": "The misdemeanor of domestic battery involves the willful use of force or violence against an intimate partner or family member. This can include physical harm, injury, or offensive touching, such as hitting, slapping, pushing, or grabbing. The offense is considered domestic when the victim has a specific domestic relationship with the perpetrator, such as a spouse, ex-spouse, cohabitant, or former cohabitant. In some cases, the perpetrator may also be subject to a restraining order or protective order."
+        },
+        {
+            "crime": "Domestic violence",
+            "fine": 2000,
+            "sentence": 12,
+            "description": "Domestic violence is a criminal offense that involves the use of physical force or the threat of physical force against an intimate partner or family member. The term \"intimate partner\" generally refers to a spouse or former spouse, a cohabitant or former cohabitant, or a person with whom the offender has or had a dating or engagement relationship. The term \"family member\" generally includes a parent, child, sibling, grandparent, or grandchild. Domestic violence can take many forms, including physical violence, sexual violence, emotional abuse, and stalking. The purpose of domestic violence laws is to protect individuals from abuse and to hold offenders accountable for their actions."
+        },
+        {
+            "crime": "Driving under the influence of alcohol or drugs (DUI)",
+            "fine": 2000,
+            "sentence": 6,
+            "description": "Driving under the influence of alcohol or drugs (DUI) is a criminal offense that involves operating a motor vehicle while impaired by drugs or alcohol. This offense can occur when the driver's blood alcohol content (BAC) exceeds the legal limit or when the driver's ability to operate a vehicle safely is impaired due to drug use. The offense is often proved through the administration of a chemical test, such as a breathalyzer or blood test, which measures the driver's BAC or the presence of drugs in their system. The severity of the offense may depend on factors such as the driver's BAC level, prior DUI convictions, and any injuries or property damage resulting from the incident."
+        },
+        {
+            "crime": "False imprisonment",
+            "fine": 5000,
+            "sentence": 8,
+            "description": "False imprisonment is the intentional and unlawful violation of the personal liberty of another person. It involves the use of violence, menace, fraud, or deceit to forcibly confine or detain another individual against their will within a defined space. False imprisonment may also involve the unreasonable refusal to release another person from detention or confinement. The duration of the confinement, as well as the means by which it is accomplished, are not determinative of whether a false imprisonment has occurred. Rather, false imprisonment occurs whenever one person intentionally deprives another person of their freedom of movement without lawful justification."
+        },
+        {
+            "crime": "Forgery",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Forgery is a type of fraud that involves the creation, alteration, or use of a false document or other written instrument for the purpose of deceiving another person. The crime of forgery is typically charged when a person creates a false document or alters an existing document with the intent to defraud another person. This can include forging checks, signatures, legal documents, or other important papers. In order to be convicted of forgery, the prosecution must prove that the accused acted with fraudulent intent and knowingly created or altered a document that was false or misleading."
+        },
+        {
+            "crime": "Fraud",
+            "fine": 2000,
+            "sentence": 12,
+            "description": "In general, fraud is a criminal offense that involves intentionally deceiving someone in order to gain something of value or cause them to suffer a loss. In the context of a misdemeanor offense, the fraud typically involves a smaller amount of money or property and may be prosecuted as a less serious crime than a felony."
+        },
+        {
+            "crime": "Harassment",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Harassment refers to a broad range of behaviors that are unwanted, intentional, and have the potential to cause emotional or physical harm to another person. This may include engaging in a course of conduct directed at a specific individual, such as repeatedly following or contacting them, using threatening or abusive language, or engaging in other conduct that is intended to cause fear or distress. In order for behavior to be considered harassment, it must be objectively unreasonable, and the victim must have a reasonable belief that the conduct would continue, regardless of the harasser's intent."
+        },
+        {
+            "crime": "Hit and run",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Hit and run is a criminal offense where a driver involved in a vehicle collision fails to stop and provide their personal and insurance information to the other driver or person affected by the accident. In some cases, the driver may also fail to render aid to anyone who was injured in the collision. The driver may leave the scene of the accident for various reasons, including not wanting to be held responsible for the damages or injuries caused."
+        },
+        {
+            "crime": "Identity theft",
+            "fine": 5000,
+            "sentence": 6,
+            "description": "Identity theft is a type of crime in which an individual unlawfully uses another person's personal identifying information for financial gain or other fraudulent purposes. This may include the use of someone's name, social security number, credit card or bank account information, or other identifying details. The offender may use this information to open new accounts, make unauthorized purchases, or engage in other activities that harm the victim's finances or reputation. Identity theft is generally classified as a misdemeanor offense, although certain circumstances may elevate the charge to a felony."
+        },
+        {
+            "crime": "Indecent exposure",
+            "fine": 500,
+            "sentence": 6,
+            "description": "Indecent exposure is a criminal offense that involves the intentional public exposure of one's genitals or other intimate body parts in a lewd or offensive manner. This offense is typically committed in a public place or in a location where the act can be observed by others. The act of indecent exposure is considered a misdemeanor and may be punishable by a fine or imprisonment, depending on the circumstances surrounding the offense."
+        },
+        {
+            "crime": "Leaving the scene of an accident",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Leaving the scene of an accident is a misdemeanor offense that involves a driver failing to stop and provide information or aid after being involved in a motor vehicle accident. The driver is required to stop at the scene of the accident and provide his or her contact and insurance information to any other drivers involved, as well as provide assistance to any injured persons if necessary. Failing to do so can result in criminal charges, even if the accident was not the driver's fault."
+        },
+        {
+            "crime": "Obstructing a police officer",
+            "fine": null,
+            "sentence": 8,
+            "description": "Obstructing a police officer is a misdemeanor offense that generally involves intentionally obstructing, resisting, or delaying a police officer or other law enforcement official in the performance of their duties. This may include providing false identification, physically interfering with an arrest, or refusing to comply with lawful orders. The specific actions that constitute obstruction may vary depending on the circumstances of the case."
+        },
+        {
+            "crime": "Petty theft (value less than $950)",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Petty theft is a type of theft crime that involves taking property that is valued at a relatively low amount. Petty theft is generally considered a less serious offense compared to grand theft, which involves taking property that is valued at a higher amount. Petty theft can involve taking property from a person, such as pickpocketing, or taking property from a store or other location without the owner's consent."
+        },
+        {
+            "crime": "Possession of drug paraphernalia",
+            "fine": null,
+            "sentence": 8,
+            "description": "This charge refers to the possession of equipment, products, or materials that are used to produce, package, store, or consume illegal drugs. Drug paraphernalia may include items such as pipes, bongs, syringes, scales, and containers that are commonly used in connection with drug use. The charge of possession of drug paraphernalia typically requires the prosecution to prove that the defendant had control over the paraphernalia and knew or reasonably should have known that it was associated with drug-related activities."
+        },
+        {
+            "crime": "Possession of marijuana (more than 28.5 grams)",
+            "fine": null,
+            "sentence": 6,
+            "description": "Possession of marijuana, also known as cannabis, is a misdemeanor offense that prohibits possessing any amount of marijuana for personal use. This offense applies to all forms of marijuana, including concentrates and edibles, regardless of whether the marijuana was obtained legally or illegally. There are certain exceptions to this law, such as for medical marijuana patients who have a valid prescription. However, possession of marijuana for recreational use is generally prohibited."
+        },
+        {
+            "crime": "Prostitution",
+            "fine": 1000,
+            "sentence": 12,
+            "description": "Prostitution is the act of engaging in sexual activity in exchange for money or other forms of compensation. It is considered a misdemeanor offense to engage in prostitution, or to offer, agree to, or actually engage in any sexual act in exchange for compensation. This includes both the person providing the sexual services as well as the person soliciting or seeking such services. The offense of prostitution can include a variety of related activities, including solicitation, pimping, and pandering."
+        },
+        {
+            "crime": "Public intoxication",
+            "fine": 500,
+            "sentence": null,
+            "description": "Public intoxication is a misdemeanor offense that involves being under the influence of alcohol, drugs, or other controlled substances in a public place. A person may be charged with public intoxication if they are found in a public place and are so intoxicated that they are unable to exercise care for their own safety or the safety of others, or if they interfere with, obstruct, or prevent the free use of any street, sidewalk, or other public way. It is not necessary for the person to have caused any harm or disturbance, but merely being intoxicated in a public place can be sufficient for a charge of public intoxication."
+        },
+        {
+            "crime": "Receiving stolen property",
+            "fine": 1000,
+            "sentence": 6,
+            "description": "Receiving stolen property is a misdemeanor offense that involves knowingly acquiring or receiving property that has been stolen, with the intent to permanently deprive the rightful owner of the property. It is not necessary for the defendant to know the identity of the person who stole the property."
+        },
+        {
+            "crime": "Reckless driving",
+            "fine": 500,
+            "sentence": 5,
+            "description": "Reckless driving is a criminal offense that involves driving a vehicle with a willful or wanton disregard for the safety of other people or property. This includes driving in a manner that creates a substantial and unjustifiable risk of harm to others, such as excessive speeding, swerving, or ignoring traffic signals. The intent of the driver is a critical element of reckless driving, as the conduct must go beyond mere negligence or carelessness. Reckless driving is generally considered a more serious offense than careless driving, which involves a lesser degree of culpability."
+        },
+        {
+            "crime": "Resisting arrest",
+            "fine": 1000,
+            "sentence": 4,
+            "description": "Resisting arrest is a misdemeanor offense that occurs when a person intentionally resists, obstructs, or delays a peace officer, public officer, or emergency medical technician in the performance of their official duties. This may include physical force, verbal resistance, or any other behavior that makes it difficult for the officer to perform their job duties. The intent to resist, obstruct, or delay the officer must be present at the time of the conduct."
+        },
+        {
+            "crime": "Shoplifting",
+            "fine": 500,
+            "sentence": 3,
+            "description": "Shoplifting is the act of taking goods or merchandise from a retail establishment without paying for them. It is considered a form of theft and is typically classified as a misdemeanor offense. The act of shoplifting can be committed by various means, including concealing items on one's person or in a bag, switching price tags or barcodes, or intentionally failing to pay for items. The value of the stolen merchandise can determine the severity of the offense."
+        },
+        {
+            "crime": "Simple assault",
+            "fine": null,
+            "sentence": 6,
+            "description": "Simple assault is a criminal offense that involves an intentional act that causes another person to fear immediate bodily harm or injury. This may involve an attempt to cause injury or an actual battery that results in only minor injuries. Simple assault can also include making threats or engaging in conduct that creates a reasonable apprehension of bodily harm. The act must be done without legal justification or excuse, such as in self-defense or defense of others."
+        },
+        {
+            "crime": "Solicitation of prostitution",
+            "fine": 1000,
+            "sentence": 12,
+            "description": "The misdemeanor of solicitation of prostitution involves seeking, agreeing to engage in, or actually engaging in sexual activity with someone in exchange for money or other compensation. It is a crime that is committed by the person who is soliciting the services of a prostitute, rather than the prostitute themselves."
+        },
+        {
+            "crime": "Stalking",
+            "fine": null,
+            "sentence": 12,
+            "description": "In general, the crime of stalking is defined as a pattern of behavior that would cause a reasonable person to feel fear or suffer substantial emotional distress, and that is engaged in willfully, maliciously, and repeatedly. This can include following, harassing, or threatening a person or their immediate family, and can involve actions such as unwanted phone calls, texts, or messages. It is considered a serious crime due to the potential harm it can cause to the victim."
+        },
+        {
+            "crime": "Tampering with a vehicle",
+            "fine": null,
+            "sentence": 12,
+            "description": "In general, the crime of tampering with a vehicle refers to any deliberate and unauthorized interference with a motor vehicle, with the intent to cause damage or to deprive the owner of the vehicle. This can include actions such as breaking into a vehicle, hot-wiring a vehicle, or tampering with the vehicle's ignition, brakes, or other vital parts. Tampering with a vehicle is considered a serious crime as it can pose a risk to public safety, and can result in significant financial losses for the vehicle owner."
+        },
+        {
+            "crime": "Unlawful assembly",
+            "fine": 1000,
+            "sentence": 12,
+            "description": "In general, the crime of unlawful assembly is defined as a group of three or more individuals gathering together to commit an unlawful act, or to use force or violence to disturb the peace. This can include rioting, looting, or other forms of violent behavior. Unlawful assembly can also occur when a group of individuals gather with the intent to commit a crime or use force or violence to disturb the peace, even if they do not engage in violent behavior. This crime is taken seriously as it poses a threat to public safety and can cause significant harm to individuals and property."
+        },
+        {
+        "crime": "Vandalism",
+            "fine": 1000,
+            "sentence": 12,
+            "description": "In general, the crime of vandalism is defined as maliciously damaging, destroying, or defacing someone else's property, without the owner's consent. This can include actions such as keying a car, spray-painting a building, or breaking windows. Vandalism is considered a serious crime because it can cause significant harm and financial loss to the victim."
+        }
+    ],
+
+    "felonies":[
+        {
+            "crime": "Arson",
+            "fine": 10000,
+            "sentence": 24,
+            "description": "In general, arson is the crime of intentionally and maliciously setting fire to or burning any structure, forest land, or property. This can include causing an explosion with the intent to damage or destroy a building or other property. The severity of the crime can vary based on the extent of the damage caused, as well as the presence of any occupants in the structure or area at the time of the arson. Due to the significant potential for harm to people and property, arson is considered a serious felony."
+        },
+        {
+            "crime": "Assault with a deadly weapon",
+            "fine": 10000,
+            "sentence": 36,
+            "description": "In general, the felony offense of \"Assault with a deadly weapon\" involves the use of a deadly weapon or instrument, such as a firearm or knife, in the commission of an assault. An assault is an intentional and unlawful attempt, coupled with the present ability, to commit a violent injury on another person. The use of a deadly weapon increases the seriousness of the offense and can result in severe bodily harm or death. It is considered a serious crime due to the potential harm it can cause to the victim."
+        },
+        {
+            "crime": "Bribery",
+            "fine": 50000,
+            "sentence": 24,
+            "description": "In general, the crime of bribery is the act of offering, giving, receiving, or soliciting anything of value in exchange for a particular action or decision. This can occur in both the public and private sectors and is considered a serious crime as it undermines the integrity of the decision-making process. Bribery is defined as the corrupt giving, offering, or promising of anything of value to any public official, including judges, legislators, and law enforcement officers, in order to influence them in the performance of their duties. It is also illegal to solicit or receive a bribe."
+        },
+        {
+            "crime": "Burglary",
+            "fine": 5000,
+            "sentence": 24,
+            "description": "In general, the crime of burglary involves entering a structure or dwelling with the intent to commit theft or a felony. A structure can include a building, room, vessel, or vehicle. In some cases, the act of breaking and entering is not necessary for a burglary charge to be brought. The key element of the crime is the intent to commit another crime once inside the structure. It is considered a serious felony due to the potential for harm to the victim and the violation of their property rights."
+        },
+        {
+            "crime": "Carjacking",
+            "fine": 10000,
+            "sentence": 25,
+            "description": "Carjacking is a serious felony offense that involves the theft of a motor vehicle through the use of force, violence, or intimidation directed towards the driver or occupants of the vehicle. The perpetrator may use a weapon or threaten to use one in order to take control of the vehicle. Carjacking is a violent crime that poses a significant threat to public safety and can result in physical harm or emotional trauma to the victim."
+        },
+        {
+            "crime": "Counterfeiting",
+            "fine": 10000,
+            "sentence": 12,
+            "description": "In general, counterfeiting is the act of creating a fake or imitation of something with the intent to deceive or defraud. In the context of criminal law, counterfeiting typically refers to the creation or distribution of fake currency or other financial instruments. This can include creating fake bills, coins, or checks, or altering legitimate financial instruments in order to make them appear more valuable. Counterfeiting is a serious crime because it can undermine the integrity of the financial system and cause significant harm to individuals and businesses."
+        },
+        {
+            "crime": "Criminal conspiracy",
+            "fine": 25000,
+            "sentence": 25,
+            "description": "In general, criminal conspiracy refers to an agreement between two or more people to commit a crime. The agreement may be either explicit or implicit, and it may involve any type of crime. In order for the conspiracy to be considered criminal, the parties must take some affirmative step towards carrying out the plan, such as making an overt act in furtherance of the conspiracy. The crime of conspiracy is considered a separate offense from the underlying crime that the conspirators agreed to commit."
+        },
+        {
+            "crime": "Criminal threats",
+            "fine": null,
+            "sentence": 15,
+            "description": "Criminal threats is a felony offense that involves making a threat to kill or harm another person, and causing that person to reasonably fear for their safety or the safety of their immediate family members. The threat must be specific and unequivocal, and communicated in a manner that would reasonably be expected to cause fear or injury to the recipient. The threat can be made orally, in writing, or by electronic means. The offense can be charged even if the person making the threat does not intend to carry out the threat, or if the recipient of the threat is not actually in danger. The severity of the offense can be enhanced if the threat is made against a public official, a school employee, or if the person making the threat has a prior criminal record."
+        },
+        {
+            "crime": "DUI causing injury or death",
+            "fine": 10000,
+            "sentence": 36,
+            "description": "The felony of DUI causing injury or death is the act of operating a motor vehicle while under the influence of drugs or alcohol and causing bodily injury to another person or causing the death of another person. In this context, \"under the influence\" means that the driver's physical or mental abilities are impaired to such a degree that they cannot operate a vehicle with the caution of a sober person. The injury or death caused can be to any person, including passengers in the driver's own vehicle, pedestrians, or occupants of other vehicles. This offense is considered a felony due to the severity of the consequences and potential danger to public safety."
+        },
+        {
+            "crime": "Drug trafficking",
+            "fine": 50000,
+            "sentence": 30,
+            "description": "Drug trafficking is a felony offense that involves the transportation, distribution, sale, or importation of illegal drugs, controlled substances, or prescription medications. The offense can involve large quantities of drugs or repeated drug-related activities, and often involves the participation of multiple individuals. Drug trafficking may also involve the use of weapons, violence, or other criminal activity to facilitate the drug trade. The severity of the offense often depends on the type and quantity of drugs involved, the number of prior drug offenses, and other aggravating factors."
+        },
+        {
+            "crime": "Elder abuse",
+            "fine": null,
+            "sentence": 15,
+            "description": "Elder abuse is a type of crime that involves the mistreatment or neglect of an elderly person. This can take many forms, such as physical abuse, emotional abuse, financial exploitation, neglect, or abandonment. In the context of criminal law, elder abuse is typically considered a felony offense, and the severity of the offense and associated penalties can depend on a variety of factors, such as the nature and extent of the abuse, the age and vulnerability of the victim, and the relationship between the victim and the perpetrator. The purpose of these laws is to protect vulnerable elderly individuals from harm and to ensure that those who engage in abusive behavior are held accountable for their actions."
+        },
+        {
+            "crime": "Embezzlement",
+            "fine": 10000,
+            "sentence": 12,
+            "description": "Embezzlement is a felony offense involving the theft or misappropriation of funds or property by someone who was entrusted with its care. This typically occurs when an individual with access to funds or property belonging to another person or entity, such as an employer or business, unlawfully takes or uses that property for their own personal gain. The key element of embezzlement is that the individual had legal access to the funds or property in question but used it for an unauthorized purpose. The amount of money or value of the property embezzled may determine the severity of the offense."
+        },
+        {
+            "crime": "Extortion",
+            "fine": null,
+            "sentence": 15,
+            "description": "Extortion is a felony offense that involves the use of force, fear, or threats to obtain property or services from another person. The person committing extortion may use threats of harm, violence, property damage, or unfavorable government action to induce the victim to comply with their demands. The crime of extortion requires that the person making the threat do so with the intent to obtain the victim's property or services. Additionally, the victim must have a reasonable belief that the person making the threat has the ability to carry out the threat."
+        },
+        {
+            "crime": "False imprisonment",
+            "fine": 10000,
+            "sentence": 15,
+            "description": "False imprisonment is a felony offense that involves intentionally and unlawfully restraining, detaining, or confining another person against their will, without their consent, and without a lawful excuse. The restraint or confinement can occur by physical force or by threats of force, and it can be accomplished through the use of physical barriers or other means of restricting a person's movements. The restraint or confinement must be for an extended period, beyond what is reasonable or necessary for a lawful purpose."
+        },
+        {
+            "crime": "Aggravated battery",
+            "fine": null,
+            "sentence": 12,
+            "description": "Aggravated battery is a felony offense that involves the intentional infliction of a serious bodily injury upon another person. The injury must be severe enough to cause a substantial risk of death, or result in permanent disfigurement or impairment of a bodily function. The offense typically involves the use of a deadly weapon or other dangerous instrument, but can also be committed through other means such as through the use of fists or feet. The perpetrator must act with the intent to cause the injury or with a reckless disregard for the safety of others."
+        },
+        {
+            "crime": "Forgery",
+            "fine": 5000,
+            "sentence": 12,
+            "description": "Forgery is a felony crime that involves creating or altering a document, signature, or other item with the intention to defraud another person or entity. The crime of forgery requires a person to create, use, or possess a forged item, such as a check or contract, with the intent to deceive or defraud. Additionally, the person must have known that the item was false or altered. The crime of forgery may also involve the use of a false name or the impersonation of another person in order to deceive or defraud."
+        },
+        {
+            "crime": "Fraud",
+            "fine": 10000,
+            "sentence": 24,
+            "description": "In general, fraud is a type of criminal offense that involves intentional deception or misrepresentation made for personal or financial gain. It typically involves false statements, concealment or manipulation of information, or other deceitful conduct aimed at inducing another person to part with money, property, or valuable rights. To constitute fraud, there must be an intent to deceive, a false representation or concealment of material fact, reasonable reliance on the false representation by the victim, and resulting harm or injury. Fraud can take many forms, including investment fraud, insurance fraud, credit card fraud, internet fraud, and others."
+        },
+        {
+            "crime": "Grand theft (value more than $950)",
+            "fine": 10000,
+            "sentence": 25,
+            "description": "Grand theft is a felony offense involving the unlawful taking of property that is valued above a specified amount, typically $950 or more. The property taken may be money, labor, or real or personal property, and can include theft by embezzlement or false pretenses. The intent to permanently deprive the owner of the property is a necessary element of the crime. The severity of the offense may be increased if the theft involves certain types of property, such as a firearm or a motor vehicle."
+        },
+        {
+            "crime": "Hit and run causing injury or death",
+            "fine": null,
+            "sentence": 35,
+            "description": "Hit and run causing injury or death is a felony offense that involves a driver causing an accident and then fleeing the scene without providing assistance to the victim(s) who were injured or killed in the accident. In order to be charged with this offense, the driver must have known or reasonably should have known that the accident caused injury or death. The driver may also be required to provide identifying information, such as their name and contact information, to the victim or law enforcement at the scene of the accident."
+        },
+        {
+            "crime": "Human trafficking",
+            "fine": 50000,
+            "sentence": 24,
+            "description": "Human trafficking is a felony offense that involves the act of recruiting, transporting, or harboring individuals through force, fraud, or coercion for the purpose of forced labor, sexual exploitation, or other forms of exploitation. It also includes the act of benefiting from or receiving financial gain from the exploitation of others. Victims of human trafficking are often vulnerable populations, such as children, women, and undocumented immigrants. The crime of human trafficking can involve both domestic and international trafficking, and can involve a range of industries including agriculture, domestic work, and the sex trade."
+        },
+        {
+            "crime": "Identity theft",
+            "fine": 5000,
+            "sentence": 12,
+            "description": "Identity theft is the act of fraudulently using someone else's personal information, such as their name, social security number, or credit card information, without their consent for financial gain or other purposes. In the context of a felony charge, the perpetrator has obtained and used the personal identifying information of another person with the intent to commit a crime, including fraud, deception, or theft."
+        },
+        {
+            "crime": "Kidnapping",
+            "fine": null,
+            "sentence": 20,
+            "description": "Kidnapping is a serious felony offense that involves the unlawful taking, holding, or detaining of another person against their will, by force, fear, or deception. The offense of kidnapping can be further classified as simple kidnapping or aggravated kidnapping, depending on various factors such as the duration of the detention, the use of force or threat of force, the intent of the kidnapper, and the age of the victim. Aggravated kidnapping often involves kidnapping for ransom, kidnapping for robbery, or kidnapping with the intent to commit certain other crimes, such as sexual assault."
+        },
+        {
+            "crime": "Manslaughter",
+            "fine": null,
+            "sentence": 30,
+            "description": "Manslaughter is a criminal offense that involves the killing of another person, but without the malice aforethought required for a murder charge. It is generally defined as the unlawful killing of another person without premeditation or deliberation, but with some level of culpability or criminal negligence. There are several different types of manslaughter, including voluntary manslaughter (which involves a killing that occurs in the heat of passion or as a result of sudden provocation), involuntary manslaughter (which involves a killing that occurs as a result of recklessness or criminal negligence), and constructive manslaughter (which involves a killing that occurs during the commission of a non-violent crime). The specific elements of the offense may vary depending on the jurisdiction and the circumstances of the case."
+        },
+        {
+            "crime": "Mayhem",
+            "fine": null,
+            "sentence": 20,
+            "description": "Mayhem is a felony offense that involves unlawfully and maliciously depriving someone of a body part, disabling, or disfiguring it. The offense is considered more serious than assault, which only involves an attempt to cause injury, while mayhem involves actual disfigurement or disabling of the victim's body part. The act can be committed using any means, such as a weapon or a dangerous substance, as long as the injury inflicted results in the permanent impairment of a body part."
+        },
+        { 
+            "crime": "Money laundering",
+            "fine": null,
+            "sentence": 12,
+            "description": "Money laundering is a felony offense involving the process of making illegally obtained proceeds (i.e., \"dirty money\") appear to be derived from legitimate sources. This is typically done by using a complex series of financial transactions, such as transfers between bank accounts, in order to obscure the true origin of the funds. The goal of money laundering is to make the proceeds of illegal activity appear to be legitimate and to avoid detection by law enforcement. Money laundering can involve large amounts of money and can be associated with a range of criminal activities, such as drug trafficking, terrorism, and organized crime."
+        },
+        {
+            "crime": "Murder",
+            "fine": null,
+            "sentence": 30,
+            "description": "Murder is the unlawful killing of a human being with malice aforethought. Malice aforethought can be express or implied, and includes the intent to kill, the intent to cause great bodily injury, or reckless disregard for human life. To be considered murder, the killing must be intentional and not committed in self-defense or other justifiable circumstances."
+        },
+        {
+            "crime": "Obstructing a police officer",
+            "fine": null,
+            "sentence": 12,
+            "description": "Obstructing a police officer, also known as obstructing justice, refers to the act of intentionally obstructing, resisting, or delaying a police officer in the course of their official duties. This can include giving false information, providing false identification, or interfering with an arrest. The purpose of this offense is to ensure that law enforcement officers are able to perform their duties effectively and efficiently without interference from individuals who seek to impede their work."
+        },
+        {
+            "crime": "Possession of a controlled substance with intent to sell",
+            "fine": 20000,
+            "sentence": 10,
+            "description": "Possession of a controlled substance with intent to sell is a felony offense that involves knowingly possessing a controlled substance, such as illegal drugs, with the intent to sell, furnish, administer, or give away that substance. The prosecution must prove that the defendant had a specific intent to sell the controlled substance, which can be inferred from the quantity and packaging of the substance, as well as other factors such as the presence of scales or other drug paraphernalia. The severity of the offense typically depends on the type and quantity of the controlled substance involved."
+        },
+        {
+            "crime": "Possession of a firearm by a felon",
+            "fine": null,
+            "sentence": 20,
+            "description": "The offense of \"possession of a firearm by a felon\" generally refers to the crime of knowingly possessing a firearm, whether operable or inoperable, after having been convicted of a felony offense. This offense is intended to prohibit certain individuals who have previously shown a disregard for the law from possessing firearms, which are considered to be inherently dangerous and potentially deadly. The offense may also apply to other types of prohibited persons, such as those convicted of certain domestic violence offenses or drug-related offenses."
+        },
+        {
+            "crime": "Possession of a stolen firearm",
+            "fine": null,
+            "sentence": 15,
+            "description": "Possession of a stolen firearm is a felony offense that involves being in possession of a firearm that has been unlawfully taken from its lawful owner or taken from someone without their consent. It is illegal to knowingly possess or receive such a firearm, whether or not the possessor was involved in the actual theft. The crime of possession of a stolen firearm is considered a serious offense and may carry severe penalties."
+        },
+        {
+            "crime": "Possession of a firearm by a prohibited person",
+            "fine": null,
+            "sentence": 20,
+            "description": "Possession of a firearm by a prohibited person is a felony offense that occurs when an individual who is legally prohibited from possessing a firearm due to their criminal history, mental health status, or other reasons, is found to be in possession of a firearm. The specific prohibitions and criteria for prohibited persons may vary by jurisdiction, but typically include individuals who have been convicted of certain crimes, are subject to certain restraining orders, or have been adjudicated as mentally incompetent or dangerous. The possession of a firearm by a prohibited person poses a significant danger to public safety and is therefore considered a serious criminal offense."
+        },
+        {
+            "crime": "Robbery",
+            "fine": null,
+            "sentence": 25,
+            "description": "Robbery is a felony offense that involves the taking of another person's property through the use of force, fear, or intimidation. It is considered a violent crime and can be committed in different ways, such as with the use of a weapon or by physically attacking the victim. The property taken during a robbery may include money, personal belongings, or other valuable items. To be convicted of robbery, the prosecution must prove that the defendant had the intent to commit the crime and used force or fear to take the victim's property."
+        },
+        {
+            "crime": "Sexual assault",
+            "fine": null,
+            "sentence": 20,
+            "description": "Sexual assault is a criminal offense that involves any non-consensual sexual act or behavior, including but not limited to unwanted touching, fondling, or penetration. Sexual assault can be committed by any person regardless of gender or relationship to the victim, and it is a serious felony offense that can have severe legal consequences."
+        },
+        {
+            "crime": "Stalking",
+            "fine": 5000,
+            "sentence": 15,
+            "description": "Stalking is a crime that involves a pattern of harassing or threatening behavior that is intended to cause fear or emotional distress in another person. This behavior may include following, observing, or surveilling the victim, making unwanted phone calls or sending unwanted messages, or engaging in any other behavior that is designed to make the victim feel unsafe. In order to be considered stalking, the behavior must cause the victim to feel reasonably afraid or threatened, and the perpetrator must have a specific intent to cause fear or distress. The behavior must also be repeated, persistent, and unwanted."
+        },
+        {
+            "crime": "Vehicular manslaughter",
+            "fine": null,
+            "sentence": 30,
+            "description": "Vehicular manslaughter is a felony offense that involves the unlawful killing of a human being while driving a vehicle. The offense is defined as the unlawful killing of a human being without malice aforethought, while driving a vehicle in the commission of an unlawful act not amounting to a felony, or in the commission of a lawful act that might produce death, in an unlawful manner, or without due caution and circumspection."
+        }
+    ]
+}]
