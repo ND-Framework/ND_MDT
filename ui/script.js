@@ -174,13 +174,6 @@ function resetStatus() {
     });
 };
 
-function isPhoneNumber(number) {
-    if (number) {
-        return `<div class="nameSearchResultInfo"><p class="nameSearchResultProperty">Phone number:</p><p class="nameSearchResultValue">${escapeHtml(number)}</p></div>`;
-    };
-    return "";
-};
-
 // display character information on the name search panel.
 function createNameSearchResult(data) {
     for (const [key, value] of Object.entries(data)) {
@@ -202,7 +195,12 @@ function createNameSearchResult(data) {
                         <p class="nameSearchResultProperty">Gender:</p>
                         <p class="nameSearchResultValue">${escapeHtml(value.gender)}</p>
                     </div>
-                    ${isPhoneNumber(value.phone)}
+                    ${(value.phone || value.ethnicity) &&
+                        `<div class="nameSearchResultInfo">
+                            ${value.ethnicity && `<p class="nameSearchResultProperty">Ethnicity:</p><p class="nameSearchResultValue">${value.ethnicity}</p>` || ""}
+                            ${value.phone && `<p class="nameSearchResultProperty">Phone number:</p><p class="nameSearchResultValue">${value.phone}</p>` || ""}
+                        </div>`
+                    || ""}
                     <div class="nameSearchResultButtons">
                         <Button class="nameSearchResultButtonWeapons nameSearchResultButton" data-character="${value.characterId}">View Weapons</Button>
                         <br>
