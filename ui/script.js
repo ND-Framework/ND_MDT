@@ -40,6 +40,9 @@ $(".topBarText").mousedown(function(event) {
 $(".form-records-bar").mousedown(function(event) {
     movePage(".form-records")
 });
+$(".form-bolo-bar").mousedown(function(event) {
+    movePage(".form-bolo")
+});
 
 const escapeHtml = (unsafe) => {
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
@@ -365,7 +368,14 @@ function createRecordsPage(data) {
     };
 
     $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .recordsMainInfo").empty();
-    $(".viewVehiclesButton, .viewWeaponsButton, .boloCitizenCreateButton, .recordsMainCreateButton").data("character", data.citizen.characterId)
+    $(".viewVehiclesButton, .viewWeaponsButton, .recordsMainCreateButton").data("character", data.citizen.characterId)
+    $(".boloCitizenCreateButton").data("character", {
+        id: data.citizen.characterId,
+        firstName: data.citizen.firstName,
+        lastName: data.citizen.lastName,
+        gender: data.citizen.gender,
+        notes: data.records.notes || ""
+    });
 
     $(".recordsCitizen").append(`
         <div class="recordsCitizenImageContainer">
@@ -537,10 +547,13 @@ $.getJSON("../config/penal.json", function(data) {
 $(".form-records-close").click(function() {
     $(".form-records").fadeOut();
 });
+$(".form-bolo-close").click(function() {
+    $(".form-bolo").fadeOut();
+});
 
 $(".recordsPageTopButton").click(function() {
     const text = $(this).text()
-    const character = $(".recordsPageTopButton").data("character")
+    const character = $(this).data("character")
     
     if (text == " View vehicles") {
         $("#plateLoader").fadeIn("fast");
@@ -557,9 +570,33 @@ $(".recordsPageTopButton").click(function() {
             searchBy: "owner"
         }));
     } else if (text == " Create BOLO") {
+        const e = $(".form-bolo")
+        e.fadeIn();
+        e.get(-1).style.zIndex = 1000;
+        document.body.append(e.get(-1));
 
+        $(".form-records-content > select").val("person")
+
+        const content = $(".form-bolo-content");
+        content.empty();
+
+        const el = $(`<div style="display: none;">
+            <input type="text" placeholder="First name" value="${character.firstName}"/>
+            <input type="text" placeholder="Last name" value="${character.lastName}"/>
+            <input type="text" placeholder="Ethnicity"/>
+            <select required>
+                ${character.gender == "Male" && `<option value="Male" selected>Male</option><option value="Female" disabled>Female</option>` || `<option value="Male" disabled>Male</option><option value="Female" selected>Female</option>`}
+            </select>
+            <textarea placeholder="BOLO information"></textarea>
+        </div>`)
+        
+        content.prepend(el)
+        el.slideToggle();
     } else if (text == " Create record") {
-        $(".form-records").fadeIn();
+        const e = $(".form-records")
+        e.fadeIn();
+        e.get(-1).style.zIndex = 1000;
+        document.body.append(e.get(-1));
     } else if (text == " Save all changes") {
         $.post(`https://${GetParentResourceName()}/saveRecords`, JSON.stringify({
             character: character,
@@ -569,6 +606,89 @@ $(".recordsPageTopButton").click(function() {
         newCharges = {}
     }
 
+});
+
+// fukin bolo things
+$(".rightPanelBoloButtons > button").click(function() {
+    const text = $(this).text()
+    
+    if (text == "All Bolo") {
+
+    } else if (text == "Vehicle Bolo") {
+
+    } else if (text == "Person Bolo") {
+
+    } else if (text == "Other Bolo") {
+
+    } else if (text == "Create Bolo") {
+        const e = $(".form-bolo")
+        e.fadeIn();
+        e.get(-1).style.zIndex = 1000;
+        document.body.append(e.get(-1));
+    }
+});
+
+// Confirm create bolo
+$("#form-bolo-create").click(function() {
+    const type = $(".form-bolo-type").val();
+    
+    if (type === "person") {
+        const nameFrist = $(".form-bolo-content > div > input:nth-child(1)").val();
+        const nameLast = $(".form-bolo-content > div > input:nth-child(2)").val();
+        const ethnicity = $(".form-bolo-content > div > input:nth-child(3)").val();
+        const gender = $(".form-bolo-content > div > select").val();
+        const info = $(".form-bolo-content > div > textarea").val();
+        console.log(nameFrist, nameLast, ethnicity, gender, info)
+    } else if (type === "vehicle") {
+        const plate = $(".form-bolo-content > div > input:nth-child(1)").val();
+        const color = $(".form-bolo-content > div > input:nth-child(2)").val();
+        const make = $(".form-bolo-content > div > input:nth-child(3)").val();
+        const model = $(".form-bolo-content > div > input:nth-child(4)").val();
+        const info = $(".form-bolo-content > div > textarea").val();
+        console.log(plate, color, make, model, info)
+    } else {
+        const info = $(".form-bolo-content > div > textarea").val();
+        console.log(info)
+    }
+
+});
+
+$(".form-records-content > select").change(function() {
+    const e = $(this);
+    const content = $(".form-bolo-content");
+    content.empty();
+    const value = e.val();
+    if (value == "person") {
+        const el = $(`<div style="display: none;">
+            <input type="text" placeholder="First name"/>
+            <input type="text" placeholder="Last name"/>
+            <input type="text" placeholder="Ethnicity"/>
+            <select required>
+                <option value="" disabled selected hidden>Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            <textarea placeholder="BOLO information"></textarea>
+        </div>`)
+        content.prepend(el)
+        el.slideToggle();
+    } else if (value == "vehicle") {
+        const el = $(`<div style="display: none;">
+            <input type="text" placeholder="Plate"/>
+            <input type="text" placeholder="Color"/>
+            <input type="text" placeholder="Make"/>
+            <input type="text" placeholder="Model"/>
+            <textarea placeholder="BOLO information"></textarea>
+        </div>`)
+        content.prepend(el)
+        el.slideToggle();
+    } else if (value == "other") {
+        const el = $(`<div style="display: none; grid-template-rows: 1fr;">
+            <textarea placeholder="BOLO information"></textarea>
+        </div>`)
+        content.prepend(el)
+        el.slideToggle();
+    } 
 });
 
 // sends a chat message in the mdt live chat.
@@ -825,15 +945,13 @@ $("#leftPanelButtonSettings").click(function() {
 
 // close ui when - is clicked
 $(".minimizeOverlay").click(function() {
-    $(".form-records").fadeOut("fast");
-    $(".background").fadeOut("fast");
+    $(".background, .form-records, .form-bolo").fadeOut("fast");
     $.post(`https://${GetParentResourceName()}/close`);
 });
 
 // close the whole ui when the X square is clicked.
 $(".closeOverlay").click(function() {
-    $(".form-records").fadeOut("fast");
-    $(".background").fadeOut("fast");
+    $(".background, .form-records, .form-bolo").fadeOut("fast");
     $.post(`https://${GetParentResourceName()}/close`);
     setTimeout(() => {
         $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .rightPanelWeaponSearchResponses, .rightPanelPlateSearchResponses, .rightPanelNameSearchResponses").empty();
@@ -961,7 +1079,7 @@ $("#setUnitNumber").submit(function() {
 // Close ui when ESC is pressed.
 document.onkeyup = function(data) { 
     if (data.which == 27) {
-        $(".background").fadeOut("fast");
+        $(".background, .form-records, .form-bolo").fadeOut("fast");
         $.post(`https://${GetParentResourceName()}/close`);
         return;
     };

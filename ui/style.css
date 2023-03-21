@@ -296,7 +296,7 @@ body {
     box-shadow: #000000 3px 3px 25px;
     transition: .1s ease-in-out;
 }
-.rightPanelDashboardButtonsStatus:hover {
+.rightPanelDashboardButtonsStatus:hover, .rightPanelBoloButtons > button:hover {
     transition: .1s ease-in-out;
     color: white !important;
     cursor: pointer;
@@ -395,7 +395,7 @@ body {
     transition: .1s ease-in-out;
     color: white;
 }
-.rightPanelNameSearchResponses, .rightPanelPlateSearchResponses, .rightPanelWeaponSearchResponses {
+.rightPanelNameSearchResponses, .rightPanelPlateSearchResponses, .rightPanelWeaponSearchResponses, .rightPanelBoloResponses {
     position: absolute;
     margin: auto;
     bottom: 4%;
@@ -921,7 +921,7 @@ body {
     background-color: #2656c9;
 }
 
-.form-records {
+.form-records, .form-bolo {
     display: none;
     margin: auto;
     position: absolute;
@@ -938,12 +938,12 @@ body {
     outline: none;
     z-index: 5;
 }
-.form-records-bar > p {
+.form-records-bar > p, .form-bolo-bar > p {
     position: relative;
     width: 50%;
     margin: 0;
 }
-.form-records-bar {
+.form-records-bar, .form-bolo-bar {
     position: relative;
     margin: 3% 0 1% 5%;
     top: auto;
@@ -1002,7 +1002,7 @@ body {
     border-radius: 8px;
     transition: .1s ease-in-out;
 }
-.form-records-close {
+.form-records-close, .form-bolo-close {
     position: absolute;
     top: 0;
     right: 0;
@@ -1016,7 +1016,7 @@ body {
     transition: .1s ease-in-out;
     outline: none;
 }
-.form-records-close:hover {
+.form-records-close:hover, .form-bolo-close:hover {
     transition: .1s ease-in-out;
     color: white;
     cursor: pointer;
@@ -1031,4 +1031,84 @@ body {
 }
 .form-records-fine-select option {
     color: #ccc;
+}
+
+
+
+.rightPanelBoloButtons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    column-gap: 2%;
+
+    margin-top: 0.75%;
+    width: 99.5%;
+    height: 2.7vh;
+    border-radius: 8px;
+}
+.rightPanelBoloButtons > button {
+    outline: none;
+    height: 100%;
+    border-radius: 5px;
+    border: none;
+    background-color: #2656c9;
+    color: #ccc;
+    box-shadow: #000000 3px 3px 25px;
+    transition: .1s ease-in-out;
+}
+.rightPanelBoloButtons > button:active {
+    opacity: 1;
+}
+
+.boloBox {
+    display: grid;
+    grid-template-columns: 12% 16% 13% 45% 13%;
+
+    padding: 2.5% 2.5% 1.5% 2.5%;
+    width: 95%;
+    margin: 1.5% 0;
+    height: auto;
+    background-color: #242526;
+    border-radius: 8px;
+}
+
+.form-bolo-content {
+    position: relative;
+    margin: 0 5%;
+    top: 7.6%;
+    width: 90%;
+    height: 75%;
+}
+.form-bolo-content > div {
+    display: grid;
+    height: 90%;
+    grid-template-rows: repeat(4, 7.2%) 1fr;
+    grid-row-gap: 4%;
+}
+.form-bolo-content > div > input, .form-bolo-content > div > select {
+    color: #ccc;
+    background-color: #2a2c2e;
+    outline: none;
+    border-radius: 5px;
+    border: solid #757575 0.5px;
+}
+.form-bolo-content > div > select:required:invalid, .form-records-content > select:required:invalid {
+    color: #757575;
+}
+.form-bolo-content > div > select > option, .form-records-content > select > option {
+    color: #ccc;
+}
+.form-bolo-content > div > textarea {
+    width: 98.2%;
+    color: #ccc;
+    background-color: #2a2c2e;
+
+    border-radius: 5px;
+    border: solid #757575 0.5px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    resize: none;
+    outline: none;
+}
+#form-bolo-create {
+    top: 86%;
 }
