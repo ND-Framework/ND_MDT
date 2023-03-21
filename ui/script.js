@@ -339,13 +339,6 @@ function createVehicleSearchResult(data) {
     });
 };
 
-function recordsCheckPhone(number) {
-    if (!number) {
-        return "";
-    };
-    return `<p class="recordsCitizenProperty">Phone number:</p><p class="recordsCitizenValue">${escapeHtml(number)}</p>`
-};
-
 function formatDate(timeStamp) {
     const date = new Date(timeStamp*1000);
     return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
@@ -381,18 +374,19 @@ function createRecordsPage(data) {
         <div class="recordsCitizenImageContainer">
             <img class="recordsCitizenImage" src="${data.citizen.img || "user.jpg"}">
         </div>
-        <div class="recordsCitizenInfo">
+        <div class="recordsCitizenInfo" style="min-width: 14%;">
             <p class="recordsCitizenProperty">First name:</p>
             <p class="recordsCitizenValue">${escapeHtml(data.citizen.firstName)}</p>
             <p class="recordsCitizenProperty">Last name:</p>
             <p class="recordsCitizenValue">${escapeHtml(data.citizen.lastName)}</p>
-            ${recordsCheckPhone(data.citizen.phone)}
+            ${data.citizen.ethnicity && `<p class="recordsCitizenProperty">Ethnicity:</p><p class="recordsCitizenValue">${escapeHtml(data.citizen.ethnicity)}</p>` || data.citizen.phone && `<p class="recordsCitizenProperty">Phone number:</p><p class="recordsCitizenValue">${escapeHtml(data.citizen.phone)}</p>` || ""}
         </div>
         <div class="recordsCitizenInfo">
             <p class="recordsCitizenProperty">Date of Birth:</p>
             <p class="recordsCitizenValue">${escapeHtml(data.citizen.dob)}</p>
             <p class="recordsCitizenProperty">Gender:</p>
             <p class="recordsCitizenValue">${escapeHtml(data.citizen.gender)}</p>
+            ${data.citizen.ethnicity && data.citizen.phone && `<p class="recordsCitizenProperty">Phone number:</p><p class="recordsCitizenValue">${escapeHtml(data.citizen.phone)}</p>` || ""}
         </div>
         <div class="recordsCitizenNotes">
             <p class="recordsCitizenNotesTitle">Notes:</p>

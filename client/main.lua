@@ -257,7 +257,8 @@ function nameSearched(result)
             lastName = info.last_name,
             dob = info.dob,
             gender = info.gender,
-            phone = info.phone
+            phone = info.phone,
+            ethnicity = info.ethnicity
         }
         citizenData[character] = citizen
         data[#data+1] = citizen

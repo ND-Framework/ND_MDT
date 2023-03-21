@@ -21,7 +21,8 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
                         break
                     end
                 end
-                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = json.decode(item.data).img}
+                local data = json.decode(item.data)
+                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = data.img, ethnicity = data.ethnicity}
             end
         end
     end
@@ -37,7 +38,8 @@ lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
                         break
                     end
                 end
-                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = json.decode(item.data).img}
+                local data = json.decode(item.data)
+                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = data.img, ethnicity = data.ethnicity}
             end
         end
     end
