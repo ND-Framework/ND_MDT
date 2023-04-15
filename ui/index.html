@@ -18,17 +18,6 @@
         <button class="minimizeOverlay"><i class="fa-solid fa-minus"></i></button>
         <button class="closeOverlay"><i class="fa-solid fa-xmark"></i></button>
 
-        <!-- Page that opens up first time you use the mdt to set your unit number. -->
-        <div class="setUnitNumberFirstTime">
-            <form id="setUnitNumber">
-                <p id="setUnitNumberFirstTimeText">Enter your unit number:</p>
-                <br>
-                <input id="setUnitNumberFirstTimeInput" type="text" placeholder="Unit number"/>
-                <br>
-                <button id="setUnitNumberFirstTimeButton" form="setUnitNumber">OPEN</button>
-            </form>
-        </div>
-
         <!-- Overlay for the whole mdt (not the top bar that would be behind .overlay and in .background) -->
         <div class="overlay">
 
@@ -40,7 +29,7 @@
                         <img class="leftPanelPlayerInfoImage" />
                     </div>
                     <div class="leftPanelPlayerInfoContainer">
-                        <h3 class="leftPanelPlayerInfoUnitNumber"></h3>
+                        <input type="text" placeholder="Callsign not set" class="leftPanelPlayerInfoUnitNumber">
                         <h4 class="leftPanelPlayerInfoName"></h4>
                     </div>
                 </div>
@@ -80,14 +69,14 @@
                 <div class="rightPanelDashboard">
                     <!-- Change status using these buttons -->
                     <div class="rightPanelDashboardButtons">
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9">10-6</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9; opacity: 1; color: white">10-7</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9">10-8</button>
-                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardPanicButton" style="background-color: red">10-99 (PANIC)</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray">10-11</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray">10-15</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray">10-23</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray">10-97</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9" value="10-6">Busy</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9; opacity: 1; color: white" value="10-7">Out of service</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9" value="10-8">In service</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardPanicButton" style="background-color: red" value="10-99">PANIC</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-11">Traffic stop</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-15">Transporting to station</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-23">Arrived on scene</button>
+                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-97">En route</button>
                     </div>
 
                     <div class="rightPanelDashboardDisplays">
@@ -161,43 +150,27 @@
                 <!-- BOLOs Page -->
                 <div class="rightPanelBoloPage">
                     <div class="rightPanelBoloButtons">
-                        <button>All Bolo</button>
-                        <button>Vehicle Bolo</button>
-                        <button>Person Bolo</button>
-                        <button>Other Bolo</button>
-                        <button>Create Bolo</button>
+                        <button value="all" style="opacity: 0.5;">All Bolo</button>
+                        <button value="vehicle">Vehicle Bolo</button>
+                        <button value="person">Person Bolo</button>
+                        <button value="other">Other Bolo</button>
+                        <button value="create">Create Bolo</button>
                     </div>
-                    <div class="rightPanelBoloResponses">
-                        <div class="boloBox">
-                            <div class="nameSearchResultImageContainer"><img class="nameSearchResultImage" src="user.jpg"/></div>
-                            <div>
-                                <p class="nameSearchResultProperty">First Name:</p>
-                                <p class="nameSearchResultValue" style="margin-bottom: 5%">John</p>
-                                <p class="nameSearchResultProperty">Last Name:</p>
-                                <p class="nameSearchResultValue">Doe</p>
-                            </div>
-                            <div>
-                                <p class="nameSearchResultProperty">Ethnicity:</p>
-                                <p class="nameSearchResultValue" style="margin-bottom: 5%">African</p>
-                                <p class="nameSearchResultProperty">Gender:</p>
-                                <p class="nameSearchResultValue">Male</p>
-                            </div>
-                            <div style="margin-right: 2%">
-                                <p class="nameSearchResultProperty">Description:</p>
-                                <p class="nameSearchResultValue" style="margin-bottom: 0">Person took off from traffic stop wearing a black jacket and blue jeans, might be related to a criminal group ballas.</p>
-                            </div>
-                            <div>
-                                <!-- <Button class="nameSearchResultButtonVehicles nameSearchResultButton" style="margin-top: 25%;">Remove Bolo</Button> -->
-                                <button class="nameSearchResultButtonWeapons nameSearchResultButton">View Citizen</button>
-                                <br>
-                                <button class="nameSearchResultButtonVehicles nameSearchResultButton">Remove Bolo</button>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="rightPanelBoloResponses"></div>
                 </div>
 
                 <!-- Reports Page -->
-                <div class="rightPanelReportsPage"></div>
+                <div class="rightPanelReportsPage">
+                    <div class="rightPanelReportsButtons">
+                        <button value="crime" style="opacity: 0.5;">Crime</button>
+                        <button value="traffic">Traffic</button>
+                        <button value="arrest">Arrest</button>
+                        <button value="incident">Incident</button>
+                        <button value="use_of_force">Use of Force</button>
+                        <button value="create">Create report</button>
+                    </div>
+                    <div class="rightPanelReportsResponses"></div>
+                </div>
 
                 <!-- Live chat Page -->
                 <div class="rightPanelLiveChat">
@@ -244,6 +217,27 @@
             </select>
             <div class="form-bolo-content"></div>
             <button id="form-bolo-create">Create</button>
+        </div>
+    </div>
+
+    <div class="form-reports">
+        <div class="form-reports-bar" style="user-select: none"><p>Create report</p></div>
+        <button class="form-reports-close"><i class="fa-solid fa-xmark"></i></button>
+
+        <div class="form-records-content">
+            <select class="form-reports-type" required>
+                <option value="" disabled selected hidden>Choose report type</option>
+                <option value="crime">Crime</option>
+                <option value="traffic">Traffic</option>
+                <option value="arrest">Arrest</option>
+                <option value="incident">Incident</option>
+                <option value="use_of_force">Use of Force</option>
+            </select>
+            <div class="form-reports-content">
+                <input type="text" placeholder="Location">
+                <textarea style="height: 80%;" placeholder="Report information"></textarea>
+            </div>
+            <button id="form-reports-create">Create</button>
         </div>
     </div>
 
