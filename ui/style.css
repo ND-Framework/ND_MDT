@@ -1112,3 +1112,60 @@ body {
 #form-bolo-create {
     top: 86%;
 }
+
+.confirm-screen {
+    display: none;
+    position: absolute;
+    margin: auto;
+    inset: 0;
+    height: 25vh;
+    width: 30vw;
+    background-color: #18191a;
+    border: solid #5c5c5c 2px;
+    border-radius: 10px;
+    animation-name: fadeIn;
+    animation-duration: 0.25s;
+}
+.confirm-screen.hidden {
+    animation-name: fadeOut;
+}
+.confirm-screen > p {
+    position: relative;
+    margin: auto;
+    top: 20%;
+    left: 0;
+    right: 0;
+    color: white;
+    text-align: center;
+    font-size: 1.5rem;
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
+}
+.confirm-screen > div {
+    position: relative;
+    margin: auto;
+    top: 40%;
+    left: 0;
+    right: 0;
+    height: 12%;
+    width: 40%;
+}
+.confirm-screen > div > button {
+    border-radius: 5px;
+    border: none;
+    height: 100%;
+    width: 48%;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.confirm-screen > div > button:hover {
+    transition: 0.2s;
+    opacity: 0.8;
+}
+.confirm-screen > div > button:nth-child(1) {
+    background-color: #2656c9;
+}
+.confirm-screen > div > button:nth-child(2) {
+    background-color: rgb(241, 44, 44);
+}

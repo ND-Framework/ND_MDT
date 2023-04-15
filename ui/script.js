@@ -1,3 +1,74 @@
+let newCharges = {}
+let timeBetweenMessages = []
+let cumilativeTimeBetweenMessages;
+let bolosLoaded = false
+let reportsLoaded = false
+
+let reportsViewing = "crime"
+let bolosViewing = "all"
+let boloList = []
+const allBolos = {
+    "person": {},
+    "vehicle": {},
+    "other": {}
+}
+const allReports = {
+    "crime": {},
+    "traffic": {},
+    "arrest": {},
+    "incident": {},
+    "use_of_force": {}
+}
+
+function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function animateHide(e, promise) {
+    const timeString = e.css("animation-duration");
+    const timeInMs = Math.round(parseFloat(timeString) * 1000);
+    e.addClass("hidden");
+
+    if (promise) {
+        wait(timeInMs)
+        e.hide();
+        return;
+    }
+
+    setTimeout(() => {
+        e.hide();
+    }, timeInMs);
+}
+
+function animateShow(e) {
+    e.removeClass("hidden");
+    e.show();
+}
+
+function createConfirmScreen(text) {
+    return new Promise((resolve, reject) => {
+        const e = $(".confirm-screen");
+
+        e.get(-1).style.zIndex = 1000;
+        document.body.append(e.get(-1));
+    
+        $(".confirm-screen > p").text(text);
+        animateShow(e);
+    
+        const timeout = setTimeout(() => {
+            animateHide(e);
+            reject("Timeout");
+        }, 30000);
+    
+        $(".confirm-screen > div > button").one("click", function() {
+            const value = $(this).val();
+            animateHide(e);
+            clearTimeout(timeout);
+            resolve(value);
+        });
+    });
+}
+
 function movePage(element) {
     let shiftX = event.clientX - $(element).get(-1).getBoundingClientRect().left;
     let shiftY = event.clientY - $(element).get(-1).getBoundingClientRect().top;
@@ -643,6 +714,13 @@ $("#form-bolo-create").click(function() {
         console.log(info)
     }
 
+$(document).on("click", ".report-delete", async function() {
+    const id = $(this).data("id");
+    const result = await createConfirmScreen(translation["Are you sure you'd like to remove this report?"])
+    if (result != "confirm") {return}
+    $.post(`https://${GetParentResourceName()}/removeReport`, JSON.stringify({
+        id: id
+    }));
 });
 
 $(".form-records-content > select").change(function() {
@@ -699,6 +777,15 @@ function createLiveChatMessage(callsign, dept, imageURL, username, text) {
     `);
 };
 
+// delete bolos if clicked on button and confirmed.
+$(document).on("click", ".bolo-delete", async function() {
+    const id = $(this).data("id");
+    const result = await createConfirmScreen(translation["Are you sure you'd like to remove this bolo?"])
+    if (result != "confirm") {return}
+    $.post(`https://${GetParentResourceName()}/removeBolo`, JSON.stringify({
+        id: id
+    }));
+});
 // Event listener for nui messages.
 window.addEventListener("message", function(event) {
     const item = event.data;
