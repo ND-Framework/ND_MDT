@@ -1,9 +1,7 @@
 NDCore = exports["ND_Core"]:GetCoreObject()
 
 local display = false
-local unitStatus = "10-7"
 local newPed
-local unitNumber = GetResourceKvpString("unitNumber")
 
 local id = 0
 local MugshotsCache = {}
@@ -100,7 +98,7 @@ end
 function display911Calls(emeregencyCalls)
     selectedCharacter = NDCore.Functions.GetSelectedCharacter()
     if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
-    local unitIdentifier = tostring(unitNumber) .. " " .. selectedCharacter.firstName .. " " .. selectedCharacter.lastName
+    local unitIdentifier = ("%s %s %s"):format(selectedCharacter.data.callsign, selectedCharacter.firstName, selectedCharacter.lastName)
     local data = {}
     for callId, info in pairs(emeregencyCalls) do
         local isAttached = false
@@ -169,8 +167,8 @@ RegisterCommand("+mdt", function()
         img = img,
         department = selectedCharacter.job,
         rank = getRankName(selectedCharacter),
-        name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
-        unitNumber = unitNumber
+        name = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName),
+        unitNumber = selectedCharacter.data.callsign
     })
     PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end, false)
@@ -187,15 +185,13 @@ end)
 -- saves the unit number in kvp so they don't need to set it everytime they log on.
 RegisterNUICallback("setUnitNumber", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    unitNumber = data.number
-    SetResourceKvp("unitNumber", unitNumber)
+    TriggerServerEvent("ND_MDT:updateCallsign", data.number)
 end)
 
 -- triggers a server event once unit status has been changed from the mdt.
 RegisterNUICallback("unitStatus", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    unitStatus = data.status
-    TriggerServerEvent("ND_MDT:setUnitStatus", unitNumber, unitStatus)
+    TriggerServerEvent("ND_MDT:setUnitStatus", data.status, data.code)
 end)
 
 -- sets the unit attached or detached from a call.
@@ -361,10 +357,10 @@ RegisterNUICallback("sendLiveChat", function(data)
     local liveChatImg = getLocalPlayerImage(PlayerPedId())
     local chatInfo = {
         type = "addLiveChatMessage",
-        callsign = unitNumber,
+        callsign = selectedCharacter.data.callsign,
         dept = selectedCharacter.job,
         img = liveChatImg,
-        name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
+        name = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName),
         text = data.text
     }
     SendNUIMessage(chatInfo)
@@ -405,10 +401,91 @@ RegisterNUICallback("weaponSerialSearch", function(data)
     weaponSearch(data.searchBy, data.search)
 end)
 
+RegisterNUICallback("createBolo", function(data)
+    TriggerServerEvent("ND_MDT:createBolo", data)
+end)
+
+RegisterNUICallback("getBolos", function(data)
+    local bolos = lib.callback.await("ND_MDT:getBolos")
+    SendNUIMessage({
+        type = "showBolos",
+        bolos = bolos
+    })
+end)
+
+RegisterNUICallback("removeBolo", function(data)
+    TriggerServerEvent("ND_MDT:removeBolo", data.id)
+end)
+
+RegisterNetEvent("ND_MDT:newBolo", function(bolo)
+    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    SendNUIMessage({
+        type = "newBolo",
+        bolo = bolo
+    })
+end)
+
+RegisterNetEvent("ND_MDT:removeBolo", function(id, boloType)
+    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    SendNUIMessage({
+        type = "removeBolo",
+        id = id,
+        boloType = boloType
+    })
+end)
+
+
+RegisterNUICallback("createReport", function(data)
+    TriggerServerEvent("ND_MDT:createReport", data)
+end)
+
+RegisterNUICallback("getReports", function(data)
+    local reports = lib.callback.await("ND_MDT:getReports")
+    SendNUIMessage({
+        type = "showReports",
+        reports = reports
+    })
+end)
+
+RegisterNUICallback("removeReport", function(data)
+    TriggerServerEvent("ND_MDT:removeReport", data.id)
+end)
+
+RegisterNetEvent("ND_MDT:newReport", function(report)
+    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    SendNUIMessage({
+        type = "newReport",
+        report = report
+    })
+end)
+
+RegisterNetEvent("ND_MDT:removeReport", function(id, reportType)
+    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    SendNUIMessage({
+        type = "removeReport",
+        id = id,
+        reportType = reportType
+    })
+end)
+
+RegisterNetEvent("ND_MDT:panic", function(info)
+    SendNUIMessage(info)
+end)
+
+lib.callback.register("ND_MDT:getStreet", function(radius)
+    local coords = GetEntityCoords(PlayerPedId())
+    local postal = false
+    if config.use911Postal then
+       postal = exports[config.postalResourceName]:getPostal()
+    end
+    local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
+    return location, postal
+end)
+
 -- triggers a server event with the 911 call information.
 RegisterCommand("911", function(source, args, rawCommand)
     local callDescription = table.concat(args, " ")
-    local caller = selectedCharacter.firstName .. " " .. selectedCharacter.lastName
+    local caller = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName)
     local coords = GetEntityCoords(PlayerPedId())
     local postal = false
     if config.use911Postal then
@@ -416,7 +493,7 @@ RegisterCommand("911", function(source, args, rawCommand)
     end
     local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
     if postal then
-        location = location .. " (" .. postal .. ")"
+        location = ("%s (%s)"):format(location, postal)
     end
     local info = {
         caller = caller,
@@ -435,12 +512,12 @@ RegisterCommand("911-", function(source, args, rawCommand)
     if first == "-" then
         caller = "*Anonymous caller*"
     else
-        caller = tostring(args[1]) .. " " .. tostring(args[2])
+        caller = ("%s %s"):format(args[1], args[2])
     end
     local location = tostring(args[3])
     local postal = tostring(args[4])
     if postal ~= "-" then
-        location = location .. " (" .. postal .. ")"
+        location = ("%s (%s)"):format(location, postal)
     end
     local info = {
         caller = caller,
@@ -485,8 +562,8 @@ RegisterCommand("mdt", function(source, args, rawCommand)
         img = img,
         department = selectedCharacter.job,
         rank = getRankName(selectedCharacter),
-        name = selectedCharacter.firstName .. " " .. selectedCharacter.lastName,
-        unitNumber = unitNumber
+        name = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName),
+        unitNumber = selectedCharacter.data.callsign
     })
     PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end, false)
