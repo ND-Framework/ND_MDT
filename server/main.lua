@@ -423,4 +423,68 @@ RegisterNetEvent("ND_MDT:removeBolo", function(id)
     TriggerClientEvent("ND_MDT:removeBolo", -1, id, boloType)
 end)
 
+
+
+-- retrive all reports.
+lib.callback.register("ND_MDT:getReports", function(src)
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    local reports = {}
+    local result = MySQL.query.await("SELECT * FROM nd_mdt_reports")
+    if not result then return reports end
+
+    for i=1, #result do
+        local item = result[i]
+        reports[#reports+1] = {
+            id = item.id,
+            type = item.type,
+            data = item.data,
+            timestamp = item.timestamp
+        }
+    end
+
+    table.sort(reports, function(a, b)
+        return a.timestamp < b.timestamp
+    end)
+
+    return reports
+end)
+
+-- register a report in db
+RegisterNetEvent("ND_MDT:createReport", function(data)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    data.officer = ("%s %s %s [%s]"):format(player.data.callsign, player.firstName, player.lastName, player.job)
+    local jsonData = json.encode(data)
+    local id = MySQL.insert.await("INSERT INTO `nd_mdt_reports` (`type`, `data`) VALUES (?, ?)", {data.type, jsonData})
+    TriggerClientEvent("ND_MDT:newReport", -1, {
+        id = id,
+        type = data.type,
+        data = jsonData,
+        timestamp = os.time()
+    })
+end)
+
+-- delete report from db
+RegisterNetEvent("ND_MDT:removeReport", function(id)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    local reportType = MySQL.query.await("SELECT `type` FROM `nd_mdt_reports` WHERE `id` = ?", {id})
+    if not reportType[1] then return end
+    reportType = reportType[1].type
+
+    MySQL.query("DELETE FROM `nd_mdt_reports` WHERE id = ?", {id})
+    TriggerClientEvent("ND_MDT:removeReport", -1, id, reportType)
+end)
+
+RegisterNetEvent("ND_MDT:updateCallsign", function(callsign)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    NDCore.Functions.SetPlayerData(player.id, "callsign", callsign)
 end)
