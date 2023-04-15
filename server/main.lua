@@ -349,3 +349,67 @@ RegisterNetEvent("wk:onPlateScanned", function(cam, plate, index)
         exports["wk_wars2x"]:TogglePlateLock(src, cam, true, true)
     end
 end)
+
+
+-- retrive all bolos.
+lib.callback.register("ND_MDT:getBolos", function(src)
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    local bolos = {}
+    local result = MySQL.query.await("SELECT * FROM nd_mdt_bolos")
+    if not result then return bolos end
+
+    for i=1, #result do
+        local item = result[i]
+        bolos[#bolos+1] = {
+            id = item.id,
+            type = item.type,
+            data = item.data,
+            timestamp = item.timestamp
+        }
+    end
+
+    table.sort(bolos, function(a, b)
+        return a.timestamp < b.timestamp
+    end)
+
+    return bolos
+end)
+
+-- register a bolo in db
+RegisterNetEvent("ND_MDT:createBolo", function(data)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    if data.type == "person" and data.character then
+        local character = NDCore.Functions.GetPlayerByCharacterId(data.character)
+        if character and character.data and character.data.img then
+            data.img = character.data.img
+        end
+    end
+    local jsonData = json.encode(data)
+    local id = MySQL.insert.await("INSERT INTO `nd_mdt_bolos` (`type`, `data`) VALUES (?, ?)", {data.type, jsonData})
+    TriggerClientEvent("ND_MDT:newBolo", -1, {
+        id = id,
+        type = data.type,
+        data = jsonData,
+        timestamp = os.time()
+    })
+end)
+
+-- delete bolo from db
+RegisterNetEvent("ND_MDT:removeBolo", function(id)
+    local src = source
+    local player = NDCore.Functions.GetPlayer(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    local boloType = MySQL.query.await("SELECT `type` FROM `nd_mdt_bolos` WHERE `id` = ?", {id})
+    if not boloType[1] then return end
+    boloType = boloType[1].type
+
+    MySQL.query("DELETE FROM `nd_mdt_bolos` WHERE id = ?", {id})
+    TriggerClientEvent("ND_MDT:removeBolo", -1, id, boloType)
+end)
+
+end)
