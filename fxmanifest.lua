@@ -13,7 +13,8 @@ files {
 	"ui/script.js",
 	"ui/style.css",
     "ui/user.jpg",
-    "config/penal.json"
+    "config/translate.json",
+    "config/charges.json"
 }
 
 ui_page "ui/index.html"
@@ -22,7 +23,7 @@ shared_scripts {
     "@ND_Core/shared/import.lua",
     "@ox_lib/init.lua",
     "config/config.lua",
-    "config/penal.json"
+    "config/charges.json"
 }
 server_scripts {
     "@oxmysql/lib/MySQL.lua",
