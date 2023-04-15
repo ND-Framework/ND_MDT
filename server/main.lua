@@ -67,16 +67,27 @@ lib.callback.register("ND_MDT:getUnitStatus", function(source)
 end)
 
 -- sets unit status in active units table and sends it to all clients.
-RegisterNetEvent("ND_MDT:setUnitStatus", function(unitNumber, unitStatus)
+RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    if unitStatus == "10-7" then
+    if statusCode == "10-7" then
         activeUnits[src] = nil
     else
-        activeUnits[src] = {unit = unitNumber .. " " .. player.firstName .. " " .. player.lastName .. " [" .. player.job .. "]", status = unitStatus}
+        activeUnits[src] = {status = unitStatus, unit = ("%s %s %s [%s]"):format(player.data.callsign, player.firstName, player.lastName, player.job)}
     end
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
+    if statusCode == "10-99" then
+        local location, postal = lib.callback.await("ND_MDT:getStreet", src)
+        location = location:gsub("St", "street")
+        location = location:gsub("Ave", "avenue")
+        TriggerClientEvent("ND_MDT:panic", -1, {
+            type = "panic",
+            unit = ("%s %s %s"):format(player.data.callsign, player.firstName, player.lastName),
+            location = location,
+            postal = postal,
+        })
+    end
 end)
 
 -- remove unit froma activeunits if they leave the server forgeting to go 10-7.
@@ -110,10 +121,10 @@ function isUnitResponding(call, unitIdentifier)
 end
 
 -- This will check if the client is already attached to the call if not then it will attach them and send it to the client.
-RegisterNetEvent("ND_MDT:unitRespondToCall", function(call, unitNumber)
+RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     local src = source
     local player = NDCore.Functions.GetPlayer(src)
-    local unitIdentifier = unitNumber .. " " .. player.firstName .. " " .. player.lastName
+    local unitIdentifier = ("%s %s %s"):format(player.data.callsign, player.firstName, player.lastName)
     local responding, unit = isUnitResponding(call, unitIdentifier)
     if responding then
         emeregencyCalls[call].attachedUnits[unit] = nil
@@ -201,7 +212,7 @@ RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
 end)
 
 function getChargesJson()
-    local chargesJson = LoadResourceFile(GetCurrentResourceName(), "config/penal.json")
+    local chargesJson = LoadResourceFile(GetCurrentResourceName(), "config/charges.json")
     if not chargesJson then return end
     local chargesList = json.decode(chargesJson)[1]
     return chargesList
