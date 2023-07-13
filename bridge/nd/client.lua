@@ -30,7 +30,7 @@ function BridgeRankName()
 end
 
 function BridgeGetCitizenInfo(id, info)
-    local citizen = {
+    return {
         img = info.img or "user.jpg",
         characterId = id,
         firstName = info.firstName,

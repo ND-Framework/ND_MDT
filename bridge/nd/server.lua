@@ -1,3 +1,5 @@
+NDCore = exports["ND_Core"]:GetCoreObject()
+
 local function getPlayerSource(id)
     local playerSource = false
     local players = NDCore.Functions.GetPlayers()

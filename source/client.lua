@@ -2,6 +2,16 @@ local display = false
 local citizenData = {}
 local changedLicences = {}
 local neverOpened = true
+local framework = {
+    nd = GetResourceState("ND_Core") == "started" and "nd",
+    esx = GetResourceState("es_extended") == "started" and "esx",
+    qb = GetResourceState("qb-core") == "started" and "qb"
+}
+
+local startedFramework = framework.nd or framework.esx or framework.qb
+local framework = ("/bridge/%s/client.lua"):format(startedFramework)
+local resourceFile = LoadResourceFile(GetCurrentResourceName(), framework)
+load(resourceFile, framework)()
 
 function displayUnits(units)
     local playerInfo = BridgeGetPlayerInfo()

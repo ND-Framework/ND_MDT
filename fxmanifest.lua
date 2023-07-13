@@ -14,21 +14,21 @@ files {
 	"ui/style.css",
     "ui/user.jpg",
     "config/translate.json",
-    "config/charges.json"
+    "config/charges.json",
+    "bridge/**/client.lua"
 }
 
 ui_page "ui/index.html"
 
 shared_scripts {
-    "@ND_Core/shared/import.lua",
     "@ox_lib/init.lua",
     "config/config.lua",
     "config/charges.json"
 }
 server_scripts {
     "@oxmysql/lib/MySQL.lua",
-    "server/main.lua"
+    "source/server.lua"
 }
 client_scripts {
-    "client/main.lua"
+    "source/client.lua"
 }

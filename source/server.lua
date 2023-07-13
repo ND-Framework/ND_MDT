@@ -1,6 +1,31 @@
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
+local resourceName = GetCurrentResourceName()
+local framework = {
+    nd = GetResourceState("ND_Core") == "started" and "nd",
+    esx = GetResourceState("es_extended") == "started" and "esx",
+    qb = GetResourceState("qb-core") == "started" and "qb"
+}
+
+local startedFramework = framework.nd or framework.esx or framework.qb
+local framework = ("/bridge/%s/server.lua"):format(startedFramework)
+local resourceFile = LoadResourceFile(resourceName, framework)
+load(resourceFile, framework)()
+
+local databaseFiles = {
+    ("bridge/%s/database/bolos.sql"):format(startedFramework),
+    ("bridge/%s/database/records.sql"):format(startedFramework),
+    ("bridge/%s/database/reports.sql"):format(startedFramework),
+    ("bridge/%s/database/weapons.sql"):format(startedFramework)
+}
+
+for i=1, #databaseFiles do
+    local file = LoadResourceFile(resourceName, databaseFiles[i])
+    if file then
+        MySQL.query(file)
+    end
+end
 
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
