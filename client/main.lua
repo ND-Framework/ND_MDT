@@ -1,86 +1,11 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
-
 local display = false
-local newPed
-
-local id = 0
-local MugshotsCache = {}
-local Answers = {}
-local selectedCharacter
-
-local myimg = nil
 local citizenData = {}
 local changedLicences = {}
-
-function GetMugShotBase64(Ped, Tasparent)
-	if not Ped then return end
-	id = id + 1 
-	
-	local Handle
-	
-	if Tasparent then
-		Handle = RegisterPedheadshotTransparent(Ped)
-	else
-		Handle = RegisterPedheadshot(Ped)
-	end
-	
-	local timer = 2000
-	while ((not Handle or not IsPedheadshotReady(Handle) or not IsPedheadshotValid(Handle)) and timer > 0) do
-		Citizen.Wait(10)
-		timer = timer - 10
-	end
-
-	local MugShotTxd = "none"
-	if (IsPedheadshotReady(Handle) and IsPedheadshotValid(Handle)) then
-		MugshotsCache[id] = Handle
-		MugShotTxd = GetPedheadshotTxdString(Handle)
-	end
-
-	SendNUIMessage({
-		type = "convert",
-		pMugShotTxd = MugShotTxd,
-		id = id,
-	})
-	
-	while not Answers[id] do
-		Citizen.Wait(10)
-	end
-	
-	if MugshotsCache[id] then
-		UnregisterPedheadshot(MugshotsCache[id])
-		MugshotsCache[id] = nil
-	end
-	
-	local CallBack = Answers[id]
-	Answers[id] = nil
-	
-	return CallBack
-end
-
-RegisterNUICallback("Answer", function(data)
-	Answers[data.Id] = data.Answer
-end)
-
-AddEventHandler("onResourceStop", function(resourceName)
-    if (GetCurrentResourceName() ~= resourceName) then
-        return
-    end
-    for k, v in pairs(MugshotsCache) do
-	    UnregisterPedheadshot(v)
-    end
-end)
-
-function getLocalPlayerImage(ped)
-    if not myimg or PlayerPedId() ~= ped then
-        myimg = GetMugShotBase64(ped, true)
-        return myimg
-    end
-    return myimg
-end
+local neverOpened = true
 
 function displayUnits(units)
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "updateUnitStatus",
         action = "clear"
@@ -96,9 +21,9 @@ function displayUnits(units)
 end
 
 function display911Calls(emeregencyCalls)
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
-    local unitIdentifier = ("%s %s %s"):format(selectedCharacter.data.callsign, selectedCharacter.firstName, selectedCharacter.lastName)
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
+    local unitIdentifier = ("%s %s %s"):format(playerInfo.callsign, playerInfo.firstName, playerInfo.lastName)
     local data = {}
     for callId, info in pairs(emeregencyCalls) do
         local isAttached = false
@@ -129,26 +54,16 @@ function display911Calls(emeregencyCalls)
     })
 end
 
-function getRankName(character)
-    if not character.data.groups then return "" end
-    local job = selectedCharacter.job:lower()
-    for name, groupInfo in pairs(character.data.groups) do
-        if name:lower() == job then
-            return groupInfo.rankName
-        end
-    end
-    return ""
-end
-
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     ped = PlayerPedId()
     local veh = GetVehiclePedIsIn(ped)
     if veh == 0 then return end
     if GetVehicleClass(veh) ~= 18 then return end
-    if id == 0 then
+    if neverOpened then
+        neverOpened = false
         -- returns all active units from the server and updates the status on the ui.
         lib.callback("ND_MDT:getUnitStatus", false, function(units)
             displayUnits(units)
@@ -157,18 +72,17 @@ RegisterCommand("+mdt", function()
             displayUnits(emeregencyCalls)
         end)
     end
-    local img = getLocalPlayerImage(ped)
     local veh = GetVehiclePedIsIn(ped)
     display = true
     SetNuiFocus(true, true)
     SendNUIMessage({
         type = "display",
         action = "open",
-        img = img,
-        department = selectedCharacter.job,
-        rank = getRankName(selectedCharacter),
-        name = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName),
-        unitNumber = selectedCharacter.data.callsign
+        img = playerInfo.img,
+        department = playerInfo.job,
+        rank = BridgeRankName(),
+        name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
+        unitNumber = playerInfo.callsign
     })
     PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end, false)
@@ -242,20 +156,7 @@ function nameSearched(result)
     end
     local data = {}
     for character, info in pairs(result) do
-        local imgFromName = info.img or "user.jpg"
-        -- if info.id then
-        --     imgFromName = GetMugShotBase64(GetPlayerPed(GetPlayerFromServerId(info.id)), true)
-        -- end
-        local citizen = {
-            img = imgFromName,
-            characterId = character,
-            firstName = info.first_name,
-            lastName = info.last_name,
-            dob = info.dob,
-            gender = info.gender,
-            phone = info.phone,
-            ethnicity = info.ethnicity
-        }
+        local citizen = BridgeGetCitizenInfo(character, info)
         citizenData[character] = citizen
         data[#data+1] = citizen
     end
@@ -353,14 +254,13 @@ end)
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    local liveChatImg = getLocalPlayerImage(PlayerPedId())
+    local playerInfo = BridgeGetPlayerInfo()
     local chatInfo = {
         type = "addLiveChatMessage",
-        callsign = selectedCharacter.data.callsign,
-        dept = selectedCharacter.job,
-        img = liveChatImg,
-        name = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName),
+        callsign = playerInfo.callsign,
+        dept = playerInfo.job,
+        img = playerInfo.img,
+        name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
         text = data.text
     }
     SendNUIMessage(chatInfo)
@@ -371,8 +271,8 @@ end)
 RegisterNetEvent("ND_MDT:receiveLiveChat")
 AddEventHandler("ND_MDT:receiveLiveChat", function(chatInfo)
     if chatInfo.id == GetPlayerServerId(PlayerId()) then return end
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     SendNUIMessage(chatInfo)
 end)
 
@@ -418,7 +318,8 @@ RegisterNUICallback("removeBolo", function(data)
 end)
 
 RegisterNetEvent("ND_MDT:newBolo", function(bolo)
-    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "newBolo",
         bolo = bolo
@@ -426,7 +327,8 @@ RegisterNetEvent("ND_MDT:newBolo", function(bolo)
 end)
 
 RegisterNetEvent("ND_MDT:removeBolo", function(id, boloType)
-    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "removeBolo",
         id = id,
@@ -452,7 +354,8 @@ RegisterNUICallback("removeReport", function(data)
 end)
 
 RegisterNetEvent("ND_MDT:newReport", function(report)
-    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "newReport",
         report = report
@@ -460,7 +363,8 @@ RegisterNetEvent("ND_MDT:newReport", function(report)
 end)
 
 RegisterNetEvent("ND_MDT:removeReport", function(id, reportType)
-    if (not selectedCharacter) or not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "removeReport",
         id = id,
@@ -485,7 +389,8 @@ end)
 -- triggers a server event with the 911 call information.
 RegisterCommand("911", function(source, args, rawCommand)
     local callDescription = table.concat(args, " ")
-    local caller = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName)
+    local playerInfo = BridgeGetPlayerInfo()
+    local caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
     local coords = GetEntityCoords(PlayerPedId())
     local postal = false
     if config.use911Postal then
@@ -540,10 +445,11 @@ print("^1[^4ND_MDT^1] ^0for support join the discord server: ^4https://discord.g
 
 
 RegisterCommand("mdt", function(source, args, rawCommand)
-    selectedCharacter = NDCore.Functions.GetSelectedCharacter()
-    if not config.policeAccess[selectedCharacter.job] and not config.fireAccess[selectedCharacter.job] then return end
+    local playerInfo = BridgeGetPlayerInfo()
+    if not BridgeHasAccess(playerInfo.job) then return end
     ped = PlayerPedId()
-    if id == 0 then
+    if neverOpened then
+        neverOpened = false
         -- returns all active units from the server and updates the status on the ui.
         lib.callback("ND_MDT:getUnitStatus", false, function(units)
             displayUnits(units)
@@ -552,18 +458,17 @@ RegisterCommand("mdt", function(source, args, rawCommand)
             displayUnits(emeregencyCalls)
         end)
     end
-    local img = getLocalPlayerImage(ped)
     local veh = GetVehiclePedIsIn(ped)
     display = true
     SetNuiFocus(true, true)
     SendNUIMessage({
         type = "display",
         action = "open",
-        img = img,
-        department = selectedCharacter.job,
-        rank = getRankName(selectedCharacter),
-        name = ("%s %s"):format(selectedCharacter.firstName, selectedCharacter.lastName),
-        unitNumber = selectedCharacter.data.callsign
+        img = playerInfo.img,
+        department = playerInfo.job,
+        rank = BridgeRankName(),
+        name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
+        unitNumber = playerInfo.data.callsign
     })
     PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end, false)

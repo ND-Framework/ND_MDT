@@ -4,59 +4,12 @@ local activeUnits = {}
 
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
-    local player = source
-    local players = NDCore.Functions.GetPlayers()
-    local profiles = {}
-    if not config.policeAccess[players[player].job] then return false end
-
-    if first and first ~= "" then
-        local result = MySQL.query.await("SELECT * FROM characters WHERE first_name RLIKE(?)", {first})
-        if result then  
-            for i=1, #result do
-                local item = result[i]
-                local playerId = false
-                for id, info in pairs(players) do
-                    if players[id].id == item.character_id then
-                        playerId = id
-                        break
-                    end
-                end
-                local data = json.decode(item.data)
-                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = data.img, ethnicity = data.ethnicity}
-            end
-        end
-    end
-    if last and last ~= "" then
-        local result = MySQL.query.await("SELECT * FROM characters WHERE last_name RLIKE(?)", {last})
-        if result then
-            for i=1, #result do
-                local item = result[i]
-                local playerId = false
-                for id, info in pairs(players) do
-                    if players[id].id == item.character_id then
-                        playerId = id
-                        break
-                    end
-                end
-                local data = json.decode(item.data)
-                profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = playerId, img = data.img, ethnicity = data.ethnicity}
-            end
-        end
-    end
-    return profiles
+    local src = source
+    return BridgeNameSearch(src, first, last)
 end)
 
 lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, characterSearched)
-    local player = NDCore.Functions.GetPlayer(source)
-    local profiles = {}
-    if not config.policeAccess[player.job] then return false end
-
-    local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {characterSearched})
-    if result and result[1] then  
-        local item = result[1]
-        profiles[item.character_id] = {first_name = item.first_name, last_name = item.last_name, dob = item.dob, gender = item.gender, phone = item.phone_number, id = source, img = json.decode(item.data).img}
-    end
-    return profiles
+    return BridgeCharacterSearch(source, characterSearched)
 end)
 
 -- get all active units on serer and send it to client.
