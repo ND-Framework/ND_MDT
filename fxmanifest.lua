@@ -32,3 +32,9 @@ server_scripts {
 client_scripts {
     "source/client.lua"
 }
+
+dependencies {
+    "oxmysql",
+    "ox_inventory",
+    "ox_lib"
+}
