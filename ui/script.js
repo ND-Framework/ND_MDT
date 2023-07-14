@@ -123,38 +123,6 @@ const escapeHtml = (unsafe) => {
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 };
 
-function getBase64Image(src, callback, outputFormat) {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        let dataURL;
-        canvas.height = img.naturalHeight;
-        canvas.width = img.naturalWidth;
-        ctx.drawImage(img, 0, 0);
-        dataURL = canvas.toDataURL(outputFormat);
-        callback(dataURL);
-    };
-    img.src = src;
-    if (img.complete || img.complete === undefined) {
-        img.src = "user.jpg";
-        img.src = src;
-    };
-};
-function Convert(pMugShotTxd, id) {
-    let tempUrl = "https://nui-img/" + pMugShotTxd + "/" + pMugShotTxd + "?t=" + String(Math.round(new Date().getTime() / 1000));
-    if (pMugShotTxd == "none") {
-        tempUrl = "user.jpg";
-    };
-    getBase64Image(tempUrl, function(dataUrl) {
-        $.post(`https://${GetParentResourceName()}/Answer`, JSON.stringify({
-            Answer: dataUrl,
-            Id: id,
-        }));
-    });
-};
-
 // get translation
 let translation = {}
 $.getJSON("../config/translate.json", function(data) {
@@ -1064,10 +1032,6 @@ function playBeep() {
 // Event listener for nui messages.
 window.addEventListener("message", function(event) {
     const item = event.data;
-
-    if (item.type == "convert") {
-        Convert(item.pMugShotTxd, item.id);
-    }
 
     // show/clsoe the ui.
     if (item.type === "display") {

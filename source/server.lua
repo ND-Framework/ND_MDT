@@ -2,6 +2,7 @@ local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
 local resourceName = GetCurrentResourceName()
+local chargesList = json.decode(LoadResourceFile(resourceName, "config/charges.json")[1])
 local framework = {
     nd = GetResourceState("ND_Core") == "started" and "nd",
     esx = GetResourceState("es_extended") == "started" and "esx",
@@ -39,7 +40,7 @@ end)
 
 -- get all active units on serer and send it to client.
 lib.callback.register("ND_MDT:getUnitStatus", function(source)
-    local player = NDCore.Functions.GetPlayer(source)
+    local player = BridgeGetPlayerInfo(source)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     return activeUnits
 end)
@@ -47,12 +48,12 @@ end)
 -- sets unit status in active units table and sends it to all clients.
 RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     if statusCode == "10-7" then
         activeUnits[src] = nil
     else
-        activeUnits[src] = {status = unitStatus, unit = ("%s %s %s [%s]"):format(player.data.callsign, player.firstName, player.lastName, player.job)}
+        activeUnits[src] = {status = unitStatus, unit = ("%s %s %s [%s]"):format(player.callsign, player.firstName, player.lastName, player.job)}
     end
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
     if statusCode == "10-99" then
@@ -61,7 +62,7 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
         location = location:gsub("Ave", "avenue")
         TriggerClientEvent("ND_MDT:panic", -1, {
             type = "panic",
-            unit = ("%s %s %s"):format(player.data.callsign, player.firstName, player.lastName),
+            unit = ("%s %s %s"):format(player.callsign, player.firstName, player.lastName),
             location = location,
             postal = postal,
         })
@@ -70,15 +71,14 @@ end)
 
 -- remove unit froma activeunits if they leave the server forgeting to go 10-7.
 AddEventHandler("playerDropped", function()
-    local player = source
-    if not activeUnits[player] then return end
-    activeUnits[player] = nil
+    local src = source
+    if not activeUnits[src] then return end
+    activeUnits[src] = nil
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
 end)
 
 -- This will just send all the current calls to the client.
 lib.callback.register("ND_MDT:getUnitStatus", function(source)
-    local src = source
     return emeregencyCalls
 end)
 
@@ -89,7 +89,7 @@ RegisterNetEvent("ND_MDT:Create911Call", function(callInfo)
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
-function isUnitResponding(call, unitIdentifier)
+local function isUnitResponding(call, unitIdentifier)
     for unit, name in pairs(emeregencyCalls[call].attachedUnits) do
         if name == unitIdentifier then
             return true, unit
@@ -101,8 +101,9 @@ end
 -- This will check if the client is already attached to the call if not then it will attach them and send it to the client.
 RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
-    local unitIdentifier = ("%s %s %s"):format(player.data.callsign, player.firstName, player.lastName)
+    local player = BridgeGetPlayerInfo(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    local unitIdentifier = ("%s %s %s"):format(player.callsign, player.firstName, player.lastName)
     local responding, unit = isUnitResponding(call, unitIdentifier)
     if responding then
         emeregencyCalls[call].attachedUnits[unit] = nil
@@ -112,78 +113,33 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
-function getVehicleCharacter(owner)
-    local result = MySQL.query.await("SELECT * FROM characters WHERE character_id LIMIT 1", {owner})
-    if result then
-        for i=1, #result do
-            local item = result[i]
-            return {firstName = item.first_name, lastName = item.last_name, characterId = item.character_id}
-        end
-    end
-end
-
 -- retrive vehicles from the database based on characterId.
 lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
-    local src = source
-    local player = NDCore.Functions.GetPlayer(src)
-    if not config.policeAccess[player.job] then return false end
-    local vehicles = {}
-    if searchBy == "plate" then
-        local result = MySQL.query.await("SELECT * FROM characters_vehicles WHERE plate = ?", {data})
-        if result then
-            for i=1, #result do
-                local item = result[i]
-                local character = getVehicleCharacter(item.vehicle_owner)
-                vehicles[item.v_id] = {id = item.v_id, color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, stolen = item.stolen == 1, character = character}
-            end
-        end
-    elseif searchBy == "owner" then
-        local result = MySQL.query.await("SELECT * FROM characters_vehicles WHERE vehicle_owner = ?", {data})
-        if result then
-            local character = getVehicleCharacter(data)
-            for i=1, #result do
-                local item = result[i]
-                vehicles[item.v_id] = {id = item.v_id, color = item.color, make = item.make, model = item.model, plate = item.plate, class = item.class, stolen = item.stolen == 1, character = character}
-            end
-        end
-    end
-    return vehicles
+    return BridgeViewVehicles(source, searchBy, data)
 end)
 
-function getProperties(id)
-    local addresses = {}
-    local result = MySQL.query.await("SELECT address FROM nd_properties WHERE owner = ?", {id})
-    if not result or not result[1] then return addresses end
-    for _, adrs in pairs(result) do
-        addresses[#addresses+1] = adrs.address
-    end
-    return addresses
-end
-
-function getRecords(id)
+local function BridgeGetRecords(id)
     local result = MySQL.query.await("SELECT records FROM nd_mdt_records WHERE `character` = ? LIMIT 1", {id})
     if not result or not result[1] then
-        return {}
+        return {}, false
     end
     return json.decode(result[1].records), true
 end
 
 lib.callback.register("ND_MDT:viewRecords", function(source, characterToSearch)
-    local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(source)
     if not config.policeAccess[player.job] then return false end
-    local records = {
-        properties = getProperties(characterToSearch),
-        records = getRecords(characterToSearch),
-        licenses = player.data.licences or {}
+    return {
+        properties = BridgeGetProperties(characterToSearch),
+        records = BridgeGetRecords(characterToSearch),
+        licenses = BridgeGetLicenses(characterToSearch)
     }
-    return records
 end)
 
 RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
-    if not config.policeAccess[player.job] then return false end
+    local player = BridgeGetPlayerInfo(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return false end
     info.id = src
     info.dept = player.job
     TriggerClientEvent("ND_MDT:receiveLiveChat", -1, info)
@@ -198,21 +154,17 @@ end
 
 RegisterNetEvent("ND_MDT:saveRecords", function(data)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     for identifier, newStatus in pairs(data.changedLicences) do
-        print(data.characterId, identifier, newStatus)
-        NDCore.Functions.EditPlayerLicense(data.characterId, identifier, {
-            status = newStatus
-        })
+        BridgeEditPlayerLicense(data.characterId, identifier, newStatus)
     end
 
-    local records, update = getRecords(data.characterId)
+    local records, update = BridgeGetRecords(data.characterId)
     records.notes = data.notes
 
     local characterCharges = records.charges or {}
-    local chargesList = getChargesJson()
     for _, chargeInfo in pairs(data.newCharges) do
         local charge = chargesList[chargeInfo.chargeType][chargeInfo.chargeNum+1]
         local fine = chargeInfo.fine
@@ -222,8 +174,7 @@ RegisterNetEvent("ND_MDT:saveRecords", function(data)
             if fine > charge.fine then
                 fine = charge.fine
             end
-
-            -- use ND_Banking and charge person here.
+            BridgeCreateInvoice(data.characterId, fine)
         end
 
         characterCharges[#characterCharges+1] = {
@@ -234,60 +185,40 @@ RegisterNetEvent("ND_MDT:saveRecords", function(data)
             timestamp = os.time(),
             id = math.random(10000, 99999)
         }
-
-        exports["ND_Banking"]:createInvoice(fine, 7, false, {
-            name = "Government",
-            account = "0"
-        },
-        {
-            character = data.characterId,
-        })
     end
     records.charges = characterCharges
 
     if update then
-        MySQL.query.await("UPDATE nd_mdt_records SET records = ? WHERE `character` = ?", {json.encode(records), data.characterId})
+        MySQL.query("UPDATE nd_mdt_records SET records = ? WHERE `character` = ?", {json.encode(records), data.characterId})
         return
     end
-    MySQL.query("INSERT INTO nd_mdt_records (`character`, records) VALUES (?, ?)", {data.characterId, json.encode(records)})
+    MySQL.insert("INSERT INTO nd_mdt_records (`character`, records) VALUES (?, ?)", {data.characterId, json.encode(records)})
 end)
 
--- store weapons in database when bought legally.
-function registerWeapon(characterId, weaponName, serial, citizenName)
-    MySQL.insert("INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)", {characterId, weaponName, serial, citizenName})
-end
-
--- check if ox inventory is started.
-exports["ND_Core"]:isResourceStarted("ox_inventory", function(started)
-    if not started then return end
-    exports.ox_inventory:registerHook("createItem", function(payload)
-        local metadata = payload.metadata
-        if payload.item.weapon then
-            local character = NDCore.Functions.GetPlayer(payload.inventoryId)
-            registerWeapon(character.id, payload.item.label, metadata.serial, metadata.registered)
-        end
-        return metadata
-    end)
+exports.ox_inventory:registerHook("createItem", function(payload)
+    local metadata = payload.metadata
+    if payload.item.weapon then
+        local player = BridgeGetPlayerInfo(payload.inventoryId)
+        MySQL.insert("INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)", {player.characterId, payload.item.label, metadata.serial, metadata.registered})
+    end
+    return metadata
 end)
 
 -- retrive weapons based on serial number.
 lib.callback.register("ND_MDT:weaponSerialSearch", function(source, searchBy, search)
-    local player = source
-    local players = NDCore.Functions.GetPlayers()
-    local weapons = {}
-    if not config.policeAccess[players[player].job] or not search then return false end
+    local player = BridgeGetPlayerInfo(source)
+    if not config.policeAccess[player.job] or not search then return false end
     
     local query = "SELECT * FROM nd_mdt_weapons WHERE serial RLIKE(?)"
     if searchBy == "owner" then
         query = "SELECT * FROM nd_mdt_weapons WHERE `character` = ?"
     end
-
+    
+    local weapons = {}
     local result = MySQL.query.await(query, {search})
-    if result then
-        for i=1, #result do
-            local item = result[i]
-            weapons[#weapons+1] = {characterId = item.character, weapon = item.weapon, serial = item.serial, ownerName = item.owner_name, stolen = item.stolen}
-        end
+    for i=1, #result do
+        local item = result[i]
+        weapons[#weapons+1] = {characterId = item.character, weapon = item.weapon, serial = item.serial, ownerName = item.owner_name, stolen = item.stolen}
     end
 
     return weapons
@@ -295,7 +226,7 @@ end)
 
 RegisterNetEvent("ND_MDT:weaponStolenStatus", function(serial, stolen)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     MySQL.query("UPDATE nd_mdt_weapons SET stolen = ? WHERE serial = ?", {stolen and 1 or 0, serial})
 end)
@@ -305,23 +236,27 @@ local stolenPlatesList = {}
 
 RegisterNetEvent("ND_MDT:vehicleStolenStatus", function(id, stolen, plate)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    MySQL.query("UPDATE characters_vehicles SET stolen = ? WHERE v_id = ?", {stolen and 1 or 0, id})
+
+    BridgeVehicleStolen(id, stolen, plate)
     if not plate then return end
     stolenPlatesList[plate] = stolen and plate or nil
-    for i = 1, #stolenPlatesCallbacks do
+    for i=1, #stolenPlatesCallbacks do
         stolenPlatesCallbacks[i](plate)
     end
 end)
 
-AddEventHandler("onResourceStart", function(resourceName)
-    local result = MySQL.query.await("SELECT `plate` FROM `characters_vehicles` WHERE `stolen` = 1")
-    if not result then return end
-    for _, plate in pairs(result) do
-        stolenPlatesList[plate.plate] = plate.plate
+AddEventHandler("onResourceStart", function(name)
+    if name ~= resourceFile then return end
+
+    local plates = BridgeGetStolenVehicles()
+    for i=1, #plates do
+        local plate = plates[i]
+        stolenPlatesList[plate] = plate
     end
 end)
+
 exports("stolenPlate", function(param)
     local dataType = type(param)
     if dataType == "string" then
@@ -342,7 +277,7 @@ end)
 
 -- retrive all bolos.
 lib.callback.register("ND_MDT:getBolos", function(src)
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     local bolos = {}
@@ -369,14 +304,13 @@ end)
 -- register a bolo in db
 RegisterNetEvent("ND_MDT:createBolo", function(data)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    
     if data.type == "person" and data.character then
-        local character = NDCore.Functions.GetPlayerByCharacterId(data.character)
-        if character and character.data and character.data.img then
-            data.img = character.data.img
-        end
+        data.img = BridgeGetPlayerImage(data.character)
     end
+
     local jsonData = json.encode(data)
     local id = MySQL.insert.await("INSERT INTO `nd_mdt_bolos` (`type`, `data`) VALUES (?, ?)", {data.type, jsonData})
     TriggerClientEvent("ND_MDT:newBolo", -1, {
@@ -390,8 +324,9 @@ end)
 -- delete bolo from db
 RegisterNetEvent("ND_MDT:removeBolo", function(id)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    if not id then return end
 
     local boloType = MySQL.query.await("SELECT `type` FROM `nd_mdt_bolos` WHERE `id` = ?", {id})
     if not boloType[1] then return end
@@ -401,11 +336,9 @@ RegisterNetEvent("ND_MDT:removeBolo", function(id)
     TriggerClientEvent("ND_MDT:removeBolo", -1, id, boloType)
 end)
 
-
-
 -- retrive all reports.
 lib.callback.register("ND_MDT:getReports", function(src)
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     local reports = {}
@@ -432,10 +365,10 @@ end)
 -- register a report in db
 RegisterNetEvent("ND_MDT:createReport", function(data)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
-    data.officer = ("%s %s %s [%s]"):format(player.data.callsign, player.firstName, player.lastName, player.job)
+    data.officer = ("%s %s %s [%s]"):format(player.callsign, player.firstName, player.lastName, player.job)
     local jsonData = json.encode(data)
     local id = MySQL.insert.await("INSERT INTO `nd_mdt_reports` (`type`, `data`) VALUES (?, ?)", {data.type, jsonData})
     TriggerClientEvent("ND_MDT:newReport", -1, {
@@ -449,7 +382,7 @@ end)
 -- delete report from db
 RegisterNetEvent("ND_MDT:removeReport", function(id)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     local reportType = MySQL.query.await("SELECT `type` FROM `nd_mdt_reports` WHERE `id` = ?", {id})
@@ -462,7 +395,7 @@ end)
 
 RegisterNetEvent("ND_MDT:updateCallsign", function(callsign)
     local src = source
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    NDCore.Functions.SetPlayerData(player.id, "callsign", callsign)
+    BridgeUpdatePlayerMetadata(player.characterId, "callsign", callsign)
 end)
