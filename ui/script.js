@@ -912,7 +912,7 @@ function viewBolo(bolo, animate) {
                     || ""}
                 </div>
                 <div>
-                    <Button class="nameSearchResultButtonVehicles nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Description"]}</Button>
+                    <Button class="nameSearchResultButtonVehicles nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>
                 </div>
             </div>
         `)
