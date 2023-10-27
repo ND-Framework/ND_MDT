@@ -1,3 +1,4 @@
+local Bridge = {}
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
@@ -35,16 +36,16 @@ end
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
     local src = source
-    return BridgeNameSearch(src, first, last)
+    return Bridge.nameSearch(src, first, last)
 end)
 
 lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, characterSearched)
-    return BridgeCharacterSearch(source, characterSearched)
+    return Bridge.characterSearch(source, characterSearched)
 end)
 
 -- get all active units on serer and send it to client.
 lib.callback.register("ND_MDT:getUnitStatus", function(source)
-    local player = BridgeGetPlayerInfo(source)
+    local player = Bridge.getPlayerInfo(source)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     return activeUnits
 end)
@@ -52,7 +53,7 @@ end)
 -- sets unit status in active units table and sends it to all clients.
 RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     if statusCode == "10-7" then
         activeUnits[src] = nil
@@ -105,7 +106,7 @@ end
 -- This will check if the client is already attached to the call if not then it will attach them and send it to the client.
 RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     local unitIdentifier = ("%s %s %s"):format(player.callsign, player.firstName, player.lastName)
     local responding, unit = isUnitResponding(call, unitIdentifier)
@@ -119,30 +120,22 @@ end)
 
 -- retrive vehicles from the database based on characterId.
 lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
-    return BridgeViewVehicles(source, searchBy, data)
+    return Bridge.viewVehicles(source, searchBy, data)
 end)
 
-local function BridgeGetRecords(id)
-    local result = MySQL.query.await("SELECT records FROM nd_mdt_records WHERE `character` = ? LIMIT 1", {id})
-    if not result or not result[1] then
-        return {}, false
-    end
-    return json.decode(result[1].records), true
-end
-
 lib.callback.register("ND_MDT:viewRecords", function(source, characterToSearch)
-    local player = BridgeGetPlayerInfo(source)
+    local player = Bridge.getPlayerInfo(source)
     if not config.policeAccess[player.job] then return false end
     return {
-        properties = BridgeGetProperties(characterToSearch),
-        records = BridgeGetRecords(characterToSearch),
-        licenses = BridgeGetLicenses(characterToSearch)
+        properties = Bridge.getProperties(characterToSearch),
+        records = Bridge.getRecords(characterToSearch),
+        licenses = Bridge.getLicenses(characterToSearch)
     }
 end)
 
 RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return false end
     info.id = src
     info.dept = player.job
@@ -158,14 +151,14 @@ end
 
 RegisterNetEvent("ND_MDT:saveRecords", function(data)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     for identifier, newStatus in pairs(data.changedLicences) do
-        BridgeEditPlayerLicense(data.characterId, identifier, newStatus)
+        Bridge.editPlayerLicense(data.characterId, identifier, newStatus)
     end
 
-    local records, update = BridgeGetRecords(data.characterId)
+    local records, update = Bridge.getRecords(data.characterId)
     records.notes = data.notes
 
     local characterCharges = records.charges or {}
@@ -178,7 +171,7 @@ RegisterNetEvent("ND_MDT:saveRecords", function(data)
             if fine > charge.fine then
                 fine = charge.fine
             end
-            BridgeCreateInvoice(data.characterId, fine)
+            Bridge.createInvoice(data.characterId, fine)
         end
 
         characterCharges[#characterCharges+1] = {
@@ -202,7 +195,7 @@ end)
 exports.ox_inventory:registerHook("createItem", function(payload)
     local metadata = payload.metadata
     if payload.item.weapon then
-        local player = BridgeGetPlayerInfo(payload.inventoryId)
+        local player = Bridge.getPlayerInfo(payload.inventoryId)
         MySQL.insert("INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)", {player.characterId, payload.item.label, metadata.serial, metadata.registered})
     end
     return metadata
@@ -210,7 +203,7 @@ end)
 
 -- retrive weapons based on serial number.
 lib.callback.register("ND_MDT:weaponSerialSearch", function(source, searchBy, search)
-    local player = BridgeGetPlayerInfo(source)
+    local player = Bridge.getPlayerInfo(source)
     if not config.policeAccess[player.job] or not search then return false end
     
     local query = "SELECT * FROM nd_mdt_weapons WHERE serial RLIKE(?)"
@@ -230,7 +223,7 @@ end)
 
 RegisterNetEvent("ND_MDT:weaponStolenStatus", function(serial, stolen)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     MySQL.query("UPDATE nd_mdt_weapons SET stolen = ? WHERE serial = ?", {stolen and 1 or 0, serial})
 end)
@@ -240,10 +233,10 @@ local stolenPlatesList = {}
 
 RegisterNetEvent("ND_MDT:vehicleStolenStatus", function(id, stolen, plate)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
-    BridgeVehicleStolen(id, stolen, plate)
+    Bridge.vehicleStolen(id, stolen, plate)
     if not plate then return end
     stolenPlatesList[plate] = stolen and plate or nil
     for i=1, #stolenPlatesCallbacks do
@@ -254,7 +247,7 @@ end)
 AddEventHandler("onResourceStart", function(name)
     if name ~= resourceFile then return end
 
-    local plates = BridgeGetStolenVehicles()
+    local plates = Bridge.getStolenVehicles()
     for i=1, #plates do
         local plate = plates[i]
         stolenPlatesList[plate] = plate
@@ -281,7 +274,7 @@ end)
 
 -- retrive all bolos.
 lib.callback.register("ND_MDT:getBolos", function(src)
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     local bolos = {}
@@ -308,11 +301,11 @@ end)
 -- register a bolo in db
 RegisterNetEvent("ND_MDT:createBolo", function(data)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     
     if data.type == "person" and data.character then
-        data.img = BridgeGetPlayerImage(data.character)
+        data.img = Bridge.getPlayerImage(data.character)
     end
 
     local jsonData = json.encode(data)
@@ -328,7 +321,7 @@ end)
 -- delete bolo from db
 RegisterNetEvent("ND_MDT:removeBolo", function(id)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     if not id then return end
 
@@ -342,7 +335,7 @@ end)
 
 -- retrive all reports.
 lib.callback.register("ND_MDT:getReports", function(src)
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     local reports = {}
@@ -369,7 +362,7 @@ end)
 -- register a report in db
 RegisterNetEvent("ND_MDT:createReport", function(data)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     data.officer = ("%s %s %s [%s]"):format(player.callsign, player.firstName, player.lastName, player.job)
@@ -386,7 +379,7 @@ end)
 -- delete report from db
 RegisterNetEvent("ND_MDT:removeReport", function(id)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
 
     local reportType = MySQL.query.await("SELECT `type` FROM `nd_mdt_reports` WHERE `id` = ?", {id})
@@ -399,7 +392,7 @@ end)
 
 RegisterNetEvent("ND_MDT:updateCallsign", function(callsign)
     local src = source
-    local player = BridgeGetPlayerInfo(src)
+    local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    BridgeUpdatePlayerMetadata(src, player.characterId, "callsign", callsign)
+    Bridge.updatePlayerMetadata(src, player.characterId, "callsign", callsign)
 end)

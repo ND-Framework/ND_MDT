@@ -1,3 +1,4 @@
+local Bridge = {}
 local display = false
 local citizenData = {}
 local changedLicences = {}
@@ -14,8 +15,8 @@ local resourceFile = LoadResourceFile(GetCurrentResourceName(), framework)
 load(resourceFile, framework)()
 
 function displayUnits(units)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "updateUnitStatus",
         action = "clear"
@@ -31,8 +32,8 @@ function displayUnits(units)
 end
 
 function display911Calls(emeregencyCalls)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     local unitIdentifier = ("%s %s %s"):format(playerInfo.callsign, playerInfo.firstName, playerInfo.lastName)
     local data = {}
     for callId, info in pairs(emeregencyCalls) do
@@ -66,8 +67,8 @@ end
 
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     ped = PlayerPedId()
     local veh = GetVehiclePedIsIn(ped)
     if veh == 0 then return end
@@ -90,7 +91,7 @@ RegisterCommand("+mdt", function()
         action = "open",
         img = playerInfo.img,
         department = playerInfo.job,
-        rank = BridgeRankName(),
+        rank = Bridge.rankName(),
         name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
         unitNumber = playerInfo.callsign
     })
@@ -166,7 +167,7 @@ function nameSearched(result)
     end
     local data = {}
     for character, info in pairs(result) do
-        local citizen = BridgeGetCitizenInfo(character, info)
+        local citizen = Bridge.getCitizenInfo(character, info)
         citizenData[character] = citizen
         data[#data+1] = citizen
     end
@@ -264,7 +265,7 @@ end)
 -- Trigger a server event and send the text and unit number form the live chat message the client sends.
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    local playerInfo = BridgeGetPlayerInfo()
+    local playerInfo = Bridge.getPlayerInfo()
     local chatInfo = {
         type = "addLiveChatMessage",
         callsign = playerInfo.callsign,
@@ -281,8 +282,8 @@ end)
 RegisterNetEvent("ND_MDT:receiveLiveChat")
 AddEventHandler("ND_MDT:receiveLiveChat", function(chatInfo)
     if chatInfo.id == GetPlayerServerId(PlayerId()) then return end
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage(chatInfo)
 end)
 
@@ -328,8 +329,8 @@ RegisterNUICallback("removeBolo", function(data)
 end)
 
 RegisterNetEvent("ND_MDT:newBolo", function(bolo)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "newBolo",
         bolo = bolo
@@ -337,8 +338,8 @@ RegisterNetEvent("ND_MDT:newBolo", function(bolo)
 end)
 
 RegisterNetEvent("ND_MDT:removeBolo", function(id, boloType)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "removeBolo",
         id = id,
@@ -364,8 +365,8 @@ RegisterNUICallback("removeReport", function(data)
 end)
 
 RegisterNetEvent("ND_MDT:newReport", function(report)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "newReport",
         report = report
@@ -373,8 +374,8 @@ RegisterNetEvent("ND_MDT:newReport", function(report)
 end)
 
 RegisterNetEvent("ND_MDT:removeReport", function(id, reportType)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage({
         type = "removeReport",
         id = id,
@@ -399,7 +400,7 @@ end)
 -- triggers a server event with the 911 call information.
 RegisterCommand("911", function(source, args, rawCommand)
     local callDescription = table.concat(args, " ")
-    local playerInfo = BridgeGetPlayerInfo()
+    local playerInfo = Bridge.getPlayerInfo()
     local caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
     local coords = GetEntityCoords(PlayerPedId())
     local postal = false
@@ -455,8 +456,8 @@ print("^1[^4ND_MDT^1] ^0for support join the discord server: ^4https://discord.g
 
 
 RegisterCommand("mdt", function(source, args, rawCommand)
-    local playerInfo = BridgeGetPlayerInfo()
-    if not BridgeHasAccess(playerInfo.job) then return end
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     ped = PlayerPedId()
     if neverOpened then
         neverOpened = false
@@ -476,7 +477,7 @@ RegisterCommand("mdt", function(source, args, rawCommand)
         action = "open",
         img = playerInfo.img,
         department = playerInfo.job,
-        rank = BridgeRankName(),
+        rank = Bridge.rankName(),
         name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
         unitNumber = playerInfo.callsign
     })

@@ -1,7 +1,7 @@
 local NDCore = exports["ND_Core"]:GetCoreObject()
 
 ---@return table
-function BridgeGetPlayerInfo()
+function Bridge.getPlayerInfo()
     local player = NDCore.Functions.GetSelectedCharacter()
     return {
         firstName = player.firstName,
@@ -14,12 +14,12 @@ end
 
 ---@param job string
 ---@return boolean
-function BridgeHasAccess(job)
+function Bridge.hasAccess(job)
     return config.policeAccess[job] or config.fireAccess[job]
 end
 
 ---@return string
-function BridgeRankName()
+function Bridge.rankName()
     local player = NDCore.Functions.GetSelectedCharacter()
     local groups = player.data.groups
     if not groups then return "" end
@@ -36,7 +36,7 @@ end
 ---@param id number
 ---@param info table
 ---@return table
-function BridgeGetCitizenInfo(id, info)
+function Bridge.getCitizenInfo(id, info)
     return {
         img = info.img or "user.jpg",
         characterId = id,

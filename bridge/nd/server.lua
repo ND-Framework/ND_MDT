@@ -35,7 +35,7 @@ end
 ---@param first string|nil
 ---@param last string|nil
 ---@return table
-function BridgeNameSearch(src, first, last)
+function Bridge.nameSearch(src, first, last)
     local player = NDCore.getPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
@@ -58,7 +58,7 @@ end
 ---@param source number
 ---@param characterSearched number
 ---@return table
-function BridgeCharacterSearch(source, characterSearched)
+function Bridge.characterSearch(source, characterSearched)
     local player = NDCore.getPlayer(source)
     if not config.policeAccess[player.job] then return false end
 
@@ -84,7 +84,7 @@ end
 
 ---@param src number
 ---@return table
-function BridgeGetPlayerInfo(src)
+function Bridge.getPlayerInfo(src)
     local player = NDCore.getPlayer(src)
     return {
         firstName = player.firstname,
@@ -139,7 +139,7 @@ end
 ---@param searchBy string
 ---@param data number|string
 ---@return table
-function BridgeViewVehicles(src, searchBy, data)
+function Bridge.viewVehicles(src, searchBy, data)
     local player = NDCore.getPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
@@ -160,7 +160,7 @@ end
 
 ---@param id number
 ---@return table
-function BridgeGetProperties(id)
+function Bridge.getProperties(id)
     local addresses = {}
     local result = MySQL.query.await("SELECT address FROM nd_properties WHERE owner = ?", {id})
     if not result or not result[1] then return addresses end
@@ -172,7 +172,7 @@ end
 
 ---@param id number
 ---@return table
-function BridgeGetLicenses(id)
+function Bridge.getLicenses(id)
     --[[ info in a license.
         {
             type = string (driver, weapon, hunting, etc),
@@ -191,7 +191,7 @@ end
 ---@param characterId number
 ---@param licenseIdentifier string
 ---@param newLicenseStatus string
-function BridgeEditPlayerLicense(characterId, licenseIdentifier, newLicenseStatus)
+function Bridge.editPlayerLicense(characterId, licenseIdentifier, newLicenseStatus)
     local player = NDCore.fetchCharacter(characterId)
     player.updateLicense(licenseIdentifier, {
         status = newLicenseStatus
@@ -200,7 +200,7 @@ end
 
 ---@param characterId number
 ---@param fine number
-function BridgeCreateInvoice(characterId, fine)
+function Bridge.createInvoice(characterId, fine)
     exports["ND_Banking"]:createInvoice(fine, 7, false, {
         name = "Government",
         account = "0"
@@ -210,12 +210,12 @@ end
 ---@param id number
 ---@param stolen boolean
 ---@param plate string
-function BridgeVehicleStolen(id, stolen, plate)
+function Bridge.vehicleStolen(id, stolen, plate)
     MySQL.query("UPDATE nd_vehicles SET stolen = ? WHERE id = ?", {stolen and 1 or 0, id})
 end
 
 ---@return table
-function BridgeGetStolenVehicles()
+function Bridge.getStolenVehicles()
     local plates = {}
     local result = MySQL.query.await("SELECT `plate` FROM `nd_vehicles` WHERE `stolen` = 1")
     for _, veh in pairs(result) do
@@ -225,7 +225,7 @@ function BridgeGetStolenVehicles()
 end
 
 ---@param characterId number
-function BridgeGetPlayerImage(characterId)
+function Bridge.getPlayerImage(characterId)
     local player = NDCore.fetchCharacter(characterId)
     return player and player.metadata and player.metadata.img -- img in metadata from a character.
 end
@@ -233,7 +233,7 @@ end
 ---@param characterId number
 ---@param key any
 ---@param value any
-function BridgeUpdatePlayerMetadata(source, characterId, key, value)
+function Bridge.updatePlayerMetadata(source, characterId, key, value)
     local player = NDCore.getPlayer(source)
     player.setMetadata(key, value)
 end
