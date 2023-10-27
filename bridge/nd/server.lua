@@ -2,33 +2,30 @@ NDCore = exports["ND_Core"]:GetCoreObject()
 
 local function getPlayerSource(id)
     local playerSource = false
-    local players = NDCore.Functions.GetPlayers()
+    local players = NDCore.getPlayers("id", id)
     for src, info in pairs(players) do
-        if players[src].id == id then
-            playerSource = src
-            break
+        if info.id == id then
+            return src
         end
     end
-    return playerSource
 end
 
 local function queryDatabaseProfiles(find, findData)
-    local query = ("SELECT * FROM characters WHERE %s RLIKE(?)"):format(find)
+    local query = ("SELECT * FROM nd_characters WHERE %s RLIKE(?)"):format(find)
     local result = MySQL.query.await(query, {findData})
     local profiles = {}
     for i=1, #result do
         local item = result[i]
-        local playerSource = false
-        local data = json.decode(item.data)
-        profiles[item.character_id] = {
-            firstName = item.first_name,
-            lastName = item.last_name,
+        local metadata = json.decode(item.metadata)
+        profiles[item.charid] = {
+            firstName = item.firstname,
+            lastName = item.lastname,
             dob = item.dob,
             gender = item.gender,
-            phone = item.phone_number,
-            id = getPlayerSource(item.character_id),
-            img = data.img,
-            ethnicity = data.ethnicity
+            phone = metadata.phoneNumber,
+            id = getPlayerSource(item.charid),
+            img = metadata.img,
+            ethnicity = metadata.ethnicity
         }
     end
     return profiles
@@ -39,18 +36,18 @@ end
 ---@param last string|nil
 ---@return table
 function BridgeNameSearch(src, first, last)
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = NDCore.getPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
     local profiles = {}
     if first and first ~= "" then
-        local data = queryDatabaseProfiles("first_name", first)
+        local data = queryDatabaseProfiles("firstname", first)
         for k, v in pairs(data) do
             profiles[k] = v
         end
     end
     if last and last ~= "" then
-        local data = queryDatabaseProfiles("last_name", last)
+        local data = queryDatabaseProfiles("lastname", last)
         for k, v in pairs(data) do
             profiles[k] = v
         end
@@ -62,25 +59,24 @@ end
 ---@param characterSearched number
 ---@return table
 function BridgeCharacterSearch(source, characterSearched)
-    local player = NDCore.Functions.GetPlayer(source)
+    local player = NDCore.getPlayer(source)
     if not config.policeAccess[player.job] then return false end
 
-    local players = NDCore.Functions.GetPlayers()
     local profiles = {}
-    local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {characterSearched})
+    local result = MySQL.query.await("SELECT * FROM nd_characters WHERE charid = ?", {characterSearched})
     local item = result and result[1]
 
     if item then        
-        local data = json.decode(item.data)
-        profiles[item.character_id] = {
-            firstName = item.first_name,
-            lastName = item.last_name,
+        local metadata = json.decode(item.metadata)
+        profiles[item.charid] = {
+            firstName = item.firstname,
+            lastName = item.lastname,
             dob = item.dob,
             gender = item.gender,
-            phone = item.phone_number,
-            id = getPlayerSource(item.character_id),
-            img = data.img,
-            ethnicity = data.ethnicity
+            phone = metadata.phonenumber,
+            id = getPlayerSource(item.charid),
+            img = metadata.img,
+            ethnicity = metadata.ethnicity
         }
     end
     return profiles
@@ -89,29 +85,33 @@ end
 ---@param src number
 ---@return table
 function BridgeGetPlayerInfo(src)
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = NDCore.getPlayer(src)
     return {
-        firstName = player.firstName,
-        lastName = player.lastName,
+        firstName = player.firstname,
+        lastName = player.lastname,
         job = player.job,
-        callsign = player.data.callsign,
-        img = player.data.img or "user.jpg",
+        callsign = player.metadata.callsign,
+        img = player.metadata.img or "user.jpg",
         characterId = player.id
     }
 end
 
 local function getVehicleCharacter(owner)
-    local result = MySQL.query.await("SELECT * FROM characters WHERE character_id = ?", {owner})
+    local result = MySQL.query.await("SELECT * FROM nd_characters WHERE charid = ?", {owner})
     if result then
         for i=1, #result do
             local item = result[i]
-            return {firstName = item.first_name, lastName = item.last_name, characterId = item.character_id}
+            return {
+                firstName = item.firstname,
+                lastName = item.lastname,
+                characterId = item.charid
+            }
         end
     end
 end
 
 local function queryDatabaseVehicles(find, findData)
-    local query = ("SELECT * FROM characters_vehicles WHERE %s = ?"):format(find)
+    local query = ("SELECT * FROM nd_vehicles WHERE %s = ?"):format(find)
     local result = MySQL.query.await(query, {findData})
     local vehicles = {}
     local character
@@ -119,14 +119,15 @@ local function queryDatabaseVehicles(find, findData)
 
     for i=1, #result do
         local item = result[i]
-        if find == "plate" then character = getVehicleCharacter(item.vehicle_owner) end
-        vehicles[item.v_id] = {
-            id = item.v_id,
-            color = item.color,
-            make = item.make,
-            model = item.model,
+        if find == "plate" then character = getVehicleCharacter(item.owner) end
+        local props = json.decode(item.properties)
+        vehicles[item.id] = {
+            id = item.id,
+            color = props.colorName,
+            make = item.makeName,
+            model = item.modelName,
             plate = item.plate,
-            class = item.class,
+            class = item.className,
             stolen = item.stolen == 1,
             character = character
         }
@@ -139,7 +140,7 @@ end
 ---@param data number|string
 ---@return table
 function BridgeViewVehicles(src, searchBy, data)
-    local player = NDCore.Functions.GetPlayer(src)
+    local player = NDCore.getPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
     local vehicles = {}
@@ -149,7 +150,7 @@ function BridgeViewVehicles(src, searchBy, data)
             vehicles[k] = v
         end
     elseif searchBy == "owner" then
-        local data = queryDatabaseVehicles("vehicle_owner", findData)
+        local data = queryDatabaseVehicles("owner", findData)
         for k, v in pairs(data) do
             vehicles[k] = v
         end
@@ -182,16 +183,17 @@ function BridgeGetLicenses(id)
         }
     ]]
 
-    local result = MySQL.query.await("SELECT `data` FROM characters WHERE character_id = ?", {id})
-    local data = result and result[1] and result[1].data
-    return data.licenses or {}
+    local result = MySQL.query.await("SELECT `metadata` FROM nd_characters WHERE charid = ?", {id})
+    local metadata = result and result[1] and json.decode(result[1].metadata)
+    return metadata.licenses or {}
 end
 
 ---@param characterId number
 ---@param licenseIdentifier string
 ---@param newLicenseStatus string
 function BridgeEditPlayerLicense(characterId, licenseIdentifier, newLicenseStatus)
-    NDCore.Functions.EditPlayerLicense(data.characterId, licenseIdentifier, {
+    local player = NDCore.fetchCharacter(characterId)
+    player.updateLicense(licenseIdentifier, {
         status = newLicenseStatus
     })
 end
@@ -209,13 +211,13 @@ end
 ---@param stolen boolean
 ---@param plate string
 function BridgeVehicleStolen(id, stolen, plate)
-    MySQL.query("UPDATE characters_vehicles SET stolen = ? WHERE v_id = ?", {stolen and 1 or 0, id})
+    MySQL.query("UPDATE nd_vehicles SET stolen = ? WHERE id = ?", {stolen and 1 or 0, id})
 end
 
 ---@return table
 function BridgeGetStolenVehicles()
     local plates = {}
-    local result = MySQL.query.await("SELECT `plate` FROM `characters_vehicles` WHERE `stolen` = 1")
+    local result = MySQL.query.await("SELECT `plate` FROM `nd_vehicles` WHERE `stolen` = 1")
     for _, veh in pairs(result) do
         plates[#plates+1] = veh.plate
     end
@@ -224,13 +226,14 @@ end
 
 ---@param characterId number
 function BridgeGetPlayerImage(characterId)
-    local character = NDCore.Functions.GetPlayerByCharacterId(characterId)
-    return character and character.data and character.data.img -- img in metadata from a character.
+    local player = NDCore.fetchCharacter(characterId)
+    return player and player.metadata and player.metadata.img -- img in metadata from a character.
 end
 
 ---@param characterId number
 ---@param key any
 ---@param value any
-function BridgeUpdatePlayerMetadata(characterId, key, value)
-    NDCore.Functions.SetPlayerData(characterId, key, value)
+function BridgeUpdatePlayerMetadata(source, characterId, key, value)
+    local player = NDCore.getPlayer(source)
+    player.setMetadata(key, value)
 end

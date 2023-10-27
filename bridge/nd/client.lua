@@ -2,13 +2,13 @@ local NDCore = exports["ND_Core"]:GetCoreObject()
 
 ---@return table
 function BridgeGetPlayerInfo()
-    local player = NDCore.Functions.GetSelectedCharacter()
+    local player = NDCore.getPlayer()
     return {
-        firstName = player.firstName,
-        lastName = player.lastName,
+        firstName = player.firstname,
+        lastName = player.lastname,
         job = player.job,
-        callsign = player.data.callsign,
-        img = player.data.img or "user.jpg"
+        callsign = player.metadata.callsign,
+        img = player.metadata.img or "user.jpg"
     }
 end
 
@@ -20,14 +20,10 @@ end
 
 ---@return string
 function BridgeRankName()
-    local player = NDCore.Functions.GetSelectedCharacter()
-    local groups = player.data.groups
-    if not groups then return "" end
-
-    local job = player.job:lower()
-    for name, groupInfo in pairs(groups) do
-        if name:lower() == job then
-            return groupInfo.rankName
+    local player = NDCore.getPlayer()
+    for _, group in pairs(player.groups) do
+        if group.isJob then
+            return group.rankName or ""
         end
     end
     return ""
@@ -36,6 +32,7 @@ end
 ---@param id number
 ---@param info table
 ---@return table
+--- info is from returned profiles in server.lua
 function BridgeGetCitizenInfo(id, info)
     return {
         img = info.img or "user.jpg",
