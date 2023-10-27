@@ -1,4 +1,3 @@
-local Bridge = {}
 local display = false
 local citizenData = {}
 local changedLicences = {}
@@ -10,9 +9,8 @@ local framework = {
 }
 
 local startedFramework = framework.nd or framework.esx or framework.qb
-local framework = ("/bridge/%s/client.lua"):format(startedFramework)
-local resourceFile = LoadResourceFile(GetCurrentResourceName(), framework)
-load(resourceFile, framework)()
+local Bridge = require(("/bridge/%s/client"):format(startedFramework))
+
 
 function displayUnits(units)
     local playerInfo = Bridge.getPlayerInfo()

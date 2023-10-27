@@ -11,9 +11,7 @@ local framework = {
 }
 
 local startedFramework = framework.nd or framework.esx or framework.qb
-local framework = ("/bridge/%s/server.lua"):format(startedFramework)
-local resourceFile = LoadResourceFile(resourceName, framework)
-load(resourceFile, framework)()
+local Bridge = require(("/bridge/%s/server"):format(startedFramework))
 
 local databaseFiles = {
     nd = {

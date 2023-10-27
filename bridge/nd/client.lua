@@ -1,4 +1,5 @@
 local NDCore = exports["ND_Core"]:GetCoreObject()
+local Bridge = {}
 
 ---@return table
 function Bridge.getPlayerInfo()
@@ -45,3 +46,5 @@ function Bridge.getCitizenInfo(id, info)
         ethnicity = info.ethnicity
     }
 end
+
+return Bridge

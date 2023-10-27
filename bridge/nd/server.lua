@@ -1,4 +1,5 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
+local NDCore = exports["ND_Core"]:GetCoreObject()
+local Bridge = {}
 
 local function getPlayerSource(id)
     local playerSource = false
@@ -237,3 +238,13 @@ function Bridge.updatePlayerMetadata(source, characterId, key, value)
     local player = NDCore.getPlayer(source)
     player.setMetadata(key, value)
 end
+
+function Bridge.getRecords(id)
+    local result = MySQL.query.await("SELECT records FROM nd_mdt_records WHERE `character` = ? LIMIT 1", {id})
+    if not result or not result[1] then
+        return {}, false
+    end
+    return json.decode(result[1].records), true
+end
+
+return Bridge
