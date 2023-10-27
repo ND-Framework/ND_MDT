@@ -61,6 +61,7 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
     if statusCode == "10-99" then
         local location, postal = lib.callback.await("ND_MDT:getStreet", src)
+        if not location then return end
         location = location:gsub("St", "street")
         location = location:gsub("Ave", "avenue")
         TriggerClientEvent("ND_MDT:panic", -1, {

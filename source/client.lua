@@ -385,12 +385,19 @@ RegisterNetEvent("ND_MDT:panic", function(info)
     SendNUIMessage(info)
 end)
 
-lib.callback.register("ND_MDT:getStreet", function(radius)
-    local coords = GetEntityCoords(PlayerPedId())
+local function getPlayerPostal()
     local postal = false
-    if config.use911Postal then
-       postal = exports[config.postalResourceName]:getPostal()
+    if GetResourceState("nearest-postal") == "started" then
+        postal = exports["nearest-postal"]:getPostal()
+    elseif GetResourceState("ModernHUD") == "started" then
+        postal = exports["ModernHUD"]:getPostal()
     end
+    return postal
+end
+
+lib.callback.register("ND_MDT:getStreet", function(radius)
+    local postal = getPlayerPostal()
+    local coords = GetEntityCoords(PlayerPedId())
     local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
     return location, postal
 end)
@@ -401,11 +408,8 @@ RegisterCommand("911", function(source, args, rawCommand)
     local playerInfo = Bridge.getPlayerInfo()
     local caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
     local coords = GetEntityCoords(PlayerPedId())
-    local postal = false
-    if config.use911Postal then
-       postal = exports[config.postalResourceName]:getPostal()
-    end
     local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
+    local postal = getPlayerPostal()
     if postal then
         location = ("%s (%s)"):format(location, postal)
     end
