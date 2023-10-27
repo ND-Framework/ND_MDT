@@ -478,7 +478,7 @@ RegisterCommand("mdt", function(source, args, rawCommand)
         department = playerInfo.job,
         rank = BridgeRankName(),
         name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
-        unitNumber = playerInfo.data.callsign
+        unitNumber = playerInfo.callsign
     })
     PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end, false)

@@ -15,14 +15,18 @@ local resourceFile = LoadResourceFile(resourceName, framework)
 load(resourceFile, framework)()
 
 local databaseFiles = {
-    ("bridge/%s/database/bolos.sql"):format(startedFramework),
-    ("bridge/%s/database/records.sql"):format(startedFramework),
-    ("bridge/%s/database/reports.sql"):format(startedFramework),
-    ("bridge/%s/database/weapons.sql"):format(startedFramework)
+    nd = {
+        "bridge/nd/database/bolos.sql",
+        "bridge/nd/database/records.sql",
+        "bridge/nd/database/reports.sql",
+        "bridge/nd/database/weapons.sql"
+    },
+    esx = {},
+    qb = {}
 }
 
-for i=1, #databaseFiles do
-    local file = LoadResourceFile(resourceName, databaseFiles[i])
+for i=1, #databaseFiles[startedFramework] do
+    local file = LoadResourceFile(resourceName, databaseFiles[startedFramework][i])
     if file then
         MySQL.query(file)
     end
@@ -397,5 +401,5 @@ RegisterNetEvent("ND_MDT:updateCallsign", function(callsign)
     local src = source
     local player = BridgeGetPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    BridgeUpdatePlayerMetadata(player.characterId, "callsign", callsign)
+    BridgeUpdatePlayerMetadata(src, player.characterId, "callsign", callsign)
 end)
