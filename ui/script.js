@@ -127,6 +127,15 @@ const escapeHtml = (unsafe) => {
 let translation = {}
 $.getJSON("../config/translate.json", function(data) {
     translation = data[0]
+    $("#leftPanelButtonDashboard").html(`<i style="margin-left: 2%; font-size: 2ch"class="bx bxs-dashboard"></i> ${translation["Dashboard"]}`);
+    $("#leftPanelButtonNameSearch").html(`<i style="margin-left: 4%" class="fas fa-user"></i> ${translation["Name Search"]}`);
+    $("#leftPanelButtonPlateSearch").html(`<i class="fas fa-car-side"></i> ${translation["Plate Search"]}`);
+    $("#leftPanelButtonWeaponSearch").html(`<i class="fa-solid fa-gun"></i> ${translation["Weapon Search"]}`);
+    $("#leftPanelButtonBolo").html(`leftPanelButtonBolo ${translation["BOLO"]}`);
+    $("#leftPanelButtonReports").html(`<i class="fa-solid fa-file"></i> ${translation["Reports"]}`);
+    $("#leftPanelButtonLiveChat").html(`<i class="fas fa-comment-alt"></i> ${translation["Live Chat"]}`);
+    $("#leftPanelButtonSettings").html(`<i class="fas fa-cog"></i> ${translation["Settings"]}`);
+    $("#leftPanelPanicButton").html(translation["PANIC"]);
 });
 
 // Hide all pages but the dashboard on start.
