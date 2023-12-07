@@ -53,19 +53,19 @@
                 <div class="rightPanelDashboard">
                     <!-- Change status using these buttons -->
                     <div class="rightPanelDashboardButtons">
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9" value="10-6">Busy</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9; opacity: 1; color: white" value="10-7">Out of service</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: #2656c9" value="10-8">In service</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardBusyButton" style="background-color: #2656c9" value="10-6">Busy</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardOutServiceButton" style="background-color: #2656c9; opacity: 1; color: white" value="10-7">Out of service</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardInServiceButton" style="background-color: #2656c9" value="10-8">In service</button>
                         <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardPanicButton" style="background-color: red" value="10-99">PANIC</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-11">Traffic stop</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-15">Transporting to station</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-23">Arrived on scene</button>
-                        <button class="rightPanelDashboardButtonsStatus" style="background-color: gray" value="10-97">En route</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardTrafficStopButton" style="background-color: gray" value="10-11">Traffic stop</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardTransportButton" style="background-color: gray" value="10-15">Transporting to station</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardArrivedButton" style="background-color: gray" value="10-23">Arrived on scene</button>
+                        <button class="rightPanelDashboardButtonsStatus" id="rightPanelDashboardRouteButton" style="background-color: gray" value="10-97">En route</button>
                     </div>
 
                     <div class="rightPanelDashboardDisplays">
-                        <h3 class="rightPanelDashboardDisplayTitle">Active Units</h3>
-                        <h3 class="rightPanelDashboardDisplayTitle">911 Calls</h3>
+                        <h3 class="rightPanelDashboardDisplayTitle" id="rightPanelDashboardDisplayActiveUnits">Active Units</h3>
+                        <h3 class="rightPanelDashboardDisplayTitle" id="rightPanelDashboardDisplayCalls">911 Calls</h3>
 
                         <!-- Show active units on the dashboard -->
                         <div class="rightPanelDashboardActiveUnits rightPanelDashboardDisplayItems"></div>

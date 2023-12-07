@@ -136,6 +136,21 @@ $.getJSON("../config/translate.json", function(data) {
     $("#leftPanelButtonLiveChat").html(`<i class="fas fa-comment-alt"></i> ${translation["Live Chat"]}`);
     $("#leftPanelButtonSettings").html(`<i class="fas fa-cog"></i> ${translation["Settings"]}`);
     $("#leftPanelPanicButton").html(translation["PANIC"]);
+    $("#rightPanelDashboardBusyButton").text(translation["Busy"]);
+    $("#rightPanelDashboardOutServiceButton").text(translation["Out of service"]);
+    $("#rightPanelDashboardInServiceButton").text(translation["In service"]);
+    $("#rightPanelDashboardPanicButton").text(translation["PANIC"]);
+    $("#rightPanelDashboardTrafficStopButton").text(translation["Traffic stop"]);
+    $("#rightPanelDashboardTransportButton").text(translation["Transporting to station"]);
+    $("#rightPanelDashboardArrivedButton").text(translation["Arrived on scene"]);
+    $("#rightPanelDashboardRouteButton").text(translation["En route"]);
+    $("#rightPanelDashboardDisplayActiveUnits").text(translation["Active Units"]);
+    $("#rightPanelDashboardDisplayCalls").text(translation["911 Calls"]);
+    $(".viewVehiclesButton").html(`<i class="fas fa-car-side"></i> ${translation["View vehicles"]}`);
+    $(".viewWeaponsButton").html(`<i class="fa-solid fa-gun"></i> ${translation["View weapons"]}`);
+    $(".boloCitizenCreateButton").html(`<i class="fa-solid fa-hand"></i> ${translation["Create BOLO"]}`);
+    $(".recordsMainCreateButton").html(`<i class="fa-solid fa-file"></i> ${translation["Create record"]}`);
+    $(".recordsCitizenSave").html(`<i class="fa-solid fa-check"></i> ${translation["Save all changes"]}`);
 });
 
 // Hide all pages but the dashboard on start.

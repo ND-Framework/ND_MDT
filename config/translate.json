@@ -47,7 +47,6 @@
     "Female": "Female",
     "BOLO information": "BOLO information",
     "person": "person",
-    "View vehicles": "View vehicles",
     "Create BOLO": "Create BOLO",
     "Create record": "Create record",
     "Save all changes": "Save all changes",
@@ -74,5 +73,15 @@
     "Reports": "Reports",
     "Live Chat": "Live Chat",
     "Settings": "Settings",
-    "PANIC": "PANIC"
+    "PANIC": "PANIC",
+    "Busy": "Busy",
+    "Out of service": "Out of service",
+    "In service": "In service",
+    "Traffic stop": "Traffic stop",
+    "Transporting to station": "Transporting to station",
+    "Arrived on scene": "Arrived on scene",
+    "En route": "En route",
+    "Active Units": "Active Units",
+    "911 Calls": "911 Calls",
+    
 }]
