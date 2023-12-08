@@ -151,6 +151,9 @@ $.getJSON("../config/translate.json", function(data) {
     $(".boloCitizenCreateButton").html(`<i class="fa-solid fa-hand"></i> ${translation["Create BOLO"]}`);
     $(".recordsMainCreateButton").html(`<i class="fa-solid fa-file"></i> ${translation["Create record"]}`);
     $(".recordsCitizenSave").html(`<i class="fa-solid fa-check"></i> ${translation["Save all changes"]}`);
+    $(".recordsLicensesTitle").html(`${translation["Licenses"]}:`);
+    $(".recordsPropertiesTitle").html(`${translation["Properties"]}:`);
+    $(".recordsMainTitle").html(`${translation["Records"]}:`);
 });
 
 // Hide all pages but the dashboard on start.
