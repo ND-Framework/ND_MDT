@@ -134,7 +134,8 @@ function weaponSearch(searchBy, search)
             if weaponPage then
                 SendNUIMessage({
                     type = "weaponSerialSearch",
-                    found = "No weapons found registered to this citizen."
+                    found = "No weapons found registered to this citizen.",
+                    weaponPage = true
                 })
             else
                 SendNUIMessage({
@@ -209,7 +210,8 @@ RegisterNUICallback("viewVehicles", function(data)
             if vehPage then
                 SendNUIMessage({
                     type = "viewVehicles",
-                    found = "No vehicles found registered to this citizen."
+                    found = "No vehicles found registered to this citizen.",
+                    vehPage = true
                 })
             else
                 SendNUIMessage({
