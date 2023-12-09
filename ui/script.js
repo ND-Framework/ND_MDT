@@ -945,10 +945,10 @@ function viewBolo(bolo, animate) {
                 </div>
                 <div>
                     ${data.character && `
-                        <button class="weaponSearchResultButton nameSearchResultButton" data-id="${data.character}">${translation["Search citizen"]}</button>
+                        <button class="nameSearchResultButton bolo-viewCitzen" data-id="${data.character}">${translation["Search citizen"]}</button>
                         <br>
-                        <button class="nameSearchResultButtonVehicles nameSearchResultButton bolo-delete" data-id="${bolo.id}">${translation["Remove Bolo"]}</button>
-                    ` || `<Button class="nameSearchResultButtonVehicles nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>`}
+                        <button class="nameSearchResultButton bolo-delete" data-id="${bolo.id}">${translation["Remove Bolo"]}</button>
+                    ` || `<Button class="nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>`}
                 </div>
             </div>
         `)
@@ -974,7 +974,7 @@ function viewBolo(bolo, animate) {
                     || ""}
                 </div>
                 <div>
-                    <Button class="nameSearchResultButtonVehicles nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>
+                    <Button class="nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>
                 </div>
             </div>
         `)
@@ -988,7 +988,7 @@ function viewBolo(bolo, animate) {
                     || ""}
                 </div>
                 <div>
-                    <Button class="nameSearchResultButtonVehicles nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>
+                    <Button class="nameSearchResultButton bolo-delete" style="margin-top: 25%;" data-id="${bolo.id}">${translation["Remove Bolo"]}</Button>
                 </div>
             </div>
         `)
@@ -1003,6 +1003,22 @@ $(document).on("click", ".bolo-delete", async function() {
     const result = await createConfirmScreen(translation["Are you sure you'd like to remove this bolo?"])
     if (result != "confirm") {return}
     $.post(`https://${GetParentResourceName()}/removeBolo`, JSON.stringify({
+        id: id
+    }));
+});
+
+$(document).on("click", ".bolo-viewCitzen", function() {
+    if ($(".rightPanelNameSearch").css("display") != "block") {
+        hideAllPages();
+        $(".rightPanelNameSearch").fadeIn("fast");
+        $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
+    };
+    
+    const id = $(this).data("id");
+    $("#nameLoader").fadeIn("fast");
+    $("body").css("cursor", "progress")
+
+    $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
         id: id
     }));
 });

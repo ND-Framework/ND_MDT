@@ -237,6 +237,15 @@ RegisterNUICallback("viewRecords", function(data)
     -- retrive records from the server and adds it on the ui.
     lib.callback("ND_MDT:viewRecords", false, function(result)
         result.citizen = citizenData[data.id]
+        if not result.citizen then
+            local result2 = lib.callback.await("ND_MDT:nameSearchByCharacter", false, data.id)
+            if not result2 or not next(result2) then return end
+            for character, info in pairs(result2) do
+                local citizen = Bridge.getCitizenInfo(character, info)
+                citizenData[character] = citizen
+            end
+            result.citizen = citizenData[data.id]
+        end
         SendNUIMessage({
             type = "viewRecords",
             data = json.encode(result)
