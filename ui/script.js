@@ -151,9 +151,16 @@ $.getJSON("../config/translate.json", function(data) {
     $(".boloCitizenCreateButton").html(`<i class="fa-solid fa-hand"></i> ${translation["Create BOLO"]}`);
     $(".recordsMainCreateButton").html(`<i class="fa-solid fa-file"></i> ${translation["Create record"]}`);
     $(".recordsCitizenSave").html(`<i class="fa-solid fa-check"></i> ${translation["Save all changes"]}`);
-    $(".recordsLicensesTitle").html(`${translation["Licenses"]}:`);
-    $(".recordsPropertiesTitle").html(`${translation["Properties"]}:`);
-    $(".recordsMainTitle").html(`${translation["Records"]}:`);
+    $(".recordsLicensesTitle").text(`${translation["Licenses"]}:`);
+    $(".recordsPropertiesTitle").text(`${translation["Properties"]}:`);
+    $(".recordsMainTitle").text(`${translation["Records"]}:`);
+    $("#firstNameSearchBar").attr("placeholder", `${translation["First name"]}..`);
+    $("#lastNameSearchBar").attr("placeholder", `${translation["Last name"]}..`);
+    $("#searchNameDefault").text(`${translation["Search citizen by name"]}.`);
+    $("#plateSearchBar").attr("placeholder", translation["Plate number"]);
+    $("#searchPlateDefault").text(`${translation["Search vehicle by plate number"]}.`);
+    $("#weaponSearchBar").attr("placeholder", translation["Weapon serial number"]);
+    $("#searchWeaponDefault").text(`${translation["Search weapon by serial number"]}.`);
 });
 
 // Hide all pages but the dashboard on start.

@@ -85,5 +85,12 @@
     "911 Calls": "911 Calls",
     "Licenses": "Licenses:",
     "Properties": "Properties",
-    "Records": "Records"
+    "Records": "Records",
+    "First name": "First name",
+    "Last name": "Last name",
+    "Search citizen by name": "Search citizen by name",
+    "Plate number": "Plate number",
+    "Search vehicle by plate number": "Search vehicle by plate number",
+    "Weapon serial number": "Weapon serial number",
+    "Search weapon by serial number": "Search weapon by serial number"
 }]
