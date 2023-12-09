@@ -126,7 +126,7 @@ const escapeHtml = (unsafe) => {
 // get translation
 let translation = {}
 $.getJSON("../config/translate.json", function(data) {
-    translation = data[0]
+    translation = data[0];
     $("#leftPanelButtonDashboard").html(`<i style="margin-left: 2%; font-size: 2ch"class="bx bxs-dashboard"></i> ${translation["Dashboard"]}`);
     $("#leftPanelButtonNameSearch").html(`<i style="margin-left: 4%" class="fas fa-user"></i> ${translation["Name Search"]}`);
     $("#leftPanelButtonPlateSearch").html(`<i class="fas fa-car-side"></i> ${translation["Plate Search"]}`);
@@ -161,6 +161,34 @@ $.getJSON("../config/translate.json", function(data) {
     $("#searchPlateDefault").text(`${translation["Search vehicle by plate number"]}.`);
     $("#weaponSearchBar").attr("placeholder", translation["Weapon serial number"]);
     $("#searchWeaponDefault").text(`${translation["Search weapon by serial number"]}.`);
+    $(".rightPanelBoloButtons button[value=\"all\"]").text(translation["All Bolo"]);
+    $(".rightPanelBoloButtons button[value=\"vehicle\"]").text(translation["Vehicle Bolo"]);
+    $(".rightPanelBoloButtons button[value=\"person\"]").text(translation["Person Bolo"]);
+    $(".rightPanelBoloButtons button[value=\"other\"]").text(translation["Other Bolo"]);
+    $(".rightPanelBoloButtons button[value=\"create\"]").text(translation["Create Bolo"]);
+    $(".rightPanelReportsButtons button[value=\"crime\"]").text(translation["Crime"]);
+    $(".rightPanelReportsButtons button[value=\"traffic\"]").text(translation["Traffic"]);
+    $(".rightPanelReportsButtons button[value=\"arrest\"]").text(translation["Arrest"]);
+    $(".rightPanelReportsButtons button[value=\"incident\"]").text(translation["Incident"]);
+    $(".rightPanelReportsButtons button[value=\"use_of_force\"]").text(translation["Use of Force"]);
+    $(".rightPanelReportsButtons button[value=\"create\"]").text(translation["Create report"]);
+    $(".liveChatRateLimit").text(translation["You've been rate limited, wait for this message to dissapear."]);
+    $(".form-records-bar").text(translation["Create record"]);
+    $("#form-bolo-create, #form-reports-create, #form-records-create").text(translation["Create"]);
+    $(".form-bolo-bar").text(translation["Create BOLO"]);
+    $(".form-bolo-type option[value=\"\"]").text(translation["Choose bolo Type"]);
+    $(".form-bolo-type option[value=\"person\"]").text(translation["Person"]);
+    $(".form-bolo-type option[value=\"vehicle\"]").text(translation["Vehicle"]);
+    $(".form-bolo-type option[value=\"other\"]").text(translation["Other"]);
+    $(".form-reports-bar").text(translation["Create report"]);
+    $(".form-reports-type option[value=\"\"]").text(translation["Choose report type"]);
+    $(".form-reports-type option[value=\"crime\"]").text(translation["Crime"]);
+    $(".form-reports-type option[value=\"traffic\"]").text(translation["Traffic"]);
+    $(".form-reports-type option[value=\"arrest\"]").text(translation["Arrest"]);
+    $(".form-reports-type option[value=\"incident\"]").text(translation["Incident"]);
+    $(".form-reports-type option[value=\"use_of_force\"]").text(translation["Use of Force"]);
+    $(".confirm-screen > div button[value=\"confirm\"]").text(translation["Confirm"]);
+    $(".confirm-screen > div button[value=\"cancel\"]").text(translation["Cancel"]);
 });
 
 // Hide all pages but the dashboard on start.
