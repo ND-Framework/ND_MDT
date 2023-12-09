@@ -3,7 +3,8 @@ local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
 local resourceName = GetCurrentResourceName()
-local chargesList = json.decode(LoadResourceFile(resourceName, "config/charges.json")[1])
+local chargesList = json.decode(LoadResourceFile(resourceName, "/config/charges.json"))[1]
+
 local framework = {
     nd = GetResourceState("ND_Core") == "started" and "nd",
     esx = GetResourceState("es_extended") == "started" and "esx",
@@ -140,13 +141,6 @@ RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     info.dept = player.job
     TriggerClientEvent("ND_MDT:receiveLiveChat", -1, info)
 end)
-
-function getChargesJson()
-    local chargesJson = LoadResourceFile(GetCurrentResourceName(), "config/charges.json")
-    if not chargesJson then return end
-    local chargesList = json.decode(chargesJson)[1]
-    return chargesList
-end
 
 RegisterNetEvent("ND_MDT:saveRecords", function(data)
     local src = source
