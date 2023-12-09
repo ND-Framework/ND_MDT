@@ -131,7 +131,7 @@ $.getJSON("../config/translate.json", function(data) {
     $("#leftPanelButtonNameSearch").html(`<i style="margin-left: 4%" class="fas fa-user"></i> ${translation["Name Search"]}`);
     $("#leftPanelButtonPlateSearch").html(`<i class="fas fa-car-side"></i> ${translation["Plate Search"]}`);
     $("#leftPanelButtonWeaponSearch").html(`<i class="fa-solid fa-gun"></i> ${translation["Weapon Search"]}`);
-    $("#leftPanelButtonBolo").html(`leftPanelButtonBolo ${translation["BOLO"]}`);
+    $("#leftPanelButtonBolo").html(`<i class="fa-solid fa-hand"></i> ${translation["BOLO"]}`);
     $("#leftPanelButtonReports").html(`<i class="fa-solid fa-file"></i> ${translation["Reports"]}`);
     $("#leftPanelButtonLiveChat").html(`<i class="fas fa-comment-alt"></i> ${translation["Live Chat"]}`);
     $("#leftPanelButtonSettings").html(`<i class="fas fa-cog"></i> ${translation["Settings"]}`);
