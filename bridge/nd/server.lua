@@ -1,9 +1,9 @@
-local NDCore = exports["ND_Core"]:GetCoreObject()
+local NDCore = exports["ND_Core"]
 local Bridge = {}
 
 local function getPlayerSource(id)
     local playerSource = false
-    local players = NDCore.getPlayers("id", id)
+    local players = NDCore:getPlayers("id", id)
     for src, info in pairs(players) do
         if info.id == id then
             return src
@@ -37,7 +37,7 @@ end
 ---@param last string|nil
 ---@return table
 function Bridge.nameSearch(src, first, last)
-    local player = NDCore.getPlayer(src)
+    local player = NDCore:getPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
     local profiles = {}
@@ -60,7 +60,7 @@ end
 ---@param characterSearched number
 ---@return table
 function Bridge.characterSearch(source, characterSearched)
-    local player = NDCore.getPlayer(source)
+    local player = NDCore:getPlayer(source)
     if not config.policeAccess[player.job] then return false end
 
     local profiles = {}
@@ -86,7 +86,7 @@ end
 ---@param src number
 ---@return table
 function Bridge.getPlayerInfo(src)
-    local player = NDCore.getPlayer(src)
+    local player = NDCore:getPlayer(src)
     return {
         firstName = player.firstname,
         lastName = player.lastname,
@@ -141,7 +141,7 @@ end
 ---@param data number|string
 ---@return table
 function Bridge.viewVehicles(src, searchBy, data)
-    local player = NDCore.getPlayer(src)
+    local player = NDCore:getPlayer(src)
     if not config.policeAccess[player.job] then return false end
 
     local vehicles = {}
@@ -193,7 +193,7 @@ end
 ---@param licenseIdentifier string
 ---@param newLicenseStatus string
 function Bridge.editPlayerLicense(characterId, licenseIdentifier, newLicenseStatus)
-    local player = NDCore.fetchCharacter(characterId)
+    local player = NDCore:fetchCharacter(characterId)
     player.updateLicense(licenseIdentifier, {
         status = newLicenseStatus
     })
@@ -227,7 +227,7 @@ end
 
 ---@param characterId number
 function Bridge.getPlayerImage(characterId)
-    local player = NDCore.fetchCharacter(characterId)
+    local player = NDCore:fetchCharacter(characterId)
     return player and player.metadata and player.metadata.img -- img in metadata from a character.
 end
 
@@ -235,7 +235,7 @@ end
 ---@param key any
 ---@param value any
 function Bridge.updatePlayerMetadata(source, characterId, key, value)
-    local player = NDCore.getPlayer(source)
+    local player = NDCore:getPlayer(source)
     player.setMetadata(key, value)
 end
 

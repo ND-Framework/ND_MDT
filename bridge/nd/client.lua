@@ -1,9 +1,9 @@
-local NDCore = exports["ND_Core"]:GetCoreObject()
+local NDCore = exports["ND_Core"]
 local Bridge = {}
 
 ---@return table
 function Bridge.getPlayerInfo()
-    local player = NDCore.getPlayer()
+    local player = NDCore:getPlayer()
     return {
         firstName = player.firstname,
         lastName = player.lastname,
@@ -21,7 +21,7 @@ end
 
 ---@return string
 function Bridge.rankName()
-    local player = NDCore.getPlayer()
+    local player = NDCore:getPlayer()
     for _, group in pairs(player.groups) do
         if group.isJob then
             return group.rankName or ""
