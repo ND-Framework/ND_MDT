@@ -1101,7 +1101,7 @@ window.addEventListener("message", function(event) {
             $(".background").fadeIn("fast");
             $(".topBarText").html(`<i class="fas fa-laptop"></i> ${translation["MOBILE DATA TERMINAL"]} | ${item.department} ${item.rank}`);
             $(".leftPanelPlayerInfoImage").attr("src", item.img);
-            $(".leftPanelPlayerInfoUnitNumber").val(item.unitNumber || "");
+            $(".leftPanelPlayerInfoUnitNumber").text(item.unitNumber || translation["Callsign not set"]);
             $(".leftPanelPlayerInfoName").text(escapeHtml(item.name));
         } else if (item.action === "close") {
             $(".background").fadeOut("fast");
@@ -1539,13 +1539,4 @@ document.addEventListener("keydown", event => {
         $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
         $.post(`https://${GetParentResourceName()}/close`);
     }
-});
-
-// Update callsign when finished typing it.
-const input = document.querySelector(".leftPanelPlayerInfoUnitNumber");
-
-input.addEventListener("blur", () => {
-    $.post(`https://${GetParentResourceName()}/setUnitNumber`, JSON.stringify({
-        number: $(".leftPanelPlayerInfoUnitNumber").val()
-    }));
 });
