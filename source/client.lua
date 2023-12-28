@@ -279,9 +279,8 @@ RegisterNUICallback("sendLiveChat", function(data)
 end)
 
 -- If the client didn't send the message then it will add it when this event is triggered.
-RegisterNetEvent("ND_MDT:receiveLiveChat")
-AddEventHandler("ND_MDT:receiveLiveChat", function(chatInfo)
-    if chatInfo.id == GetPlayerServerId(PlayerId()) then return end
+RegisterNetEvent("ND_MDT:receiveLiveChat", function(chatInfo)
+    if chatInfo.id == cache.serverId then return end
     local playerInfo = Bridge.getPlayerInfo()
     if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage(chatInfo)
