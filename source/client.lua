@@ -2,15 +2,6 @@ local display = false
 local citizenData = {}
 local changedLicences = {}
 local neverOpened = true
-local framework = {
-    nd = GetResourceState("ND_Core") == "started" and "nd",
-    esx = GetResourceState("es_extended") == "started" and "esx",
-    qb = GetResourceState("qb-core") == "started" and "qb"
-}
-
-local startedFramework = framework.nd or framework.esx or framework.qb
-local Bridge = require(("/bridge/%s/client"):format(startedFramework))
-
 
 function displayUnits(units)
     local playerInfo = Bridge.getPlayerInfo()

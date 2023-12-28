@@ -5,33 +5,6 @@ local activeUnits = {}
 local resourceName = GetCurrentResourceName()
 local chargesList = json.decode(LoadResourceFile(resourceName, "/config/charges.json"))[1]
 
-local framework = {
-    nd = GetResourceState("ND_Core") == "started" and "nd",
-    esx = GetResourceState("es_extended") == "started" and "esx",
-    qb = GetResourceState("qb-core") == "started" and "qb"
-}
-
-local startedFramework = framework.nd or framework.esx or framework.qb
-local Bridge = require(("/bridge/%s/server"):format(startedFramework))
-
-local databaseFiles = {
-    nd = {
-        "bridge/nd/database/bolos.sql",
-        "bridge/nd/database/records.sql",
-        "bridge/nd/database/reports.sql",
-        "bridge/nd/database/weapons.sql"
-    },
-    esx = {},
-    qb = {}
-}
-
-for i=1, #databaseFiles[startedFramework] do
-    local file = LoadResourceFile(resourceName, databaseFiles[startedFramework][i])
-    if file then
-        MySQL.query(file)
-    end
-end
-
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
     local src = source
