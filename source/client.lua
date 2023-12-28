@@ -79,7 +79,7 @@ RegisterCommand("+mdt", function()
         type = "display",
         action = "open",
         img = playerInfo.img,
-        department = playerInfo.job,
+        department = playerInfo.jobLabel,
         rank = Bridge.rankName(),
         name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
         unitNumber = playerInfo.callsign
@@ -269,7 +269,7 @@ RegisterNUICallback("sendLiveChat", function(data)
     local chatInfo = {
         type = "addLiveChatMessage",
         callsign = playerInfo.callsign,
-        dept = playerInfo.job,
+        dept = playerInfo.jobLabel,
         img = playerInfo.img,
         name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
         text = data.text

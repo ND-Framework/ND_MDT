@@ -3,12 +3,13 @@ local Bridge = {}
 
 ---@return table
 function Bridge.getPlayerInfo()
-    local player = NDCore:getPlayer()
+    local player = NDCore:getPlayer() or {}
     return {
-        firstName = player.firstname,
-        lastName = player.lastname,
-        job = player.job,
-        callsign = player.metadata.callsign,
+        firstName = player.firstname or "",
+        lastName = player.lastname or "",
+        job = player.job or "",
+        jobLabel = player.jobInfo?.label or player.job or "",
+        callsign = player.metadata.callsign or "",
         img = player.metadata.img or "user.jpg"
     }
 end

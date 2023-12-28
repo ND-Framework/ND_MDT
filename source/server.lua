@@ -1,4 +1,3 @@
-local Bridge = {}
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
@@ -111,7 +110,7 @@ RegisterNetEvent("ND_MDT:sendLiveChat", function(info)
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return false end
     info.id = src
-    info.dept = player.job
+    info.dept = player.jobLabel
     TriggerClientEvent("ND_MDT:receiveLiveChat", -1, info)
 end)
 
