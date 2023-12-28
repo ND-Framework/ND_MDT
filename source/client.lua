@@ -456,33 +456,3 @@ TriggerEvent("chat:addSuggestion", "/911-", "Make a detailed 911 call.", {
     {name="Describe your situation.", help="What's happening, do you need Police, Ambulance?"}
 })
 print("^1[^4ND_MDT^1] ^0for support join the discord server: ^4https://discord.gg/Z9Mxu72zZ6^0.")
-
-
-RegisterCommand("mdt", function(source, args, rawCommand)
-    local playerInfo = Bridge.getPlayerInfo()
-    if not Bridge.hasAccess(playerInfo.job) then return end
-    ped = PlayerPedId()
-    if neverOpened then
-        neverOpened = false
-        -- returns all active units from the server and updates the status on the ui.
-        lib.callback("ND_MDT:getUnitStatus", false, function(units)
-            displayUnits(units)
-        end)
-        lib.callback("ND_MDT:get911Calls", false, function(emeregencyCalls)
-            displayUnits(emeregencyCalls)
-        end)
-    end
-    local veh = GetVehiclePedIsIn(ped)
-    display = true
-    SetNuiFocus(true, true)
-    SendNUIMessage({
-        type = "display",
-        action = "open",
-        img = playerInfo.img,
-        department = playerInfo.job,
-        rank = Bridge.rankName(),
-        name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
-        unitNumber = playerInfo.callsign
-    })
-    PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
-end, false)
