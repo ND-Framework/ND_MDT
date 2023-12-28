@@ -16,6 +16,7 @@ end
 local bridge, resource = getBridge()
 
 if lib.context == "server" then
+    local resourceName = GetCurrentResourceName()
     local databaseFiles = {
         "bridge/%s/database/bolos.sql",
         "bridge/%s/database/records.sql",

@@ -1,6 +1,6 @@
 -- For support join my discord: https://discord.gg/Z9Mxu72zZ6
 
-author "Andyyy#7666"
+author "Andyyy7666"
 description "ND Framework MDT For LEO and FIRE"
 version "1.0.0"
 
@@ -23,7 +23,8 @@ ui_page "ui/index.html"
 shared_scripts {
     "@ox_lib/init.lua",
     "config/config.lua",
-    "config/charges.json"
+    "config/charges.json",
+    "source/shared.lua"
 }
 server_scripts {
     "@oxmysql/lib/MySQL.lua",
