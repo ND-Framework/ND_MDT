@@ -1119,6 +1119,11 @@ window.addEventListener("message", function(event) {
             $(".leftPanelPlayerInfoImage").attr("src", item.img);
             $(".leftPanelPlayerInfoUnitNumber").text(item.unitNumber || translation["Callsign not set"]);
             $(".leftPanelPlayerInfoName").text(escapeHtml(item.name));
+            if (item.boss) {
+                $("#leftPanelButtonEmployees").show();
+            } else {
+                $("#leftPanelButtonEmployees").hide();
+            }
         } else if (item.action === "close") {
             $(".background").fadeOut("fast");
         };

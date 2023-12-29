@@ -10,7 +10,8 @@ function Bridge.getPlayerInfo()
         job = player.job or "",
         jobLabel = player.jobInfo?.label or player.job or "",
         callsign = player.metadata.callsign or "",
-        img = player.metadata.img or "user.jpg"
+        img = player.metadata.img or "user.jpg",
+        isBoss = player.jobInfo?.isBoss
     }
 end
 
