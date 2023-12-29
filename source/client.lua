@@ -3,6 +3,37 @@ local citizenData = {}
 local changedLicences = {}
 local neverOpened = true
 
+local function openMDT(status)
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
+
+    if neverOpened then
+        neverOpened = false
+        -- returns all active units from the server and updates the status on the ui.
+        lib.callback("ND_MDT:getUnitStatus", false, function(units)
+            displayUnits(units)
+        end)
+        lib.callback("ND_MDT:get911Calls", false, function(emeregencyCalls)
+            displayUnits(emeregencyCalls)
+        end)
+    end
+
+    display = true
+    SetNuiFocus(true, true)
+    SendNUIMessage({
+        type = "display",
+        action = "open",
+        img = playerInfo.img,
+        department = playerInfo.jobLabel,
+        rank = Bridge.rankName(),
+        name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
+        unitNumber = playerInfo.callsign,
+        boss = playerInfo.isBoss
+    })
+
+    PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
+end
+
 function displayUnits(units)
     local playerInfo = Bridge.getPlayerInfo()
     if not Bridge.hasAccess(playerInfo.job) then return end
@@ -56,36 +87,9 @@ end
 
 -- open the mdt using keymapping.
 RegisterCommand("+mdt", function()
-    local playerInfo = Bridge.getPlayerInfo()
-    if not Bridge.hasAccess(playerInfo.job) then return end
-    ped = PlayerPedId()
-    local veh = GetVehiclePedIsIn(ped)
-    if veh == 0 then return end
-    if GetVehicleClass(veh) ~= 18 then return end
-    if neverOpened then
-        neverOpened = false
-        -- returns all active units from the server and updates the status on the ui.
-        lib.callback("ND_MDT:getUnitStatus", false, function(units)
-            displayUnits(units)
-        end)
-        lib.callback("ND_MDT:get911Calls", false, function(emeregencyCalls)
-            displayUnits(emeregencyCalls)
-        end)
-    end
-    local veh = GetVehiclePedIsIn(ped)
-    display = true
-    SetNuiFocus(true, true)
-    SendNUIMessage({
-        type = "display",
-        action = "open",
-        img = playerInfo.img,
-        department = playerInfo.jobLabel,
-        rank = Bridge.rankName(),
-        name = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName),
-        unitNumber = playerInfo.callsign,
-        boss = playerInfo.isBoss
-    })
-    PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
+    local veh = GetVehiclePedIsIn(cache.ped)
+    if not DoesEntityExist(veh) or GetVehicleClass(veh) ~= 18 then return end
+    openMDT(true)
 end, false)
 RegisterCommand("-mdt", function()end, false)
 RegisterKeyMapping("+mdt", "Open the ND MDT", "keyboard", "b")
@@ -399,7 +403,7 @@ end
 
 lib.callback.register("ND_MDT:getStreet", function(radius)
     local postal = getPlayerPostal()
-    local coords = GetEntityCoords(PlayerPedId())
+    local coords = GetEntityCoords(cache.ped)
     local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
     return location, postal
 end)
@@ -409,7 +413,7 @@ RegisterCommand("911", function(source, args, rawCommand)
     local callDescription = table.concat(args, " ")
     local playerInfo = Bridge.getPlayerInfo()
     local caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
-    local coords = GetEntityCoords(PlayerPedId())
+    local coords = GetEntityCoords(cache.ped)
     local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
     local postal = getPlayerPostal()
     if postal then
