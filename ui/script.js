@@ -134,6 +134,7 @@ $.getJSON("../config/translate.json", function(data) {
     $("#leftPanelButtonBolo").html(`<i class="fa-solid fa-hand"></i> ${translation["BOLO"]}`);
     $("#leftPanelButtonReports").html(`<i class="fa-solid fa-file"></i> ${translation["Reports"]}`);
     $("#leftPanelButtonLiveChat").html(`<i class="fas fa-comment-alt"></i> ${translation["Live Chat"]}`);
+    $("#leftPanelButtonEmployees").html(`<i class="fa-solid fa-users-gear"></i> ${translation["Employees"]}`);
     $("#leftPanelButtonSettings").html(`<i class="fas fa-cog"></i> ${translation["Settings"]}`);
     $("#leftPanelPanicButton").html(translation["PANIC"]);
     $("#rightPanelDashboardBusyButton").text(translation["Busy"]);
@@ -192,11 +193,11 @@ $.getJSON("../config/translate.json", function(data) {
 });
 
 // Hide all pages but the dashboard on start.
-$(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelWeaponSearch, .rightPanelBoloPage, .rightPanelReportsPage, .rightPanelLiveChat, .rightPanelSettings").hide();
+$(".rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelWeaponSearch, .rightPanelBoloPage, .rightPanelReportsPage, .rightPanelLiveChat, .rightPanelEmployees, .rightPanelSettings").hide();
 
 // This function will hide all pages and reset the background-color for the menu buttons. This is used when changing pages to display another page.
 function hideAllPages() {
-    $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelWeaponSearch, .rightPanelBoloPage, .rightPanelReportsPage, .rightPanelLiveChat, .rightPanelSettings").hide();
+    $(".rightPanelDashboard, .rightPanelNameSearch, .rightPanelPlateSearch, .rightPanelWeaponSearch, .rightPanelBoloPage, .rightPanelReportsPage, .rightPanelLiveChat, .rightPanelEmployees, .rightPanelSettings").hide();
     $(".leftPanelButtons").css("background-color", "transparent");
 };
 
@@ -1422,6 +1423,14 @@ $("#leftPanelButtonLiveChat").click(function() {
     };
     hideAllPages();
     $(".rightPanelLiveChat").fadeIn("fast");
+    $(this).css("background-color", "#3a3b3c");
+});
+$("#leftPanelButtonEmployees").click(function() {
+    if ($(".rightPanelEmployees").css("display") == "block") {
+        return;
+    };
+    hideAllPages();
+    $(".rightPanelEmployees").fadeIn("fast");
     $(this).css("background-color", "#3a3b3c");
 });
 $("#leftPanelButtonSettings").click(function() {
