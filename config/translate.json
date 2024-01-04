@@ -116,5 +116,11 @@
     "Callsign not set": "Callsign not set",
     "View weapons": "View weapons",
     "View vehicles": "View vehicles",
-    "Employees": "Employees"
+    "Employees": "Employees",
+    "Department": "Department",
+    "Rank": "Rank",
+    "Callsign": "Callsign",
+    "Fire Employee": "Fire Employee",
+    "Change Rank": "Change Rank",
+    "Change Callsign": "Change Callsign"
 }]

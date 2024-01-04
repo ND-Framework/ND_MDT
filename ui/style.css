@@ -380,7 +380,7 @@ button {
     transition: .1s ease-in-out;
     color: white;
 }
-.rightPanelNameSearchResponses, .rightPanelPlateSearchResponses, .rightPanelWeaponSearchResponses, .rightPanelBoloResponses, .rightPanelReportsResponses {
+.rightPanelNameSearchResponses, .rightPanelPlateSearchResponses, .rightPanelWeaponSearchResponses, .rightPanelBoloResponses, .rightPanelReportsResponses, .rightPanelEmployeeSearchResponses {
     position: absolute;
     margin: auto;
     bottom: 4%;
@@ -401,6 +401,15 @@ button {
     border-radius: 8px;
     cursor: pointer;
 }
+.nameSearchEmployeeResult {
+    padding: 3% 2.5% 1% 2.5%;
+    width: 95%;
+    margin: 1.5% 0;
+    height: auto;
+    background-color: #242526;
+    border-radius: 8px;
+}
+
 .nameSearchResultImageContainer {
     display: inline-block;
     margin-right: 1%;
@@ -439,6 +448,11 @@ button {
     margin: 5%;
     border-radius: 5px;
     transition: .1s ease-in-out;
+}
+.employeeSearchResultButton {
+    height: 2.2vh;
+    margin-top: 1%;
+    margin-bottom: 4%;
 }
 .nameSearchResultButton:hover, .plateSearchResultButton:hover, .weaponSearchResultButton:hover, .searchButtons > button:hover, .form-records-content > button:hover {
     transition: .1s ease-in-out;

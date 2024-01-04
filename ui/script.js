@@ -454,6 +454,64 @@ function formatDate(timeStamp) {
     return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
 };
 
+// create employee profile
+function createEmployee(data) {
+    $(".rightPanelEmployeeSearchResponses").append(`
+        <div class="nameSearchEmployeeResult" data-character="${data.charId}">
+            <div class="nameSearchResultImageContainer">
+                <img class="nameSearchResultImage" src="${data.img || "user.jpg"}">
+            </div>
+            <div class="nameSearchResultInfo">
+                <p class="nameSearchResultProperty">${translation["First Name"]}:</p>
+                <p class="nameSearchResultValue">${escapeHtml(data.first)}</p>
+                <p class="nameSearchResultProperty">${translation["Last Name"]}:</p>
+                <p class="nameSearchResultValue">${escapeHtml(data.last)}</p>
+            </div>
+            <div class="nameSearchResultInfo">
+                <p class="nameSearchResultProperty">${translation["Date of Birth"]}:</p>
+                <p class="nameSearchResultValue">${escapeHtml(data.dob)}</p>
+                <p class="nameSearchResultProperty">${translation["Gender"]}:</p>
+                <p class="nameSearchResultValue">${escapeHtml(data.gender)}</p>
+            </div>
+            ${data.jobInfo && 
+
+                `<div class="nameSearchResultInfo">
+                    <p class="nameSearchResultProperty">${translation["Department"]}:</p>
+                    <p class="nameSearchResultValue">${escapeHtml(data.jobInfo.label)}</p>
+                    <p class="nameSearchResultProperty">${translation["Rank"]}:</p>
+                    <p class="nameSearchResultValue">${escapeHtml(data.jobInfo.rankName)}</p>
+                </div>`
+
+                || ""
+            }
+
+            ${(data.phone || data.callsign) &&
+
+                `<div class="nameSearchResultInfo">
+                    ${data.callsign && `<p class="nameSearchResultProperty">${translation["Callsign"]}:</p><p class="nameSearchResultValue">${data.callsign}</p>` || ""}
+                    ${data.phone && `<p class="nameSearchResultProperty">${translation["Phone number"]}:</p><p class="nameSearchResultValue">${data.phone}</p>` || ""}
+                </div>`
+
+                || ""
+            }
+
+            <div class="nameSearchResultButtons">
+                <Button class="nameSearchResultButton employeeSearchResultButton" data-character="${data.charId}" data-action="rank">${translation["Change Rank"]}</Button>
+                <br>
+                <Button class="nameSearchResultButton employeeSearchResultButton" data-character="${data.charId}" data-action="callsign">${translation["Change Callsign"]}</Button>
+                <br>
+                <Button class="nameSearchResultButton employeeSearchResultButton" data-character="${data.charId}" data-action="fire" style="background-color:#c22525;">${translation["Fire Employee"]}</Button>
+            </div>
+        </div>
+    `);
+
+    $(".employeeSearchResultButton").click(function() {
+        const action = $(this).data("action")
+        console.log("tst", action)
+        return;
+    })
+}
+
 // Creates a records page for a citizen with options to give citation and all that.
 function createRecordsPage(data) {
     newCharges = {}
@@ -1257,6 +1315,17 @@ window.addEventListener("message", function(event) {
         }
     }
 
+    // show employees
+    if (item.type == "viewEmployees") {
+        const employees = JSON.parse(item.data)
+        $("#nameLoader").fadeOut("fast");
+        $("body").css("cursor", "default")
+        for (key in employees) {
+            const employee = employees[key]
+            createEmployee(employee);
+        }
+    }
+
     // show new bolos.
     if (item.type === "newBolo") {
         const bolo = item.bolo
@@ -1453,7 +1522,7 @@ $(".closeOverlay").click(function() {
     $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
     $.post(`https://${GetParentResourceName()}/close`);
     setTimeout(() => {
-        $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .rightPanelWeaponSearchResponses, .rightPanelPlateSearchResponses, .rightPanelNameSearchResponses").empty();
+        $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .rightPanelWeaponSearchResponses, .rightPanelPlateSearchResponses, .rightPanelNameSearchResponses, .rightPanelEmployeeSearchResponses").empty();
         $("#searchNameDefault").text("Search citizen by name.");
         $("#searchWeaponDefault").text("Search weapon by serial number.");
         $("#searchPlateDefault").text("Search vehicle by plate number.");
@@ -1503,6 +1572,21 @@ $("#plateSearch").submit(function() {
     return false;
 });
 
+// Submit the employee search and reset the search bar.
+$("#employeeSearch").submit(function() {
+    $(".rightPanelEmployeeSearchResponses").show();
+    $(".rightPanelEmployeeSearchResponses").empty();
+    $("#plateLoader").fadeIn("fast");
+    $("body").css("cursor", "progress");
+    $.post(`https://${GetParentResourceName()}/viewEmployees`, JSON.stringify({
+        search: $("#employeeSearchBar").val()
+    }));
+    this.reset();
+    return false;
+});
+
+
+// Submit weapon serial number search and reset the search bar.
 $("#weaponSearch").submit(function() {
     $(".rightPanelWeaponSearchResponses").show();
     $(".rightPanelWeaponSearchResponses").empty();
