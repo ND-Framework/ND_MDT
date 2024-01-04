@@ -90,6 +90,12 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
+
+lib.callback.register("ND_MDT:viewEmployees", function(source, search)
+    return Bridge.viewEmployees(source, search)
+end)
+
+
 -- retrive vehicles from the database based on characterId.
 lib.callback.register("ND_MDT:viewVehicles", function(source, searchBy, data)
     return Bridge.viewVehicles(source, searchBy, data)

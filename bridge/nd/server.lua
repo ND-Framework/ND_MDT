@@ -268,4 +268,70 @@ function Bridge.getRecords(id)
     return json.decode(result[1].records), true
 end
 
+local function getPermsFromGroups(groups)
+    for name, group in pairs(groups) do
+        if group.isJob then
+            return name, group
+        end
+    end
+end
+
+local function filterEmployeeSearch(player, metadata, search)
+    local toSearch = ("%s %s %s"):format(
+        (player.firstname or ""):lower(),
+        (player.lastname or ""):lower(),
+        (metadata.callsign or ""):lower()
+    )
+
+    if toSearch:find(search:lower()) then
+        return true
+    end
+end
+
+-- local function getPlayerSourceFromPlayers(players, id)
+--     for src, info in pairs(players) do
+--         if info.id == id then
+--             return src
+--         end
+--     end
+-- end
+
+function Bridge.viewEmployees(src, search)
+    local player = NDCore:getPlayer(src)
+    if not config.policeAccess[player.job] then return end
+
+    local employees = {}
+    local result = MySQL.query.await("SELECT * FROM nd_characters")
+    -- local onlinePlayers = NDCore:getPlayers()
+
+    for i=1, #result do
+        local info = result[i]
+        local groups = info.groups and json.decode(info.groups) or {}
+        local job, jobInfo = getPermsFromGroups(groups)
+
+        if not config.policeAccess[job] then goto next end
+
+        local metadata = info.metadata and json.decode(info.metadata) or {}
+        if not filterEmployeeSearch(info, metadata, search or "") then goto next end
+        
+        employees[#employees+1] = {
+            -- source = getPlayerSourceFromPlayers(onlinePlayers, info.charid),
+            charId = info.charid,
+            first = info.firstname,
+            last = info.lastname,
+            img = metadata.img,
+            callsign = metadata.callsign,
+            job = job,
+            jobInfo = jobInfo,
+            dob = player.dob,
+            gender = player.gender,
+            phone = metadata.phoneNumber
+        }
+
+        ::next::
+    end
+
+    return employees
+end
+
 return Bridge

@@ -173,6 +173,18 @@ function nameSearched(result)
     })
 end
 
+RegisterNUICallback("viewEmployees", function(data)
+    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+
+    lib.callback("ND_MDT:viewEmployees", false, function(result)
+        print(json.encode(result, {indent=true}))
+        SendNUIMessage({
+            type = "viewEmployees",
+            data = json.encode(result or {})
+        })
+    end, data.search)
+end)
+
 -- triggers a server event to retrive names based on search.
 RegisterNUICallback("nameSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
