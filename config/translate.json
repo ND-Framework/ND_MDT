@@ -122,5 +122,6 @@
     "Callsign": "Callsign",
     "Fire Employee": "Fire Employee",
     "Change Rank": "Change Rank",
-    "Change Callsign": "Change Callsign"
+    "Change Callsign": "Change Callsign",
+    "This action will fire this employee, are you sure you'd like to continue?": "This action will fire this employee, are you sure you'd like to continue?"
 }]

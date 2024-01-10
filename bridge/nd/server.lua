@@ -23,7 +23,7 @@ local function queryDatabaseProfiles(find, findData)
             lastName = item.lastname,
             dob = item.dob,
             gender = item.gender,
-            phone = metadata.phoneNumber,
+            phone = metadata.phonenumber,
             id = getPlayerSource(item.charid),
             img = metadata.img,
             ethnicity = metadata.ethnicity
@@ -280,7 +280,7 @@ local function filterEmployeeSearch(player, metadata, search)
     local toSearch = ("%s %s %s"):format(
         (player.firstname or ""):lower(),
         (player.lastname or ""):lower(),
-        (metadata.callsign or ""):lower()
+        (metadata.callsign and tostring(metadata.callsign) or ""):lower()
     )
 
     if toSearch:find(search:lower()) then
@@ -301,11 +301,37 @@ function Bridge.viewEmployees(src, search)
     if not config.policeAccess[player.job] then return end
 
     local employees = {}
+    local onlinePlayers = NDCore:getPlayers(nil, nil, true)
     local result = MySQL.query.await("SELECT * FROM nd_characters")
-    -- local onlinePlayers = NDCore:getPlayers()
 
     for i=1, #result do
         local info = result[i]
+        for j=1, #onlinePlayers do
+            local ply = onlinePlayers[j]
+            if ply.id == info.charid then
+                local job, jobInfo = getPermsFromGroups(ply.groups)
+                if not config.policeAccess[job] then goto next end
+                
+                local metadata = ply.metadata
+                if not filterEmployeeSearch(ply, metadata, search or "") then goto next end
+                
+                employees[#employees+1] = {
+                    source = ply.source,
+                    charId = ply.id,
+                    first = ply.firstname,
+                    last = ply.lastname,
+                    img = metadata.img,
+                    callsign = metadata.callsign,
+                    job = job,
+                    jobInfo = jobInfo,
+                    dob = ply.dob,
+                    gender = ply.gender,
+                    phone = metadata.phonenumber
+                }
+                goto next
+            end
+        end
+        
         local groups = info.groups and json.decode(info.groups) or {}
         local job, jobInfo = getPermsFromGroups(groups)
 
@@ -315,7 +341,6 @@ function Bridge.viewEmployees(src, search)
         if not filterEmployeeSearch(info, metadata, search or "") then goto next end
         
         employees[#employees+1] = {
-            -- source = getPlayerSourceFromPlayers(onlinePlayers, info.charid),
             charId = info.charid,
             first = info.firstname,
             last = info.lastname,
@@ -323,15 +348,141 @@ function Bridge.viewEmployees(src, search)
             callsign = metadata.callsign,
             job = job,
             jobInfo = jobInfo,
-            dob = player.dob,
-            gender = player.gender,
-            phone = metadata.phoneNumber
+            dob = info.dob,
+            gender = info.gender,
+            phone = metadata.phonenumber
         }
 
         ::next::
     end
 
     return employees
+end
+
+function Bridge.employeeUpdateCallsign(charid, callsign)
+    callsign = tonumber(callsign)
+    if not callsign then
+        return false, "Callsign must be a number!"
+    end
+
+    charid = tonumber(charid)
+    if not charid then
+        return false, "Employee not found!"
+    end
+
+    local characterMetadata = nil
+    local result = MySQL.query.await("SELECT * FROM nd_characters")
+    for i=1, #result do
+        local info = result[i]
+        local metadata = json.decode(info.metadata) or {}
+        if metadata.callsign == callsign then
+            return false, "This callsign is already used."
+        end
+        if info.charid == charid then
+            characterMetadata = metadata
+        end
+    end
+
+    local player = findCharacterById(charid)
+    if player then
+        player.setMetadata("callsign", callsign)
+        player.save("metadata")
+        return callsign
+    elseif not characterMetadata then
+        return false, "Employee not found"
+    end
+
+    characterMetadata.callsign = callsign
+    
+    MySQL.update.await("UPDATE nd_characters SET `metadata` = ? WHERE charid = ?", {
+        json.encode(characterMetadata),
+        charid
+    })
+    return callsign
+end
+
+function Bridge.updateEmployeeRank(update)
+    local groups = NDCore:getConfig("groups")
+    local groupRank = tonumber(update.newRank)
+    local groupInfo = groups[update.job]
+    local rankLabel = groupRank and groupInfo and groupInfo.ranks?[groupRank]
+    if not rankLabel then return end
+
+    if not tonumber(update.charid) then return end
+
+    local player = findCharacterById(update.charid)
+    if player then
+        player.setJob(update.job, update.newRank)
+        return rankLabel
+    end
+
+    local result = MySQL.query.await("SELECT `groups` FROM nd_characters WHERE charid = ?", {update.charid})
+    local info = result[1]
+    if not info then return end
+
+    local playerGroups = json.decode(info.groups) or {}
+    local bossRank = groupInfo and groupInfo.minimumBossRank
+    local name = update.job
+
+    for _, group in pairs(playerGroups) do
+        group.isJob = nil
+    end
+
+    playerGroups[name] = {
+        name = name,
+        label = groupInfo and groupInfo.label or name,
+        rankName = rankLabel,
+        rank = groupRank,
+        isJob = true,
+        isBoss = bossRank and groupRank >= bossRank
+    }
+
+    MySQL.update.await("UPDATE nd_characters SET `groups` = ? WHERE charid = ?", {
+        json.encode(playerGroups),
+        update.charid
+    })
+
+    return rankLabel
+end
+
+function Bridge.removeEmployeeJob(charid)
+    charid = tonumber(charid)
+    if not charid then
+        return false, "Employee not found!"
+    end
+
+    local player = findCharacterById(charid)
+    if player then
+        player.setJob("unemployed")
+        return true
+    end
+
+    local result = MySQL.query.await("SELECT `groups` FROM nd_characters WHERE charid = ?", {charid})
+    local info = result[1]
+    if not info then
+        return false, "Employee not found"
+    end
+
+    local groupName = nil
+    local playerGroups = json.decode(info.groups) or {}
+    for name, group in pairs(playerGroups) do
+        if group.isJob then
+            groupName = name
+            break
+        end
+    end
+
+    if not groupName then
+        return false, "An issue occured, try again later."
+    end
+
+    playerGroups[groupName] = nil
+
+    MySQL.update.await("UPDATE nd_characters SET `groups` = ? WHERE charid = ?", {
+        json.encode(playerGroups),
+        charid
+    })
+    return true
 end
 
 return Bridge

@@ -49,4 +49,20 @@ function Bridge.getCitizenInfo(id, info)
     }
 end
 
+function Bridge.getRanks(job)
+    local groups = NDCore:getConfig("groups") or {}
+    local ranks = groups[job]?.ranks
+    if not ranks then return end
+
+    local options = {}
+    for i=1, #ranks do
+        options[#options+1] = {
+            value = i,
+            label = ranks[i]
+        }
+    end
+
+    return options, job
+end
+
 return Bridge

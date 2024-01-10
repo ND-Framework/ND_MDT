@@ -361,9 +361,20 @@ RegisterNetEvent("ND_MDT:removeReport", function(id)
     TriggerClientEvent("ND_MDT:removeReport", -1, id, reportType)
 end)
 
-RegisterNetEvent("ND_MDT:updateCallsign", function(callsign)
-    local src = source
+lib.callback.register("ND_MDT:employeeUpdateRank", function(src, info)
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    Bridge.updatePlayerMetadata(src, player.characterId, "callsign", callsign)
+    return Bridge.updateEmployeeRank(info)
+end)
+
+lib.callback.register("ND_MDT:employeeUpdateCallsign", function(src, character, callsign)
+    local player = Bridge.getPlayerInfo(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    return Bridge.employeeUpdateCallsign(character, callsign)
+end)
+
+lib.callback.register("ND_MDT:employeeFire", function(src, character)
+    local player = Bridge.getPlayerInfo(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+    return Bridge.removeEmployeeJob(character)
 end)

@@ -101,11 +101,11 @@ RegisterNUICallback("close", function()
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 end)
 
+-- VERY OLD CODE
 -- saves the unit number in kvp so they don't need to set it everytime they log on.
-RegisterNUICallback("setUnitNumber", function(data)
-    PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    TriggerServerEvent("ND_MDT:updateCallsign", data.number)
-end)
+-- RegisterNUICallback("setUnitNumber", function(data)
+--     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
+-- end)
 
 -- triggers a server event once unit status has been changed from the mdt.
 RegisterNUICallback("unitStatus", function(data)
@@ -125,7 +125,7 @@ function weaponSearch(searchBy, search)
 
     -- returns retrived names and character information from the server and adds it on the ui.
     lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
-        print(json.encode(result,{indent=true}))
+        -- print(json.encode(result,{indent=true}))
         if not result or not next(result) then
             if weaponPage then
                 SendNUIMessage({
@@ -152,7 +152,7 @@ function weaponSearch(searchBy, search)
 end
 
 function nameSearched(result)
-    print(json.encode(result, {indent = true}))
+    -- print(json.encode(result, {indent = true}))
     if not result or not next(result) then
         SendNUIMessage({
             type = "nameSearch",
@@ -177,12 +177,92 @@ RegisterNUICallback("viewEmployees", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 
     lib.callback("ND_MDT:viewEmployees", false, function(result)
-        print(json.encode(result, {indent=true}))
+        -- print(json.encode(result, {indent=true}))
         SendNUIMessage({
             type = "viewEmployees",
             data = json.encode(result or {})
         })
     end, data.search)
+end)
+
+RegisterNuiCallback("empoyeeAction", function(data, cb)
+    local charid, action, data = data.character, data.action, data.data
+    print("Client/employeeAction", charid, action, data)
+
+    if action == "rank" then
+        local options, job = Bridge.getRanks(data)
+        if not options then
+            return openMDT(true)
+        end
+
+        local input = lib.inputDialog("Change employee rank", {
+            {
+                type = "select",
+                label = "Rank name",
+                description = "Select the rank you want to set the employee to",
+                required = true,
+                options = options,
+            }
+        })
+
+        if not input or not input[1] then
+            return openMDT(true)
+        end
+
+        local success = lib.callback.await("ND_MDT:employeeUpdateRank", false, {
+            charid = charid,
+            newRank = input[1],
+            job = job
+        })
+        
+        if success then
+            cb(success)
+        else
+            lib.notify({
+                title = "MDT",
+                description = "Couldn't change employee rank!",
+                type = "error"
+            })
+        end
+    elseif action == "callsign" then
+        local input = lib.inputDialog("Change employee callsign", {
+            {
+                type = "input",
+                label = "Input a callsign",
+                description = "Callsign pattern: 001-999",
+                required = true,
+                min = 3,
+                max = 3
+            }
+        })
+
+        if not input or not input[1] then
+            return openMDT(true)
+        end
+        
+        local success, errorMessage = lib.callback.await("ND_MDT:employeeUpdateCallsign", false, charid, input[1])
+        if success then
+            cb(tostring(success))
+        else
+            lib.notify({
+                title = "MDT",
+                description = errorMessage,
+                type = "error"
+            })
+        end
+    elseif action == "fire" then
+        local success, errorMessage = lib.callback.await("ND_MDT:employeeFire", false, charid)
+        if success then
+            cb(1)
+        else
+            lib.notify({
+                title = "MDT",
+                description = errorMessage,
+                type = "error"
+            })
+        end
+    end
+    openMDT(true)
 end)
 
 -- triggers a server event to retrive names based on search.
@@ -213,7 +293,7 @@ RegisterNUICallback("viewVehicles", function(data)
 
     -- retrived vehicles from the server and adds it on the ui.
     lib.callback("ND_MDT:viewVehicles", false, function(result)
-        print(json.encode(result, {indent = true}))
+        -- print(json.encode(result, {indent = true}))
         if not result or not next(result) then
             if vehPage then
                 SendNUIMessage({

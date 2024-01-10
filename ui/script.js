@@ -20,6 +20,18 @@ const allReports = {
     "use_of_force": {}
 }
 
+function fetchCallback(name, data, cb) {
+    fetch(`https://${GetParentResourceName()}/${name}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+        },
+        body: JSON.stringify(data)
+    }).then(resp => resp.json()).then(resp =>
+        cb(resp)
+    );
+}
+
 function wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -479,7 +491,7 @@ function createEmployee(data) {
                     <p class="nameSearchResultProperty">${translation["Department"]}:</p>
                     <p class="nameSearchResultValue">${escapeHtml(data.jobInfo.label)}</p>
                     <p class="nameSearchResultProperty">${translation["Rank"]}:</p>
-                    <p class="nameSearchResultValue">${escapeHtml(data.jobInfo.rankName)}</p>
+                    <p class="nameSearchResultValue" data-characterrank="${data.charId}">${escapeHtml(data.jobInfo.rankName)}</p>
                 </div>`
 
                 || ""
@@ -488,7 +500,7 @@ function createEmployee(data) {
             ${(data.phone || data.callsign) &&
 
                 `<div class="nameSearchResultInfo">
-                    ${data.callsign && `<p class="nameSearchResultProperty">${translation["Callsign"]}:</p><p class="nameSearchResultValue">${data.callsign}</p>` || ""}
+                    ${data.callsign && `<p class="nameSearchResultProperty">${translation["Callsign"]}:</p><p class="nameSearchResultValue" data-charactercallsign="${data.charId}">${data.callsign}</p>` || ""}
                     ${data.phone && `<p class="nameSearchResultProperty">${translation["Phone number"]}:</p><p class="nameSearchResultValue">${data.phone}</p>` || ""}
                 </div>`
 
@@ -496,7 +508,7 @@ function createEmployee(data) {
             }
 
             <div class="nameSearchResultButtons">
-                <Button class="nameSearchResultButton employeeSearchResultButton" data-character="${data.charId}" data-action="rank">${translation["Change Rank"]}</Button>
+                <Button class="nameSearchResultButton employeeSearchResultButton" data-character="${data.charId}" data-job="${data.job}" data-action="rank">${translation["Change Rank"]}</Button>
                 <br>
                 <Button class="nameSearchResultButton employeeSearchResultButton" data-character="${data.charId}" data-action="callsign">${translation["Change Callsign"]}</Button>
                 <br>
@@ -504,13 +516,43 @@ function createEmployee(data) {
             </div>
         </div>
     `);
-
-    $(".employeeSearchResultButton").click(function() {
-        const action = $(this).data("action")
-        console.log("tst", action)
-        return;
-    })
 }
+
+$(document).on("click", ".employeeSearchResultButton", async function() { // todo some pages might have their info inside the form which causes buttons to submit the form again.
+    const th = $(this);
+    const action = th.data("action");
+    const character = th.data("character");
+    let data = null;
+
+    if (action == "rank") {
+        $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
+        $.post(`https://${GetParentResourceName()}/close`);
+        data = th.data("job");
+    } else if (action == "callsign") {
+        $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
+        $.post(`https://${GetParentResourceName()}/close`);
+    } else if (action == "fire") {
+        const result = await createConfirmScreen(translation["This action will fire this employee, are you sure you'd like to continue?"])
+        if (result != "confirm") {return}
+    }
+
+    fetchCallback("empoyeeAction", {
+        character: character,
+        action: action,
+        data: data
+    }, function(resp) {
+        if (action == "rank") {
+            const element = document.querySelector(`.nameSearchResultValue[data-characterrank="${character}"]`);
+            element.textContent = escapeHtml(resp);
+        } else if (action == "callsign") {
+            const element = document.querySelector(`.nameSearchResultValue[data-charactercallsign="${character}"]`);
+            element.textContent = escapeHtml(resp);
+        } else if (action == "fire") {
+            const element = document.querySelector(`.nameSearchEmployeeResult[data-character="${character}"]`);
+            element.remove();
+        }
+    });
+})
 
 // Creates a records page for a citizen with options to give citation and all that.
 function createRecordsPage(data) {
@@ -1501,6 +1543,14 @@ $("#leftPanelButtonEmployees").click(function() {
     hideAllPages();
     $(".rightPanelEmployees").fadeIn("fast");
     $(this).css("background-color", "#3a3b3c");
+
+    if ($(".rightPanelEmployeeSearchResponses").html().trim() === "") {
+        $(".rightPanelEmployeeSearchResponses").show();
+        $("body").css("cursor", "progress");
+        $.post(`https://${GetParentResourceName()}/viewEmployees`, JSON.stringify({
+            search: ""
+        }));
+    }
 });
 $("#leftPanelButtonSettings").click(function() {
     if ($(".rightPanelSettings").css("display") == "block") {
@@ -1544,43 +1594,65 @@ $(".closeOverlay").click(function() {
 
 // Submit the name search and reset the search bar.
 $("#nameSearch").submit(function() {
+    const searchFirst = $("#firstNameSearchBar").val();
+    const searchLast = $("#lastNameSearchBar").val();
+    if ((!searchFirst || searchFirst.trim() == "") && (!searchLast || searchLast.trim() == "")) {
+        return false;
+    }
+
     $(".rightPanelNameSearchResponses").show();
     $(".rightPanelNameSearchResponses").empty();
     $("#searchNameDefault").text("");
     $("#nameLoader").fadeIn("fast");
     $("body").css("cursor", "progress")
+
     $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
-        first: $("#firstNameSearchBar").val(),
-        last: $("#lastNameSearchBar").val()
+        first: searchFirst,
+        last: searchFirst
     }));
+
     this.reset();
     return false;
 });
 
 // Submit the plate search and reset the search bar.
 $("#plateSearch").submit(function() {
+    const search = $("#plateSearchBar").val()
+    if (!search || search.trim() == "") {
+        return false;
+    }
+
     $(".rightPanelPlateSearchResponses").show();
     $(".rightPanelPlateSearchResponses").empty();
     $("#searchPlateDefault").text("");
     $("#plateLoader").fadeIn("fast");
     $("body").css("cursor", "progress");
+
     $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
-        search: $("#plateSearchBar").val(),
+        search: search,
         searchBy: "plate"
     }));
+
     this.reset();
     return false;
 });
 
 // Submit the employee search and reset the search bar.
 $("#employeeSearch").submit(function() {
+    const search = $("#employeeSearchBar").val();
+    if (!search || search.trim() == "") {
+        return false;
+    }
+
     $(".rightPanelEmployeeSearchResponses").show();
     $(".rightPanelEmployeeSearchResponses").empty();
     $("#plateLoader").fadeIn("fast");
     $("body").css("cursor", "progress");
+
     $.post(`https://${GetParentResourceName()}/viewEmployees`, JSON.stringify({
-        search: $("#employeeSearchBar").val()
+        search: search
     }));
+
     this.reset();
     return false;
 });
@@ -1588,14 +1660,21 @@ $("#employeeSearch").submit(function() {
 
 // Submit weapon serial number search and reset the search bar.
 $("#weaponSearch").submit(function() {
+    const search = $("#weaponSearchBar").val();
+    if (!search || search.trim() == "") {
+        return false;
+    }
+
     $(".rightPanelWeaponSearchResponses").show();
     $(".rightPanelWeaponSearchResponses").empty();
     $("#searchWeaponDefault").text("");
     $("#weaponLoader").fadeIn("fast");
     $("body").css("cursor", "progress");
+
     $.post(`https://${GetParentResourceName()}/weaponSerialSearch`, JSON.stringify({
-        search: $("#weaponSearchBar").val()
+        search: search
     }));
+
     this.reset();
     return false;
 });
