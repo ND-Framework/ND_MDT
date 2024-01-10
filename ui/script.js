@@ -131,7 +131,7 @@ $(".form-reports-bar").mousedown(function(event) {
 });
 
 const escapeHtml = (unsafe) => {
-    if (!unsafe || unsafe == "") {return unsafe}
+    if (!unsafe || unsafe == "" || typeof(unsafe) != "string") {return unsafe}
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 };
 
@@ -250,29 +250,30 @@ function createWeaponSearchResult(data) {
         };
     };
 
-    $(".setWeaponStolen").click(function() {
-        const e = $(this);
-        const serial = e.data("serial");
-        const stolen = e.text() == translation["Mark stolen"]
-        const status = $(`.weapon_${serial}`);
-        $.post(`https://${GetParentResourceName()}/weaponStatus`, JSON.stringify({
-            serial: serial,
-            stolen: stolen
-        }));
-        if (stolen) {
-            e.text(translation["Mark found"]);
-            e.css("background-color", "#494e59");
-            status.text(translation["Stolen"]);
-            status.css("color", "red");
-        } else {
-            e.text(translation["Mark stolen"]);
-            e.css("background-color", "#2656c9");
-            status.text(translation["Not stolen"]);
-            status.css("color", "#ccc");
-        }
-        return false;
-    });
 };
+
+$(document).on("click", ".setWeaponStolen", function() {
+    const e = $(this);
+    const serial = e.data("serial");
+    const stolen = e.text() == translation["Mark stolen"]
+    const status = $(`.weapon_${serial}`);
+    $.post(`https://${GetParentResourceName()}/weaponStatus`, JSON.stringify({
+        serial: serial,
+        stolen: stolen
+    }));
+    if (stolen) {
+        e.text(translation["Mark found"]);
+        e.css("background-color", "#494e59");
+        status.text(translation["Stolen"]);
+        status.css("color", "red");
+    } else {
+        e.text(translation["Mark stolen"]);
+        e.css("background-color", "#2656c9");
+        status.text(translation["Not stolen"]);
+        status.css("color", "#ccc");
+    }
+    return false;
+});
 
 $(document).on("click", ".weaponSearchResultButton", function() {
     $(".rightPanelNameSearchResponses").show();
@@ -334,33 +335,37 @@ function createNameSearchResult(data) {
             `);
         };
     };
-    $(".nameSearchResult").click(function() {
-        $("#nameLoader").fadeIn("fast");
-        $("body").css("cursor", "progress")
-        $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
-            id: $(this).data("character")
-        }));
-        return false;
-    });
-    $(".nameSearchResultButtonWeapons").click(function() {
-        $("#weaponLoader").fadeIn("fast");
-        $("body").css("cursor", "progress")
-        $.post(`https://${GetParentResourceName()}/viewWeapons`, JSON.stringify({
-            search: $(this).data("character"),
-            searchBy: "owner"
-        }));
-        return false;
-    });
-    $(".nameSearchResultButtonVehicles").click(function() {
-        $("#plateLoader").fadeIn("fast");
-        $("body").css("cursor", "progress")
-        $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
-            search: $(this).data("character"),
-            searchBy: "owner"
-        }));
-        return false;
-    });
+
 };
+
+$(document).on("click", ".nameSearchResult", function() {
+    $("#nameLoader").fadeIn("fast");
+    $("body").css("cursor", "progress")
+    $.post(`https://${GetParentResourceName()}/viewRecords`, JSON.stringify({
+        id: $(this).data("character")
+    }));
+    return false;
+});
+
+$(document).on("click", ".nameSearchResultButtonWeapons", function() {
+    $("#weaponLoader").fadeIn("fast");
+    $("body").css("cursor", "progress")
+    $.post(`https://${GetParentResourceName()}/viewWeapons`, JSON.stringify({
+        search: $(this).data("character"),
+        searchBy: "owner"
+    }));
+    return false;
+});
+
+$(document).on("click", ".nameSearchResultButtonVehicles", function() {
+    $("#plateLoader").fadeIn("fast");
+    $("body").css("cursor", "progress")
+    $.post(`https://${GetParentResourceName()}/viewVehicles`, JSON.stringify({
+        search: $(this).data("character"),
+        searchBy: "owner"
+    }));
+    return false;
+});
 
 function vehicleText(text) {
     let txt = text
@@ -419,47 +424,48 @@ function createVehicleSearchResult(data) {
         };
     };
 
-    $(".setVehicleStolen").click(function() {
-        const e = $(this);
-        const id = e.data("id");
-        const stolen = e.text() == translation["Mark stolen"]
-        const status = $(`.vehicle_${id}`);
-        $.post(`https://${GetParentResourceName()}/vehicleStatus`, JSON.stringify({
-            id: id,
-            stolen: stolen,
-            plate: e.data("plate")
-        }));
-        if (stolen) {
-            e.text(translation["Mark found"]);
-            e.css("background-color", "#494e59");
-            status.text(translation["Stolen"]);
-            status.css("color", "red");
-        } else {
-            e.text(translation["Mark stolen"]);
-            e.css("background-color", "#2656c9");
-            status.text(translation["Not stolen"]);
-            status.css("color", "#ccc");
-        }
-        return false;
-    });
-
-    $(".plateSearchResultButton").click(function() {
-        $(".rightPanelNameSearchResponses").show();
-        $(".rightPanelNameSearchResponses").empty();
-        $("#searchNameDefault").text("");
-        $("#nameLoader").fadeIn("fast");
-        $("body").css("cursor", "progress")
-        $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
-            first: $(this).data("first"), 
-            last: $(this).data("last")
-        }));
-
-        hideAllPages();
-        $(".rightPanelNameSearch").fadeIn("fast");
-        $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
-        return false;
-    });
 };
+
+$(document).on("click", ".setVehicleStolen", function() {
+    const e = $(this);
+    const id = e.data("id");
+    const stolen = e.text() == translation["Mark stolen"]
+    const status = $(`.vehicle_${id}`);
+    $.post(`https://${GetParentResourceName()}/vehicleStatus`, JSON.stringify({
+        id: id,
+        stolen: stolen,
+        plate: e.data("plate")
+    }));
+    if (stolen) {
+        e.text(translation["Mark found"]);
+        e.css("background-color", "#494e59");
+        status.text(translation["Stolen"]);
+        status.css("color", "red");
+    } else {
+        e.text(translation["Mark stolen"]);
+        e.css("background-color", "#2656c9");
+        status.text(translation["Not stolen"]);
+        status.css("color", "#ccc");
+    }
+    return false;
+});
+
+$(document).on("click", ".plateSearchResultButton", function() {
+    $(".rightPanelNameSearchResponses").show();
+    $(".rightPanelNameSearchResponses").empty();
+    $("#searchNameDefault").text("");
+    $("#nameLoader").fadeIn("fast");
+    $("body").css("cursor", "progress")
+    $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
+        first: $(this).data("first"), 
+        last: $(this).data("last")
+    }));
+
+    hideAllPages();
+    $(".rightPanelNameSearch").fadeIn("fast");
+    $("#leftPanelButtonNameSearch").css("background-color", "#3a3b3c");
+    return false;
+});
 
 function formatDate(timeStamp) {
     const date = new Date(timeStamp*1000);
@@ -569,7 +575,7 @@ function createRecordsPage(data) {
     };
 
     $(".recordsCitizen, .recordsPropertiesInfo, .recordsLicensesInfo, .recordsMainInfo").empty();
-    $(".viewVehiclesButton, .viewWeaponsButton, .recordsMainCreateButton").data("character", data.citizen.characterId)
+    $(".viewVehiclesButton, .viewWeaponsButton, .recordsMainCreateButton, .recordsCitizenSave").data("character", data.citizen.characterId)
     $(".boloCitizenCreateButton").data("character", {
         id: data.citizen.characterId,
         firstName: data.citizen.firstName,
@@ -703,47 +709,47 @@ $.getJSON("../config/charges.json", function(data) {
     } else {
         $(".form-records-fine").text("Fine: none");
     }
+});
 
-    // Update record page
-    $("#form-records-charges").change(function() {
-        const e = $(this)
-        const chargeNum = e.val();
-        const chargeType = e.find(":selected").data("type")
-        const charge = penal[chargeType][chargeNum]
-        $(".form-records-description-value").text(charge.description);
-        $(".form-records-sentence").text(charge.sentence && `${translation["Up to"]} ${charge.sentence} ${translation["months sentence"]}` || "");
-        if (charge.fine) {
-            const fineDivision = charge.fine/4
-            $(".form-records-fine").html(`${translation["Fine"]}: <select class="form-records-fine-select"><option>$${fineDivision*4}</option><option>$${fineDivision*3}</option><option>$${fineDivision*2}</option><option>$${fineDivision}</option></select>`);
-        } else {
-            $(".form-records-fine").text(`${translation["Fine"]}: ${translation["none"]}`);
-        }
-    });
+// Update record page
+$(document).on("change", "#form-records-charges", function() {
+    const e = $(this)
+    const chargeNum = e.val();
+    const chargeType = e.find(":selected").data("type")
+    const charge = penal[chargeType][chargeNum]
+    $(".form-records-description-value").text(charge.description);
+    $(".form-records-sentence").text(charge.sentence && `${translation["Up to"]} ${charge.sentence} ${translation["months sentence"]}` || "");
+    if (charge.fine) {
+        const fineDivision = charge.fine/4
+        $(".form-records-fine").html(`${translation["Fine"]}: <select class="form-records-fine-select"><option>$${fineDivision*4}</option><option>$${fineDivision*3}</option><option>$${fineDivision*2}</option><option>$${fineDivision}</option></select>`);
+    } else {
+        $(".form-records-fine").text(`${translation["Fine"]}: ${translation["none"]}`);
+    }
+});
 
-    // Confirm create a record
-    $("#form-records-create").click(function() {
-        const e = $("#form-records-charges")
-        const chargeNum = e.val();
-        const chargeType = e.find(":selected").data("type")
-        const fine = $(".form-records-fine-select").val()
-        const charge = penal[chargeType][chargeNum]
-        newCharges[newCharges.length+1] = {
-            chargeNum: chargeNum,
-            chargeType: chargeType,
-            fine: fine
-        }
-        const el = $(`
-            <div class="recordsMainItem" style="display: none;">
-                <div class="recordsMainInfraction">
-                    <p class="recordsMainInfractionTitle">${charge.crime}:</p>
-                    <p class="recordsMainInfractionValue">${translation["Date"]}: ${formatDate(Math.floor(Date.now() / 1000))} ${fine && `| ${translation["Fine"]}: ${fine}` || ""}</p>
-                </div>
-                <p class="recordsMainType">${chargeType == "infractions" && translation["Infraction"] || chargeType == "misdemeanours" && translation["Misdemeanour"] || chargeType == "felonies" && translation["Felony"]}</p>
+// Confirm create a record
+$(document).on("click", "#form-records-create", function() {
+    const e = $("#form-records-charges")
+    const chargeNum = e.val();
+    const chargeType = e.find(":selected").data("type")
+    const fine = $(".form-records-fine-select").val()
+    const charge = penal[chargeType][chargeNum]
+    newCharges[newCharges.length+1] = {
+        chargeNum: chargeNum,
+        chargeType: chargeType,
+        fine: fine
+    }
+    const el = $(`
+        <div class="recordsMainItem" style="display: none;">
+            <div class="recordsMainInfraction">
+                <p class="recordsMainInfractionTitle">${charge.crime}:</p>
+                <p class="recordsMainInfractionValue">${translation["Date"]}: ${formatDate(Math.floor(Date.now() / 1000))} ${fine && `| ${translation["Fine"]}: ${fine}` || ""}</p>
             </div>
-        `)
-        $(".recordsMainInfo").prepend(el)
-        el.slideToggle();
-    });
+            <p class="recordsMainType">${chargeType == "infractions" && translation["Infraction"] || chargeType == "misdemeanours" && translation["Misdemeanour"] || chargeType == "felonies" && translation["Felony"]}</p>
+        </div>
+    `)
+    $(".recordsMainInfo").prepend(el)
+    el.slideToggle();
 });
 
 // close the whole ui when the X square is clicked.
@@ -1181,6 +1187,13 @@ $(".rightPanelReportsButtons > button").click(function() {
     }
 });
 
+// Detach/attach to call button.
+$(document).on("click", "rightPanelDashboard911CallsItemRespond", function() {
+    $.post(`https://${GetParentResourceName()}/unitRespondToCall`, JSON.stringify({
+        id: $(this).data("call")
+    }));
+});
+
 const utterance = new SpeechSynthesisUtterance();
 speechSynthesis.addEventListener("voiceschanged", function() {
     const voices = speechSynthesis.getVoices();
@@ -1284,13 +1297,6 @@ window.addEventListener("message", function(event) {
                     </div>
                 `);
             }
-        });
-        
-        // Detach/attach to call button.
-        $(".rightPanelDashboard911CallsItemRespond").click(function() {
-            $.post(`https://${GetParentResourceName()}/unitRespondToCall`, JSON.stringify({
-                id: $(this).data("call")
-            }));
         });
     };
 
@@ -1682,7 +1688,7 @@ $("#weaponSearch").submit(function() {
 // Submit chat and send it.
 $("#liveChatForm").submit(function() {
     const liveChatMessage = $("#liveChatTextField").val()
-    if (liveChatMessage.trim() === "" || liveChatMessage === null) {
+    if (!liveChatMessage || liveChatMessage.trim() === "") {
         return false;
     }
     timeBetweenMessages.push(Date.now());
