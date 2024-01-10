@@ -361,7 +361,12 @@ function Bridge.viewEmployees(src, search)
     return employees
 end
 
-function Bridge.employeeUpdateCallsign(charid, callsign)
+function Bridge.employeeUpdateCallsign(src, charid, callsign)
+    local player = NDCore:getPlayer(src)
+    if not player then
+        return false, "An issue occured try again later!"
+    end
+    
     callsign = tonumber(callsign)
     if not callsign then
         return false, "Callsign must be a number!"
@@ -373,6 +378,7 @@ function Bridge.employeeUpdateCallsign(charid, callsign)
     end
 
     local characterMetadata = nil
+    local characterGroups = nil
     local result = MySQL.query.await("SELECT * FROM nd_characters")
     for i=1, #result do
         local info = result[i]
@@ -382,16 +388,40 @@ function Bridge.employeeUpdateCallsign(charid, callsign)
         end
         if info.charid == charid then
             characterMetadata = metadata
+            characterGroups = json.decode(info.groups) or {}
         end
     end
 
-    local player = findCharacterById(charid)
-    if player then
-        player.setMetadata("callsign", callsign)
-        player.save("metadata")
+    local isAdmin = player.getGroup("admin") ~= nil
+    local _, jobInfo = player.getJob()
+    local targetPlayer = findCharacterById(charid)
+    if targetPlayer then
+        local _, targetJob = targetPlayer.getJob()
+        if not isAdmin and jobInfo.rank <= targetJob.rank then
+            return false, "You can only update lower rank employees!"
+        end
+
+        targetPlayer.setMetadata("callsign", callsign)
+        targetPlayer.save("metadata")
         return callsign
     elseif not characterMetadata then
         return false, "Employee not found"
+    end
+
+    local jobRank = nil
+    for _, group in pairs(characterGroups) do
+        if group.isJob then
+            jobRank = group.rank
+            break
+        end
+    end
+
+    if not jobRank then
+        return false, "An issue occured, try again later."
+    end
+
+    if not isAdmin and jobInfo.rank <= jobRank then
+        return false, "You can only update lower rank employees!"
     end
 
     characterMetadata.callsign = callsign
@@ -403,41 +433,70 @@ function Bridge.employeeUpdateCallsign(charid, callsign)
     return callsign
 end
 
-function Bridge.updateEmployeeRank(update)
+function Bridge.updateEmployeeRank(src, update)
+    local player = NDCore:getPlayer(src)
+    if not player then
+        return false, "An issue occured try again later!"
+    end
+
+    local isAdmin = player.getGroup("admin") ~= nil
+    local _, jobInfo = player.getJob()
+    if not isAdmin and jobInfo.rank <= update.newRank then
+        return false, "You can't set employees higher rank than you!"
+    end
+
     local groups = NDCore:getConfig("groups")
     local groupRank = tonumber(update.newRank)
     local groupInfo = groups[update.job]
     local rankLabel = groupRank and groupInfo and groupInfo.ranks?[groupRank]
-    if not rankLabel then return end
+    if not rankLabel then
+        return false, "Rank not found!"
+    end
 
-    if not tonumber(update.charid) then return end
+    if not tonumber(update.charid) then
+        return false, "Employee no found!"
+    end
 
-    local player = findCharacterById(update.charid)
-    if player then
-        player.setJob(update.job, update.newRank)
+    local targetPlayer = findCharacterById(update.charid)
+    if targetPlayer then
+        local _, targetJob = targetPlayer.getJob()
+        if not isAdmin and jobInfo.rank <= targetJob.rank then
+            return false, "You can only update lower rank employees!"
+        end
+
+        targetPlayer.setJob(update.job, update.newRank)
         return rankLabel
     end
 
     local result = MySQL.query.await("SELECT `groups` FROM nd_characters WHERE charid = ?", {update.charid})
     local info = result[1]
-    if not info then return end
+    if not info then
+        return false, "Employee no found!"
+    end
 
     local playerGroups = json.decode(info.groups) or {}
     local bossRank = groupInfo and groupInfo.minimumBossRank
-    local name = update.job
+    local groupName = update.job
+    local jobRank = nil
 
-    for _, group in pairs(playerGroups) do
-        group.isJob = nil
+    for name, group in pairs(playerGroups) do
+        if group.isJob and groupName == name then
+            jobRank = group.rank
+            group.label = groupInfo and groupInfo.label or name
+            group.rankName = rankLabel
+            group.rank = groupRank
+            group.isBoss = bossRank and groupRank >= bossRank
+            break
+        end
     end
 
-    playerGroups[name] = {
-        name = name,
-        label = groupInfo and groupInfo.label or name,
-        rankName = rankLabel,
-        rank = groupRank,
-        isJob = true,
-        isBoss = bossRank and groupRank >= bossRank
-    }
+    if not jobRank then
+        return false, "An issue occured, try again later."
+    end
+
+    if not isAdmin and jobInfo.rank <= jobRank then
+        return false, "You can only update lower rank employees!"
+    end
 
     MySQL.update.await("UPDATE nd_characters SET `groups` = ? WHERE charid = ?", {
         json.encode(playerGroups),
@@ -447,15 +506,28 @@ function Bridge.updateEmployeeRank(update)
     return rankLabel
 end
 
-function Bridge.removeEmployeeJob(charid)
+function Bridge.removeEmployeeJob(src, charid)
+    local player = NDCore:getPlayer(src)
+    if not player then
+        return false, "An issue occured try again later!"
+    end
+
     charid = tonumber(charid)
     if not charid then
         return false, "Employee not found!"
     end
 
-    local player = findCharacterById(charid)
-    if player then
-        player.setJob("unemployed")
+    local isAdmin = player.getGroup("admin") ~= nil
+    local _, jobInfo = player.getJob()
+
+    local targetPlayer = findCharacterById(charid)
+    if targetPlayer then
+        local _, targetJob = targetPlayer.getJob()
+        if not isAdmin and jobInfo.rank <= targetJob.rank then
+            return false, "You can only update lower rank employees!"
+        end
+
+        targetPlayer.setJob("unemployed")
         return true
     end
 
@@ -467,15 +539,26 @@ function Bridge.removeEmployeeJob(charid)
 
     local groupName = nil
     local playerGroups = json.decode(info.groups) or {}
+    local jobRank = nil
+
     for name, group in pairs(playerGroups) do
         if group.isJob then
             groupName = name
+            jobRank = group.rank
             break
         end
     end
 
     if not groupName then
         return false, "An issue occured, try again later."
+    end
+
+    if not jobRank then
+        return false, "An issue occured, try again later."
+    end
+
+    if not isAdmin and jobInfo.rank <= jobRank then
+        return false, "You can only update lower rank employees!"
     end
 
     playerGroups[groupName] = nil

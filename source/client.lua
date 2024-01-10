@@ -209,7 +209,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
             return openMDT(true)
         end
 
-        local success = lib.callback.await("ND_MDT:employeeUpdateRank", false, {
+        local success, errorMessage = lib.callback.await("ND_MDT:employeeUpdateRank", false, {
             charid = charid,
             newRank = input[1],
             job = job
@@ -220,7 +220,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
         else
             lib.notify({
                 title = "MDT",
-                description = "Couldn't change employee rank!",
+                description = errorMessage,
                 type = "error"
             })
         end

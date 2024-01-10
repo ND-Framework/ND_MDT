@@ -364,13 +364,13 @@ end)
 lib.callback.register("ND_MDT:employeeUpdateRank", function(src, info)
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    return Bridge.updateEmployeeRank(info)
+    return Bridge.updateEmployeeRank(src, info)
 end)
 
 lib.callback.register("ND_MDT:employeeUpdateCallsign", function(src, character, callsign)
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    return Bridge.employeeUpdateCallsign(character, callsign)
+    return Bridge.employeeUpdateCallsign(src, character, callsign)
 end)
 
 lib.callback.register("ND_MDT:employeeFire", function(src, character)
