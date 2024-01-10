@@ -12,22 +12,24 @@ local function getPlayerSource(id)
 end
 
 local function queryDatabaseProfiles(find, findData)
-    local query = ("SELECT * FROM nd_characters WHERE %s RLIKE(?)"):format(find)
-    local result = MySQL.query.await(query, {findData})
+    local result = MySQL.query.await("SELECT * FROM nd_characters")
     local profiles = {}
     for i=1, #result do
         local item = result[i]
         local metadata = json.decode(item.metadata)
-        profiles[item.charid] = {
-            firstName = item.firstname,
-            lastName = item.lastname,
-            dob = item.dob,
-            gender = item.gender,
-            phone = metadata.phonenumber,
-            id = getPlayerSource(item.charid),
-            img = metadata.img,
-            ethnicity = metadata.ethnicity
-        }
+        local toFind = item[find]
+        if toFind:lower() == findData:lower() then            
+            profiles[item.charid] = {
+                firstName = item.firstname,
+                lastName = item.lastname,
+                dob = item.dob,
+                gender = item.gender,
+                phone = metadata.phonenumber,
+                id = getPlayerSource(item.charid),
+                img = metadata.img,
+                ethnicity = metadata.ethnicity
+            }
+        end
     end
     return profiles
 end
