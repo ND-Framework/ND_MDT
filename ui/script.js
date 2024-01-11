@@ -531,12 +531,12 @@ $(document).on("click", ".employeeSearchResultButton", async function() { // tod
     let data = null;
 
     if (action == "rank") {
-        $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
-        $.post(`https://${GetParentResourceName()}/close`);
+        // $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
+        // $.post(`https://${GetParentResourceName()}/close`);
         data = th.data("job");
     } else if (action == "callsign") {
-        $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
-        $.post(`https://${GetParentResourceName()}/close`);
+        // $(".background, .form-records, .form-bolo, .form-reports").fadeOut("fast");
+        // $.post(`https://${GetParentResourceName()}/close`);
     } else if (action == "fire") {
         const result = await createConfirmScreen(translation["This action will fire this employee, are you sure you'd like to continue?"])
         if (result != "confirm") {return}

@@ -187,12 +187,11 @@ end)
 
 RegisterNuiCallback("empoyeeAction", function(data, cb)
     local charid, action, data = data.character, data.action, data.data
-    print("Client/employeeAction", charid, action, data)
 
     if action == "rank" then
         local options, job = Bridge.getRanks(data)
         if not options then
-            return openMDT(true)
+            return --openMDT(true)
         end
 
         local input = lib.inputDialog("Change employee rank", {
@@ -206,7 +205,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
         })
 
         if not input or not input[1] then
-            return openMDT(true)
+            return --openMDT(true)
         end
 
         local success, errorMessage = lib.callback.await("ND_MDT:employeeUpdateRank", false, {
@@ -237,7 +236,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
         })
 
         if not input or not input[1] then
-            return openMDT(true)
+            return --openMDT(true)
         end
         
         local success, errorMessage = lib.callback.await("ND_MDT:employeeUpdateCallsign", false, charid, input[1])
@@ -262,7 +261,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
             })
         end
     end
-    openMDT(true)
+    --openMDT(true)
 end)
 
 -- triggers a server event to retrive names based on search.
