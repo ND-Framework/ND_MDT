@@ -570,4 +570,13 @@ function Bridge.removeEmployeeJob(src, charid)
     return true
 end
 
+function Bridge.invitePlayerToJob(src, target)
+    local player = NDCore:getPlayer(src)
+    if not player.job then return end
+
+    local targetPlayer = NDCore:getPlayer(target)
+    targetPlayer.setJob(player.job)
+    return true
+end
+
 return Bridge

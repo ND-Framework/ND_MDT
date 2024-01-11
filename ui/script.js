@@ -524,7 +524,7 @@ function createEmployee(data) {
     `);
 }
 
-$(document).on("click", ".employeeSearchResultButton", async function() { // todo some pages might have their info inside the form which causes buttons to submit the form again.
+$(document).on("click", ".employeeSearchResultButton", async function() {
     const th = $(this);
     const action = th.data("action");
     const character = th.data("character");
@@ -559,6 +559,12 @@ $(document).on("click", ".employeeSearchResultButton", async function() { // tod
         }
     });
 })
+
+// add new employee
+$(document).on("click", ".newEmployeeButton", function() {
+    $.post(`https://${GetParentResourceName()}/newEmployee`);
+})
+
 
 // Creates a records page for a citizen with options to give citation and all that.
 function createRecordsPage(data) {

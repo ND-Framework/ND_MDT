@@ -378,3 +378,21 @@ lib.callback.register("ND_MDT:employeeFire", function(src, character)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     return Bridge.removeEmployeeJob(character)
 end)
+
+lib.callback.register("ND_MDT:inviteEmployee", function(src, target)
+    target = tonumber(target)
+    if not target then
+        return false, "Player not found!"
+    end
+
+    local player = Bridge.getPlayerInfo(src)
+    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
+    local accepted = lib.callback.await("ND_MDT:employeeRequestInvite", target, GetPlayerName(src), player.jobLabel)
+    if accepted and not Bridge.invitePlayerToJob(src, target) then
+        return false, "Couldn't set player's job, try again later!"
+    end
+
+    local playerName = GetPlayerName(target)
+    return accepted, accepted and ("%s accepted invite."):format(playerName) or ("%s didn't accept invite."):format(playerName)
+end)

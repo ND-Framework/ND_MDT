@@ -264,6 +264,63 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
     --openMDT(true)
 end)
 
+local function getNearbyPlayers()
+    local list = {}
+    local coords = GetEntityCoords(cache.ped)
+    local players = lib.getNearbyPlayers(coords, 5, false)
+
+    for i=1, #players do
+        local ply = players[i]
+        list[#list+1] = {
+            value = GetPlayerServerId(ply.id),
+            label = GetPlayerName(ply.id)
+        }
+    end
+
+    if #list == 0 then
+        list[#list+1] = {
+            value = 0,
+            label = "No players found nearby!",
+            disabled = true
+        }
+    end
+    
+    return list
+end
+
+RegisterNUICallback("newEmployee", function(data)
+    local input = lib.inputDialog("Select employee to hire.", {
+        {
+            type = "select",
+            label = "Nearby players",
+            placeholder = "Select a player",
+            required = true,
+            options = getNearbyPlayers()
+        }
+    })
+
+    local player = input and tonumber(input[1])
+    if not player then return end
+
+    local accepted, message = lib.callback.await("ND_MDT:inviteEmployee", false, player)
+    lib.notify({
+        title = "MDT",
+        description = message,
+        type = accepted and "success" or "error"
+    })
+end)
+
+lib.callback.register("ND_MDT:employeeRequestInvite", function(playerInviting, department)
+    if not ClockedIn then return end
+    local alert = lib.alertDialog({
+        header = ("You've been invited by %s"):format(playerInviting),
+        content = ("%s is inviting you to work at %s would you like to accept the invite?"):format(playerInviting, department),
+        centered = true,
+        cancel = true
+    })
+    return alert == "confirm"
+end)
+
 -- triggers a server event to retrive names based on search.
 RegisterNUICallback("nameSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
