@@ -72,7 +72,7 @@ function display911Calls(emeregencyCalls)
                     break
                 end
             end
-            attachedUnits = table.concat(info.attachedUnits, ", ") -- todo: do it in js make it on new line instead of comma probably by using <br> and insert html but make sure to escape the units.
+            -- attachedUnits = table.concat(info.attachedUnits, ", ")
         end
 
         data[#data+1] = {
@@ -562,56 +562,55 @@ lib.callback.register("ND_MDT:getStreet", function(radius)
     return location, postal
 end)
 
+local function isInputValid(input)
+    if not input or input:gsub("[%.%-_ ]", "") == "" then return end
+    return true
+end
+
 -- triggers a server event with the 911 call information.
 RegisterCommand("911", function(source, args, rawCommand)
-    local callDescription = table.concat(args, " ")
-    local playerInfo = Bridge.getPlayerInfo()
-    local caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
-    local coords = GetEntityCoords(cache.ped)
-    local location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
-    local postal = getPlayerPostal()
-    if postal then
-        location = ("%s (%s)"):format(location, postal)
+    local input = lib.inputDialog("Create a 911 call", {
+        {type = "textarea", label = "Message", required = true},
+        {type = "checkbox", label = "Share location"},
+        {type = "checkbox", label = "Share your name"},
+    })
+
+    if not input or not isInputValid(input[1]) then
+        return lib.notify({
+            title = "911",
+            description = "invalid input!",
+            type = "error"
+        })
     end
-    local info = {
+
+    local caller = nil
+    if input[2] then
+        local playerInfo = Bridge.getPlayerInfo()
+        caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
+    end
+
+    local location = nil
+    if input[3] then
+        local coords = GetEntityCoords(cache.ped)
+        location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
+
+        local postal = getPlayerPostal()
+        if postal then
+            location = ("%s (%s)"):format(location, postal)
+        end
+    end
+
+    TriggerServerEvent("ND_MDT:Create911Call", {
         caller = caller,
         location = location,
-        callDescription = callDescription,
-        attachedUnits = {}
-    }
-    TriggerServerEvent("ND_MDT:Create911Call", info)
+        callDescription = input[1]
+    })
+
+    lib.notify({
+        title = "911",
+        description = "Your call has been successfully submitted!",
+        type = "success"
+    })
 end, false)
 
-RegisterCommand("911-", function(source, args, rawCommand)
-    local callDescription = "test"
-    local first = tostring(args[1])
-    local last = tostring(args[2])
-    local caller
-    if first == "-" then
-        caller = "*Anonymous caller*"
-    else
-        caller = ("%s %s"):format(args[1], args[2])
-    end
-    local location = tostring(args[3])
-    local postal = tostring(args[4])
-    if postal ~= "-" then
-        location = ("%s (%s)"):format(location, postal)
-    end
-    local info = {
-        caller = caller,
-        location = location,
-        callDescription = callDescription,
-        attachedUnits = {}
-    }
-    TriggerServerEvent("ND_MDT:Create911Call", info)
-end, false)
-
-TriggerEvent("chat:addSuggestion", "/test", "Make a quick 911 call.", {{name="Description", help="Describe your situation."}})
-TriggerEvent("chat:addSuggestion", "/911-", "Make a detailed 911 call.", {
-    {name="What's your first name?", help="To skip write -"},
-    {name="What's your last name?", help="To skip write -"},
-    {name="What street are you on?", help="To skip write -"},
-    {name="What's your nearest postal?", help="To skip write -"},
-    {name="Describe your situation.", help="What's happening, do you need Police, Ambulance?"}
-})
 print("^1[^4ND_MDT^1] ^0for support join the discord server: ^4https://discord.gg/Z9Mxu72zZ6^0.")

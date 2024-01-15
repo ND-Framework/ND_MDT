@@ -1227,6 +1227,14 @@ function playBeep() {
     }, 500);
 }
 
+function orderAttachedUnits(units) {
+    const attachedUnits = []
+    units.forEach(unit => {
+        attachedUnits[attachedUnits.length] = escapeHtml(unit)
+    });
+    return attachedUnits.join(",<br>")
+}
+
 // Event listener for nui messages.
 window.addEventListener("message", function(event) {
     const item = event.data;
@@ -1279,18 +1287,26 @@ window.addEventListener("message", function(event) {
         JSON.parse(item.callData).forEach((call) => {
             $(".rightPanelDashboard911Calls").prepend(`
                 <div class="rightPanelDashboard911CallsItem">
-                    <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p> <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
-                    <br>
-                    <br>
-                    <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p> <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
-                    <br>
-                    <br>
+                    ${call.caller && `
+                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p> <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
+                        <br>
+                        <br>`
+                    || ""}
+                    
+
+                    ${call.location && `
+                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p> <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
+                        <br>
+                        <br>`
+                    || ""}
+
                     <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-comment-alt"></i> ${translation["Description"]}:</p> <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.callDescription)}</p>
                     <br>
                     <br>
+                    
                     ${call.attachedUnits == "none" && " " || `
                         <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-route"></i> ${translation["Responding Units"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(call.attachedUnits)}</p>
+                        <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${orderAttachedUnits(call.attachedUnits)}</p>
                     `}
 
                     ${call.isAttached && `

@@ -70,7 +70,12 @@ end)
 -- Create 911 call in emeregencyCalls.
 RegisterNetEvent("ND_MDT:Create911Call", function(callInfo)
     callId = callId + 1
-    emeregencyCalls[callId] = callInfo
+    emeregencyCalls[callId] = {
+        caller = callInfo.caller,
+        location = callInfo.location,
+        callDescription = callInfo.callDescription,
+        attachedUnits = {}
+    }
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
@@ -97,8 +102,13 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     if emeregencyCall.attachedUnits[src] then
         emeregencyCall.attachedUnits[src] = nil
     else
+        for i=1, #emeregencyCalls do
+            local emerCall = emeregencyCalls[i]
+            if emerCall.attachedUnits[src] then
+                emerCall.attachedUnits[src] = nil
+            end
+        end
         emeregencyCall.attachedUnits[src] = unitIdentifier
-        emeregencyCall.attachedUnits[2] = "[111] Mike Hawk"
     end
 
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
