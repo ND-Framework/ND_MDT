@@ -346,6 +346,12 @@ button {
     color: rgb(255, 255, 255);
     opacity: 0.7;
 }
+.CallTimeAgo911 {
+    margin: 0;
+    position: absolute;
+    right: 6%;
+    font-size: 13px;
+}
 
 .searchBar {
     outline: none;

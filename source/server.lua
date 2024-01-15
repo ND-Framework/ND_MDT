@@ -74,7 +74,8 @@ RegisterNetEvent("ND_MDT:Create911Call", function(callInfo)
         caller = callInfo.caller,
         location = callInfo.location,
         callDescription = callInfo.callDescription,
-        attachedUnits = {}
+        attachedUnits = {},
+        timeCreated = os.time()
     }
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)

@@ -81,7 +81,8 @@ function display911Calls(emeregencyCalls)
             location = info.location,
             callDescription = info.callDescription,
             attachedUnits = attachedUnits,
-            isAttached = isAttached
+            isAttached = isAttached,
+            timeCreated = info.timeCreated
         }
     end
 

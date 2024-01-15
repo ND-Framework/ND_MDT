@@ -1235,6 +1235,32 @@ function orderAttachedUnits(units) {
     return attachedUnits.join(",<br>")
 }
 
+const formatter = new Intl.RelativeTimeFormat("en", {
+    numeric: "auto"
+})
+
+const DIVISIONS = [
+    { amount: 60, name: "seconds" },
+    { amount: 60, name: "minutes" },
+    { amount: 24, name: "hours" },
+    { amount: 7, name: "days" },
+    { amount: 4.34524, name: "weeks" },
+    { amount: 12, name: "months" },
+    { amount: Number.POSITIVE_INFINITY, name: "years" }
+]
+
+function formatTimeAgo(date) {
+    let duration = (date - new Date()) / 1000
+
+    for (let i = 0; i <= DIVISIONS.length; i++) {
+        const division = DIVISIONS[i]
+        if (Math.abs(duration) < division.amount) {
+            return formatter.format(Math.round(duration), division.name).replace("seconds", "sec").replace("second", "sec").replace("minutes", "min").replace("minute", "min").replace("hours", "hr").replace("hour", "hr");
+        }
+        duration /= division.amount
+    }
+}
+
 // Event listener for nui messages.
 window.addEventListener("message", function(event) {
     const item = event.data;
@@ -1284,9 +1310,13 @@ window.addEventListener("message", function(event) {
     // update all the 911 calls on the dashboard.
     if (item.type === "update911Calls") {
         $(".rightPanelDashboard911Calls").empty();
+        const currentDate = new Date()
+
         JSON.parse(item.callData).forEach((call) => {
             $(".rightPanelDashboard911Calls").prepend(`
                 <div class="rightPanelDashboard911CallsItem">
+                    <p class="CallTimeAgo911">${formatTimeAgo(currentDate.setTime(call.timeCreated*1000))}</p>
+
                     ${call.caller && `
                         <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p> <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
                         <br>
