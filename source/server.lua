@@ -26,24 +26,32 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     local src = source
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
+
     if statusCode == "10-7" then
         activeUnits[src] = nil
     else
-        activeUnits[src] = {status = unitStatus, unit = ("%s %s %s [%s]"):format(player.callsign, player.firstName, player.lastName, player.job)}
+        activeUnits[src] = {
+            status = unitStatus,
+            department = player.jobLabel,
+            unit = ("%s %s [%s]"):format(player.firstName, player.lastName, player.callsign)
+        }
     end
+
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
-    if statusCode == "10-99" then
-        local location, postal = lib.callback.await("ND_MDT:getStreet", src)
-        if not location then return end
-        location = location:gsub("St", "street")
-        location = location:gsub("Ave", "avenue")
-        TriggerClientEvent("ND_MDT:panic", -1, {
-            type = "panic",
-            unit = ("%s %s %s"):format(player.callsign, player.firstName, player.lastName),
-            location = location,
-            postal = postal,
-        })
-    end
+
+    if statusCode ~= "10-99" then return end
+
+    local location, postal = lib.callback.await("ND_MDT:getStreet", src)
+    if not location then return end
+
+    location = location:gsub("St", "street")
+    location = location:gsub("Ave", "avenue")
+    TriggerClientEvent("ND_MDT:panic", -1, {
+        type = "panic",
+        unit = ("%s %s %s"):format(player.callsign, player.firstName, player.lastName),
+        location = location,
+        postal = postal
+    })
 end)
 
 -- remove unit froma activeunits if they leave the server forgeting to go 10-7.
@@ -80,13 +88,19 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     local src = source
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    local unitIdentifier = ("%s %s %s"):format(player.callsign, player.firstName, player.lastName)
-    local responding, unit = isUnitResponding(call, unitIdentifier)
-    if responding then
-        emeregencyCalls[call].attachedUnits[unit] = nil
+
+    local emeregencyCall = emeregencyCalls[call]
+    if not emeregencyCall then return end
+
+    local unitIdentifier = ("[%s] %s %s"):format(player.callsign, player.firstName, player.lastName)
+
+    if emeregencyCall.attachedUnits[src] then
+        emeregencyCall.attachedUnits[src] = nil
     else
-        table.insert(emeregencyCalls[call].attachedUnits, unitIdentifier)
+        emeregencyCall.attachedUnits[src] = unitIdentifier
+        emeregencyCall.attachedUnits[2] = "[111] Mike Hawk"
     end
+
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 

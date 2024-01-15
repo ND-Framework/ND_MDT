@@ -1194,7 +1194,7 @@ $(".rightPanelReportsButtons > button").click(function() {
 });
 
 // Detach/attach to call button.
-$(document).on("click", "rightPanelDashboard911CallsItemRespond", function() {
+$(document).on("click", ".rightPanelDashboard911CallsItemRespond", function() {
     $.post(`https://${GetParentResourceName()}/unitRespondToCall`, JSON.stringify({
         id: $(this).data("call")
     }));
@@ -1261,10 +1261,13 @@ window.addEventListener("message", function(event) {
         if (item.action === "add") {
             $(".rightPanelDashboardActiveUnits").append(`
                 <div class="rightPanelDashboardActiveUnitsItem">
-                    <p class="rightPanelDashboardActiveUnitsItemText"><i class="fas fa-id-badge"></i> ${translation["Unit"]}:</p>
-                    <p class="rightPanelDashboardActiveUnitsItemTextCallsign" style="margin-bottom: 5%; margin-top: 1%;">${escapeHtml(item.unit)}</p>
-                    <p class="rightPanelDashboardActiveUnitsItemText"><i class="fas fa-exclamation-circle"></i> ${translation["Status"]}:</p>
-                    <p class="rightPanelDashboardActiveUnitsItemTextUnits" style="margin-bottom: 0; margin-top: 1%;">${item.status}</p>
+                    <p class="rightPanelDashboardActiveUnitsItemText">${translation["Unit"]}:</p> <p class="rightPanelDashboardActiveUnitsItemTextCallsign" style="margin-bottom: 5%; margin-top: 1%;">${escapeHtml(item.unit)}</p>
+                    <br>
+                    <br>
+                    <p class="rightPanelDashboardActiveUnitsItemText">${translation["Department"]}:</p> <p class="rightPanelDashboardActiveUnitsItemTextUnits" style="margin-bottom: 0; margin-top: 1%;">${escapeHtml(item.department)}</p>
+                    <br>
+                    <br>
+                    <p class="rightPanelDashboardActiveUnitsItemText">${translation["Status"]}:</p> <p class="rightPanelDashboardActiveUnitsItemTextUnits" style="margin-bottom: 0; margin-top: 1%; ${item.status == translation["PANIC"] && "color: red;" || ""}">${escapeHtml(item.status)}</p>
                 </div>
             `);
         }
@@ -1274,35 +1277,29 @@ window.addEventListener("message", function(event) {
     if (item.type === "update911Calls") {
         $(".rightPanelDashboard911Calls").empty();
         JSON.parse(item.callData).forEach((call) => {
-            if (call.isAttached) {
-                $(".rightPanelDashboard911Calls").prepend(`
-                    <div class="rightPanelDashboard911CallsItem">
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-comment-alt"></i> ${translation["Description"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.callDescription)}</p>
+            $(".rightPanelDashboard911Calls").prepend(`
+                <div class="rightPanelDashboard911CallsItem">
+                    <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p> <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
+                    <br>
+                    <br>
+                    <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p> <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
+                    <br>
+                    <br>
+                    <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-comment-alt"></i> ${translation["Description"]}:</p> <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.callDescription)}</p>
+                    <br>
+                    <br>
+                    ${call.attachedUnits == "none" && " " || `
                         <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-route"></i> ${translation["Responding Units"]}:</p>
                         <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(call.attachedUnits)}</p>
+                    `}
+
+                    ${call.isAttached && `
                         <button class="rightPanelDashboard911CallsItemRespond" data-call="${call.callId}" style="background-color: rgb(201, 38, 38);">${translation["Detach from call"]} [${translation["call id"]}: ${call.callId}]</button>
-                    </div>
-                `);
-            } else {
-                $(".rightPanelDashboard911Calls").prepend(`
-                    <div class="rightPanelDashboard911CallsItem">
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-comment-alt"></i> ${translation["Description"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextDescription" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.callDescription)}</p>
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-route"></i> ${translation["Responding Units"]}:</p>
-                        <p class="rightPanelDashboard911CallsItemTextUnits" style="margin-top: 1%;">${escapeHtml(call.attachedUnits)}</p>
+                    ` || `
                         <button class="rightPanelDashboard911CallsItemRespond" data-call="${call.callId}" >${translation["Attach to call"]} [${translation["call id"]}: ${call.callId}]</button>
-                    </div>
-                `);
-            }
+                    `}
+                </div>
+            `);
         });
     };
 

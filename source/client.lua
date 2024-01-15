@@ -46,7 +46,8 @@ function displayUnits(units)
             type = "updateUnitStatus",
             action = "add",
             unit = info.unit,
-            status = info.status
+            status = info.status,
+            department = info.department
         })
     end
 end
@@ -54,13 +55,16 @@ end
 function display911Calls(emeregencyCalls)
     local playerInfo = Bridge.getPlayerInfo()
     if not Bridge.hasAccess(playerInfo.job) then return end
-    local unitIdentifier = ("%s %s %s"):format(playerInfo.callsign, playerInfo.firstName, playerInfo.lastName)
+
+    local unitIdentifier = ("[%s] %s %s"):format(playerInfo.callsign, playerInfo.firstName, playerInfo.lastName)
     local data = {}
+
     for callId, info in pairs(emeregencyCalls) do
         local isAttached = false
         local attachedUnits = info.attachedUnits
+
         if #attachedUnits == 0 then
-            attachedUnits = "*No units attached to call*"
+            attachedUnits = "none"
         else
             for _, unit in pairs(attachedUnits) do
                 if unit == unitIdentifier then
@@ -68,8 +72,9 @@ function display911Calls(emeregencyCalls)
                     break
                 end
             end
-            attachedUnits = table.concat(info.attachedUnits, ", ")
+            attachedUnits = table.concat(info.attachedUnits, ", ") -- todo: do it in js make it on new line instead of comma probably by using <br> and insert html but make sure to escape the units.
         end
+
         data[#data+1] = {
             callId = callId,
             caller = info.caller,
@@ -79,6 +84,7 @@ function display911Calls(emeregencyCalls)
             isAttached = isAttached
         }
     end
+
     SendNUIMessage({
         type = "update911Calls",
         callData = json.encode(data)
@@ -116,7 +122,7 @@ end)
 -- sets the unit attached or detached from a call.
 RegisterNUICallback("unitRespondToCall", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
-    TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(data.id), unitNumber)
+    TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(data.id))
 end)
 
 function weaponSearch(searchBy, search)

@@ -367,9 +367,13 @@ function Bridge.employeeUpdateCallsign(src, charid, callsign)
         return false, "An issue occured try again later!"
     end
     
-    callsign = tonumber(callsign)
-    if not callsign then
+    if not tonumber(callsign) then
         return false, "Callsign must be a number!"
+    end
+
+    callsign = tostring(callsign)
+    if not callsign then
+        return false, "Incorrect callsign"
     end
 
     charid = tonumber(charid)
