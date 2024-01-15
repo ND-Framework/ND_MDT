@@ -571,7 +571,7 @@ end
 RegisterCommand("911", function(source, args, rawCommand)
     local input = lib.inputDialog("Create a 911 call", {
         {type = "textarea", label = "Message", required = true},
-        {type = "checkbox", label = "Share location"},
+        {type = "checkbox", label = "Share your location"},
         {type = "checkbox", label = "Share your name"},
     })
 
