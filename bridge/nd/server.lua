@@ -11,14 +11,16 @@ local function getPlayerSource(id)
     end
 end
 
-local function queryDatabaseProfiles(find, findData)
+local function queryDatabaseProfiles(first, last)
     local result = MySQL.query.await("SELECT * FROM nd_characters")
     local profiles = {}
     for i=1, #result do
         local item = result[i]
         local metadata = json.decode(item.metadata)
-        local toFind = item[find]
-        if toFind:lower() == findData:lower() then            
+        local firstname = (item.firstname or ""):lower()
+        local lastname = (item.lastname or ""):lower()
+
+        if first ~= "" and firstname:find(first) or last ~= "" and lastname:find(last) then            
             profiles[item.charid] = {
                 firstName = item.firstname,
                 lastName = item.lastname,
@@ -43,18 +45,14 @@ function Bridge.nameSearch(src, first, last)
     if not config.policeAccess[player.job] then return false end
 
     local profiles = {}
-    if first and first ~= "" then
-        local data = queryDatabaseProfiles("firstname", first)
-        for k, v in pairs(data) do
-            profiles[k] = v
-        end
+    local firstname = (first or ""):lower()
+    local lastname = (last):lower()
+    local data = queryDatabaseProfiles(firstname, lastname)
+
+    for k, v in pairs(data) do
+        profiles[k] = v
     end
-    if last and last ~= "" then
-        local data = queryDatabaseProfiles("lastname", last)
-        for k, v in pairs(data) do
-            profiles[k] = v
-        end
-    end
+
     return profiles
 end
 

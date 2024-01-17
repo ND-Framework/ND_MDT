@@ -1663,7 +1663,7 @@ $("#nameSearch").submit(function() {
 
     $.post(`https://${GetParentResourceName()}/nameSearch`, JSON.stringify({
         first: searchFirst,
-        last: searchFirst
+        last: searchLast
     }));
 
     this.reset();
