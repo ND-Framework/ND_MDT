@@ -67,22 +67,31 @@ lib.callback.register("ND_MDT:getUnitStatus", function(source)
     return emeregencyCalls
 end)
 
+local function createDispatch(info)
+    callId = callId + 1
+    emeregencyCalls[callId] = {
+        caller = info.caller,
+        location = info.location,
+        callDescription = info.callDescription,
+        attachedUnits = {},
+        timeCreated = os.time(),
+        coords = info.coords
+    }
+    TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
+end
+
+exports("createDispatch", createDispatch)
+
 -- Create 911 call in emeregencyCalls.
 RegisterNetEvent("ND_MDT:Create911Call", function(callInfo)
     local src = source
-    local ped = GetPlayerPed(src)
-    local coords = GetEntityCoords(ped)
 
-    callId = callId + 1
-    emeregencyCalls[callId] = {
-        caller = callInfo.caller,
-        location = callInfo.location,
-        callDescription = callInfo.callDescription,
-        attachedUnits = {},
-        timeCreated = os.time(),
-        coords = coords
-    }
-    TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
+    if callInfo.location then
+        local ped = GetPlayerPed(src)
+        callInfo.coords = GetEntityCoords(ped)
+    end
+
+    createDispatch(callInfo)
 end)
 
 local function removePlayerFromAllCalls(calls, player)
@@ -110,7 +119,8 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
         emeregencyCall.attachedUnits[src] = nil
         blipInfo = {
             type = "remove",
-            player = src
+            player = src,
+            call = call
         }
     else
         removePlayerFromAllCalls(emeregencyCalls, src)
@@ -118,6 +128,7 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
         blipInfo = {
             type = "add",
             player = src,
+            call = call,
             coords = emeregencyCall.coords
         }
     end

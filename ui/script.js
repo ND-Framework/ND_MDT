@@ -159,7 +159,7 @@ $.getJSON("../config/translate.json", function(data) {
     $("#rightPanelDashboardArrivedButton").text(translation["Arrived on scene"]);
     $("#rightPanelDashboardRouteButton").text(translation["En route"]);
     $("#rightPanelDashboardDisplayActiveUnits").text(translation["Active Units"]);
-    $("#rightPanelDashboardDisplayCalls").text(translation["911 Calls"]);
+    $("#rightPanelDashboardDisplayCalls").text(translation["Calls"]);
     $(".viewVehiclesButton").html(`<i class="fas fa-car-side"></i> ${translation["View vehicles"]}`);
     $(".viewWeaponsButton").html(`<i class="fa-solid fa-gun"></i> ${translation["View weapons"]}`);
     $(".boloCitizenCreateButton").html(`<i class="fa-solid fa-hand"></i> ${translation["Create BOLO"]}`);

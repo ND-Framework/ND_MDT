@@ -75,6 +75,11 @@ function display911Calls(emeregencyCalls)
             attachedUnits = "none"
         end
 
+        if info.coords and not info.location then
+            local coords = info.coords
+            info.location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
+        end
+
         data[#data+1] = {
             callId = callId,
             caller = info.caller,
@@ -449,6 +454,7 @@ end)
 
 local responseBlip = nil
 local responseBlipPoint = nil
+local responseBlipCall = 0
 
 local function removeResponseBlipAndPoint()
     if DoesBlipExist(responseBlip) then
@@ -458,6 +464,7 @@ local function removeResponseBlipAndPoint()
         responseBlipPoint:remove()
         responseBlip = nil
     end
+    responseBlipCall = 0
 end
 
 -- returns all 911 calls from the server and updates them on the ui.
@@ -475,6 +482,13 @@ RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls, blipInfo)
         TriggerServerEvent("ND_MDT:setUnitStatus", "In service", "10-8")
         return removeResponseBlipAndPoint()
     end
+    
+    if responseBlipCall > 0 and responseBlipCall ~= blipInfo.call then
+        removeResponseBlipAndPoint()
+    end
+
+    if not blipInfo.coords or blipInfo.call == responseBlipCall then return end
+    responseBlipCall = blipInfo.call
 
     local coords = blipInfo.coords
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
@@ -648,14 +662,8 @@ RegisterCommand("911", function(source, args, rawCommand)
         })
     end
 
-    local caller = nil
-    if input[2] then
-        local playerInfo = Bridge.getPlayerInfo()
-        caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
-    end
-
     local location = nil
-    if input[3] then
+    if input[2] then
         local coords = GetEntityCoords(cache.ped)
         location = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
 
@@ -663,6 +671,12 @@ RegisterCommand("911", function(source, args, rawCommand)
         if postal then
             location = ("%s (%s)"):format(location, postal)
         end
+    end
+
+    local caller = nil
+    if input[3] then
+        local playerInfo = Bridge.getPlayerInfo()
+        caller = ("%s %s"):format(playerInfo.firstName, playerInfo.lastName)
     end
 
     TriggerServerEvent("ND_MDT:Create911Call", {
