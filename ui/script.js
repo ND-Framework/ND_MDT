@@ -694,8 +694,9 @@ function getCrimes(penal, type) {
     return string
 }
 
+let penal = {}
 $.getJSON("../config/charges.json", function(data) {
-    const penal = data[0]
+    penal = data[0]
 
     // add charges to list
     for (const [key, value] of Object.entries(penal)) {
