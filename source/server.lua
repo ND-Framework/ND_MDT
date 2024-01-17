@@ -69,24 +69,29 @@ end)
 
 -- Create 911 call in emeregencyCalls.
 RegisterNetEvent("ND_MDT:Create911Call", function(callInfo)
+    local src = source
+    local ped = GetPlayerPed(src)
+    local coords = GetEntityCoords(ped)
+
     callId = callId + 1
     emeregencyCalls[callId] = {
         caller = callInfo.caller,
         location = callInfo.location,
         callDescription = callInfo.callDescription,
         attachedUnits = {},
-        timeCreated = os.time()
+        timeCreated = os.time(),
+        coords = coords
     }
     TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
 end)
 
-local function isUnitResponding(call, unitIdentifier)
-    for unit, name in pairs(emeregencyCalls[call].attachedUnits) do
-        if name == unitIdentifier then
-            return true, unit
+local function removePlayerFromAllCalls(calls, player)
+    for i=1, #calls do
+        local emerCall = calls[i]
+        if emerCall.attachedUnits[player] then
+            emerCall.attachedUnits[player] = nil
         end
     end
-    return false
 end
 
 -- This will check if the client is already attached to the call if not then it will attach them and send it to the client.
@@ -98,21 +103,26 @@ RegisterNetEvent("ND_MDT:unitRespondToCall", function(call)
     local emeregencyCall = emeregencyCalls[call]
     if not emeregencyCall then return end
 
+    local blipInfo = nil
     local unitIdentifier = ("[%s] %s %s"):format(player.callsign, player.firstName, player.lastName)
 
     if emeregencyCall.attachedUnits[src] then
         emeregencyCall.attachedUnits[src] = nil
+        blipInfo = {
+            type = "remove",
+            player = src
+        }
     else
-        for i=1, #emeregencyCalls do
-            local emerCall = emeregencyCalls[i]
-            if emerCall.attachedUnits[src] then
-                emerCall.attachedUnits[src] = nil
-            end
-        end
+        removePlayerFromAllCalls(emeregencyCalls, src)
         emeregencyCall.attachedUnits[src] = unitIdentifier
+        blipInfo = {
+            type = "add",
+            player = src,
+            coords = emeregencyCall.coords
+        }
     end
 
-    TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
+    TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls, blipInfo)
 end)
 
 

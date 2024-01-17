@@ -62,17 +62,17 @@ function display911Calls(emeregencyCalls)
     for callId, info in pairs(emeregencyCalls) do
         local isAttached = false
         local attachedUnits = info.attachedUnits
+        local unitsArray = {}
 
-        if #attachedUnits == 0 then
-            attachedUnits = "none"
-        else
-            for _, unit in pairs(attachedUnits) do
-                if unit == unitIdentifier then
-                    isAttached = true
-                    break
-                end
+        for _, unit in pairs(attachedUnits) do
+            unitsArray[#unitsArray+1] = unit
+            if unit == unitIdentifier then
+                isAttached = true
             end
-            -- attachedUnits = table.concat(info.attachedUnits, ", ")
+        end
+
+        if #unitsArray == 0 then
+            attachedUnits = "none"
         end
 
         data[#data+1] = {
@@ -80,7 +80,7 @@ function display911Calls(emeregencyCalls)
             caller = info.caller,
             location = info.location,
             callDescription = info.callDescription,
-            attachedUnits = attachedUnits,
+            attachedUnits = unitsArray,
             isAttached = isAttached,
             timeCreated = info.timeCreated
         }
@@ -446,9 +446,73 @@ RegisterNetEvent("ND_MDT:receiveLiveChat", function(chatInfo)
     SendNUIMessage(chatInfo)
 end)
 
+
+local responseBlip = nil
+local responseBlipPoint = nil
+
+local function removeResponseBlipAndPoint()
+    if DoesBlipExist(responseBlip) then
+        RemoveBlip(responseBlip)
+    end
+    if responseBlipPoint then
+        responseBlipPoint:remove()
+        responseBlip = nil
+    end
+end
+
 -- returns all 911 calls from the server and updates them on the ui.
-RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls)
+RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls, blipInfo)
     display911Calls(emeregencyCalls)
+    if not blipInfo or blipInfo.player ~= cache.serverId then return end
+
+    if blipInfo.type == "remove" then
+        lib.notify({
+            title = "MDT",
+            description = "Status updated to (In service)",
+            type = "inform",
+            duration = 5000
+        })
+        TriggerServerEvent("ND_MDT:setUnitStatus", "In service", "10-8")
+        return removeResponseBlipAndPoint()
+    end
+
+    local coords = blipInfo.coords
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+    SetBlipSprite(blip, 161)
+    SetBlipScale(blip, 0.5)
+    SetBlipColour(blip, 1)
+    SetBlipAsShortRange(blip, false)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString("Attached call")
+    EndTextCommandSetBlipName(blip)
+    SetBlipRoute(blip, true)
+    responseBlip = blip
+
+    lib.notify({
+        title = "MDT",
+        description = "Status updated to (En route)",
+        type = "inform",
+        duration = 5000
+    })
+    TriggerServerEvent("ND_MDT:setUnitStatus", "En route", "10-97")
+
+    local point = lib.points.new({
+        coords = coords,
+        distance = 50
+    })
+     
+    function point:onEnter()
+        removeResponseBlipAndPoint()
+        lib.notify({
+            title = "MDT",
+            description = "Status updated to (Arrived on scene)",
+            type = "inform",
+            duration = 5000
+        })
+        TriggerServerEvent("ND_MDT:setUnitStatus", "Arrived on scene", "10-23")
+    end
+
+    responseBlipPoint = point
 end)
 
 -- returns all active units from the server and updates the status on the ui.

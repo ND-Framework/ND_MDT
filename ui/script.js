@@ -3,6 +3,7 @@ let timeBetweenMessages = []
 let cumilativeTimeBetweenMessages;
 let bolosLoaded = false
 let reportsLoaded = false
+const currentDate = new Date()
 
 let reportsViewing = "crime"
 let bolosViewing = "all"
@@ -905,7 +906,7 @@ $("#form-reports-create").click(function() {
     const type = $(".form-reports-type").val();
     const location = $(".form-reports-content > input").val();
     const info = $(".form-reports-content > textarea").val();
-    print(type, info)
+
     $.post(`https://${GetParentResourceName()}/createReport`, JSON.stringify({
         type: type,
         info: info,
@@ -1310,12 +1311,13 @@ window.addEventListener("message", function(event) {
     // update all the 911 calls on the dashboard.
     if (item.type === "update911Calls") {
         $(".rightPanelDashboard911Calls").empty();
-        const currentDate = new Date()
-
+        
         JSON.parse(item.callData).forEach((call) => {
+            const timeCreated = call.timeCreated*1000
+
             $(".rightPanelDashboard911Calls").prepend(`
                 <div class="rightPanelDashboard911CallsItem">
-                    <p class="CallTimeAgo911">${formatTimeAgo(currentDate.setTime(call.timeCreated*1000))}</p>
+                    <p class="CallTimeAgo911" data-timeCreated="${timeCreated}">${formatTimeAgo(currentDate.setTime(timeCreated))}</p>
 
                     ${call.caller && `
                         <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-phone"></i> ${translation["Caller"]}:</p> <p class="rightPanelDashboard911CallsItemTextCaller" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.caller)}</p>
@@ -1788,3 +1790,11 @@ document.addEventListener("keydown", event => {
         $.post(`https://${GetParentResourceName()}/close`);
     }
 });
+
+setInterval(() => {
+    const elements = document.querySelectorAll(".CallTimeAgo911");
+    elements.forEach(function(element) {
+        const timeCreated = element.getAttribute("data-timeCreated");
+        element.textContent = formatTimeAgo(currentDate.setTime(timeCreated));
+    });
+}, 1000);
