@@ -240,9 +240,20 @@ end
 function Bridge.getStolenVehicles()
     local plates = {}
     local result = MySQL.query.await("SELECT `plate` FROM `nd_vehicles` WHERE `stolen` = 1")
-    for _, veh in pairs(result) do
+    for i=1, #result do
+        local veh = result[i]
         plates[#plates+1] = veh.plate
     end
+
+    local bolos = MySQL.query.await("SELECT `data` FROM `nd_mdt_bolos` WHERE `type` = 'vehicle'")
+    for i=1, #bolos do
+        local veh = bolos[i]
+        local info = json.decode(veh.data) or {}
+        if info.plate then
+            plates[#plates+1] = info.plate
+        end
+    end
+
     return plates
 end
 
