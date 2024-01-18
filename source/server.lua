@@ -1,8 +1,9 @@
 local callId = 0
 local emeregencyCalls = {}
 local activeUnits = {}
-local resourceName = GetCurrentResourceName()
+local resourceName = cache.resource
 local chargesList = json.decode(LoadResourceFile(resourceName, "/config/charges.json"))[1]
+require("modules.plates.server")
 
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
@@ -243,49 +244,6 @@ RegisterNetEvent("ND_MDT:weaponStolenStatus", function(serial, stolen)
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     MySQL.query("UPDATE nd_mdt_weapons SET stolen = ? WHERE serial = ?", {stolen and 1 or 0, serial})
-end)
-
-local stolenPlatesCallbacks = {}
-local stolenPlatesList = {}
-
-RegisterNetEvent("ND_MDT:vehicleStolenStatus", function(id, stolen, plate)
-    local src = source
-    local player = Bridge.getPlayerInfo(src)
-    if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-
-    Bridge.vehicleStolen(id, stolen, plate)
-    if not plate then return end
-    stolenPlatesList[plate] = stolen and plate or nil
-    for i=1, #stolenPlatesCallbacks do
-        stolenPlatesCallbacks[i](plate)
-    end
-end)
-
-AddEventHandler("onResourceStart", function(name)
-    if name ~= resourceFile then return end
-
-    local plates = Bridge.getStolenVehicles()
-    for i=1, #plates do
-        local plate = plates[i]
-        stolenPlatesList[plate] = plate
-    end
-end)
-
-exports("stolenPlate", function(param)
-    local dataType = type(param)
-    if dataType == "string" then
-        return stolenPlatesList[plate]
-    elseif dataType == "function" then
-        stolenPlatesCallbacks[#stolenPlatesCallbacks+1] = param
-        return stolenPlatesList
-    end
-end)
-
-RegisterNetEvent("wk:onPlateScanned", function(cam, plate, index)
-    local src = source
-    if stolenPlatesList[plate] then
-        exports["wk_wars2x"]:TogglePlateLock(src, cam, true, true)
-    end
 end)
 
 
