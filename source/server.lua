@@ -384,7 +384,7 @@ end)
 lib.callback.register("ND_MDT:employeeFire", function(src, character)
     local player = Bridge.getPlayerInfo(src)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
-    return Bridge.removeEmployeeJob(character)
+    return Bridge.removeEmployeeJob(src, character)
 end)
 
 lib.callback.register("ND_MDT:inviteEmployee", function(src, target)

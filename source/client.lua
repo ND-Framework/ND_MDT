@@ -340,7 +340,6 @@ RegisterNUICallback("newEmployee", function(data)
 end)
 
 lib.callback.register("ND_MDT:employeeRequestInvite", function(playerInviting, department)
-    if not ClockedIn then return end
     local alert = lib.alertDialog({
         header = ("You've been invited by %s"):format(playerInviting),
         content = ("%s is inviting you to work at %s would you like to accept the invite?"):format(playerInviting, department),
