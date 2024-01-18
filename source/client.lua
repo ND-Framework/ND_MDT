@@ -107,6 +107,8 @@ function display911Calls(emeregencyCalls)
         type = "update911Calls",
         callData = json.encode(data)
     })
+
+    return true
 end
 
 -- open the mdt using keymapping.
@@ -484,8 +486,13 @@ local function removeResponseBlipAndPoint()
 end
 
 -- returns all 911 calls from the server and updates them on the ui.
-RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls, blipInfo)
-    display911Calls(emeregencyCalls)
+RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls, blipInfo, notification)
+    if not display911Calls(emeregencyCalls) then return end
+
+    if notification then
+        lib.notify(notification)
+    end
+
     if not blipInfo or blipInfo.player ~= cache.serverId then return end
 
     if blipInfo.type == "remove" then

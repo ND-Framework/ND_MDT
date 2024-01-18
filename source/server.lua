@@ -78,7 +78,10 @@ local function createDispatch(info)
         timeCreated = os.time(),
         coords = info.coords
     }
-    TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls)
+    TriggerClientEvent("ND_MDT:update911Calls", -1, emeregencyCalls, nil, {
+        title = ("Dispatch: new call (%s)"):format(callId),
+        description = info.callDescription
+    })
 end
 
 exports("createDispatch", createDispatch)
