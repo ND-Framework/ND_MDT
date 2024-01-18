@@ -33,6 +33,18 @@ exports["ND_MDT"]:createDispatch({
 })
 ```
 
+## Inventory item:
+```lua
+["mdt"] = {
+    label = "MDT",
+    weight = 800,
+    client = {
+        export = "ND_MDT.useTablet"
+    }
+}
+```
+![mdt](https://github.com/ND-Framework/ND_MDT/assets/86536434/1dcb38e5-4609-401f-97bf-77371fb55466)
+
 ## Features:
 * General
   * Tablet item with ox_inventory.
@@ -79,3 +91,5 @@ exports["ND_MDT"]:createDispatch({
 
 ## Video preview:
 [![mdt-thumbnail-youtube](https://github.com/ND-Framework/ND_MDT/assets/86536434/7b3df9ad-c205-4fa9-bbe1-9353cfc7c0ca)](https://youtu.be/NcTIdCN4VR0?si=k6OPmumDNQ27_LjO)
+
+
