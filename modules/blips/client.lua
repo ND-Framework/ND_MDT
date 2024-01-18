@@ -11,25 +11,27 @@ function blips.enable(status)
     if not blipColor then return end
 
     local state = Entity(veh).state
-    state.emergencyBlip = {
+    state:set("emergencyBlip", {
         player = cache.serverId,
         label = ("[%s] %s"):format(playerInfo.callsign, status),
         color = blipColor,
         sprite = config.policeAccess[playerInfo.job] and config.getPoliceVehicleBlip(veh) or config.fireAccess[playerInfo.job] and config.getFireVehicleBlip(veh) or 1
-    }
+    }, true)
 end
 
 function blips.disable()
     local veh = cache.vehicle
-    if not veh then return end
+    if not veh or cache.seat ~= -1 then return end
 
     local state = Entity(veh).state
     if state.emergencyBlip then
-        state.emergencyBlip = nil
+        state:set("emergencyBlip", false, true)
     end
 end
 
-AddStateBagChangeHandler("emergencyBlip", nil, function(bagName, _, value)
+AddStateBagChangeHandler("emergencyBlip", nil, function(bagName, _, value, reserved, replicated)
+    if replicated then return end
+    
     local playerInfo = Bridge.getPlayerInfo()
     if not Bridge.hasAccess(playerInfo.job) then return end
 
