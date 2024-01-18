@@ -2,6 +2,7 @@ local display = false
 local citizenData = {}
 local changedLicences = {}
 local neverOpened = true
+local blips = require("modules.blips.client")
 
 local function openMDT(status)
     local playerInfo = Bridge.getPlayerInfo()
@@ -121,6 +122,10 @@ end)
 
 -- triggers a server event once unit status has been changed from the mdt.
 RegisterNUICallback("unitStatus", function(data)
+    blips.disable()
+    if data.code ~= "10-7" then
+        blips.enable(data.status)
+    end
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     TriggerServerEvent("ND_MDT:setUnitStatus", data.status, data.code)
 end)

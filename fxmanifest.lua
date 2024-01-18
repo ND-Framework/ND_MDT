@@ -15,7 +15,8 @@ files {
     "ui/user.jpg",
     "config/translate.json",
     "config/charges.json",
-    "bridge/**/client.lua"
+    "bridge/**/client.lua",
+    "modules/**/client.lua"
 }
 
 ui_page "ui/index.html"
