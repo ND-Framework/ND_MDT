@@ -285,12 +285,16 @@ RegisterNetEvent("ND_MDT:createBolo", function(data)
 
     local jsonData = json.encode(data)
     local id = MySQL.insert.await("INSERT INTO `nd_mdt_bolos` (`type`, `data`) VALUES (?, ?)", {data.type, jsonData})
-    TriggerClientEvent("ND_MDT:newBolo", -1, {
+
+    local info = {
         id = id,
         type = data.type,
         data = jsonData,
         timestamp = os.time()
-    })
+    }
+
+    TriggerEvent("ND_MDT:newBolo", info)
+    TriggerClientEvent("ND_MDT:newBolo", -1, info)
 end)
 
 -- delete bolo from db
