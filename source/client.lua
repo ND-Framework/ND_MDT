@@ -3,10 +3,21 @@ local citizenData = {}
 local changedLicences = {}
 local neverOpened = true
 local blips = require("modules.blips.client")
+require("modules.tablet.client")
 
-local function openMDT(status)
+function OpenMDT(status)
     local playerInfo = Bridge.getPlayerInfo()
     if not Bridge.hasAccess(playerInfo.job) then return end
+
+    if not status then
+        display = false
+        SetNuiFocus(false, false)
+        TriggerEvent("ND_MDT:closeUI")
+        return SendNUIMessage({
+            type = "display",
+            action = "close"
+        })
+    end
 
     if neverOpened then
         neverOpened = false
@@ -102,13 +113,14 @@ end
 RegisterCommand("+mdt", function()
     local veh = GetVehiclePedIsIn(cache.ped)
     if not DoesEntityExist(veh) or GetVehicleClass(veh) ~= 18 then return end
-    openMDT(true)
+    OpenMDT(true)
 end, false)
 RegisterCommand("-mdt", function()end, false)
 RegisterKeyMapping("+mdt", "Open the ND MDT", "keyboard", "b")
 
 -- close the ui.
 RegisterNUICallback("close", function()
+    TriggerEvent("ND_MDT:closeUI")
     display = false
     SetNuiFocus(false, false)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
@@ -208,7 +220,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
     if action == "rank" then
         local options, job = Bridge.getRanks(data)
         if not options then
-            return --openMDT(true)
+            return --OpenMDT(true)
         end
 
         local input = lib.inputDialog("Change employee rank", {
@@ -222,7 +234,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
         })
 
         if not input or not input[1] then
-            return --openMDT(true)
+            return --OpenMDT(true)
         end
 
         local success, errorMessage = lib.callback.await("ND_MDT:employeeUpdateRank", false, {
@@ -253,7 +265,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
         })
 
         if not input or not input[1] then
-            return --openMDT(true)
+            return --OpenMDT(true)
         end
         
         local success, errorMessage = lib.callback.await("ND_MDT:employeeUpdateCallsign", false, charid, input[1])
@@ -278,7 +290,7 @@ RegisterNuiCallback("empoyeeAction", function(data, cb)
             })
         end
     end
-    --openMDT(true)
+    --OpenMDT(true)
 end)
 
 local function getNearbyPlayers()
