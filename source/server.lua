@@ -47,7 +47,7 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
 
     if currTime - lastPanicTime < config.panicCooldown then
         local remainingTime = config.panicCooldown - (currTime - lastPanicTime)
-        TriggerClientEvent("ND_MDT:panicOnCooldown", source, remainingTime)
+        TriggerClientEvent("ND_MDT:panicOnCooldown", src, remainingTime)
         return
     end
 
