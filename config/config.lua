@@ -22,6 +22,8 @@ config = {
         ["lsfd"] = 1
     },
 
+    -- the length, in seconds, that you want people to wait before being able to panic again
+    panicCooldown = 30,
 
     getPoliceVehicleBlip = function(vehicle)
         local class = GetVehicleClass(vehicle)
