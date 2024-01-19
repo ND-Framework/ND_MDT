@@ -647,6 +647,15 @@ RegisterNetEvent("ND_MDT:panic", function(info)
     SendNUIMessage(info)
 end)
 
+RegisterNetEvent("ND_MDT:panicOnCooldown", function(remainingTime)
+    lib.notify({
+        title = "MDT",
+        description = "Your panic button is on a cooldown for " .. remainingTime .. " more seconds",
+        type = "error",
+        duration = 5000
+    })
+end)
+
 local function getPlayerPostal()
     local postal = false
     if GetResourceState("nearest-postal") == "started" then
