@@ -31,6 +31,7 @@ function OpenMDT(status)
     end
 
     display = true
+    TriggerServerEvent("ND_MDT:MDTOpened")
     SetNuiFocus(true, true)
     SendNUIMessage({
         type = "display",
