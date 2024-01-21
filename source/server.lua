@@ -5,7 +5,7 @@ local resourceName = cache.resource
 local chargesList = json.decode(LoadResourceFile(resourceName, "/config/charges.json"))[1]
 require("modules.plates.server")
 
--- retrive characters from the database based on client searches.
+-- Retrieve characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
     local src = source
     return Bridge.nameSearch(src, first, last)
@@ -15,14 +15,14 @@ lib.callback.register("ND_MDT:nameSearchByCharacter", function(source, character
     return Bridge.characterSearch(source, characterSearched)
 end)
 
--- get all active units on serer and send it to client.
+-- Get all active units on the server and send them to the client.
 lib.callback.register("ND_MDT:getUnitStatus", function(source)
     local player = Bridge.getPlayerInfo(source)
     if not config.policeAccess[player.job] and not config.fireAccess[player.job] then return end
     return activeUnits
 end)
 
--- sets unit status in active units table and sends it to all clients.
+-- Sets unit status in active units table and sends it to all clients.
 RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     local src = source
     local player = Bridge.getPlayerInfo(src)
@@ -55,7 +55,7 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
     })
 end)
 
--- remove unit froma activeunits if they leave the server forgeting to go 10-7.
+-- Remove unit from activeUnits if they leave the server without going 10-7.
 AddEventHandler("playerDropped", function()
     local src = source
     if not activeUnits[src] then return end
