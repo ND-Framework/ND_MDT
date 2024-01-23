@@ -73,6 +73,13 @@ AddEventHandler("playerDropped", function()
     TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
 end)
 
+-- Remove unit from activeUnits if they change character without going 10-7.
+AddEventHandler("ND:characterUnloaded", function(src)
+    if not activeUnits[src] then return end
+    activeUnits[src] = nil
+    TriggerClientEvent("ND_MDT:updateUnitStatus", -1, activeUnits)
+end)
+
 -- This will just send all the current calls to the client.
 lib.callback.register("ND_MDT:getUnitStatus", function(source)
     return emeregencyCalls
