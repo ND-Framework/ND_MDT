@@ -21,7 +21,7 @@ function OpenMDT(status)
 
     if neverOpened then
         neverOpened = false
-        -- returns all active units from the server and updates the status on the ui.
+        -- Returns all active units from the server and updates the status on the UI.
         lib.callback("ND_MDT:getUnitStatus", false, function(units)
             displayUnits(units)
         end)
@@ -111,7 +111,7 @@ function display911Calls(emeregencyCalls)
     return true
 end
 
--- open the mdt using keymapping.
+-- Open the MDT using keymapping.
 RegisterCommand("+mdt", function()
     local veh = GetVehiclePedIsIn(cache.ped)
     if not DoesEntityExist(veh) or GetVehicleClass(veh) ~= 18 then return end
@@ -134,7 +134,7 @@ end)
 --     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 -- end)
 
--- triggers a server event once unit status has been changed from the mdt.
+-- Triggers a server event once a units status has been changed from the MDT.
 RegisterNUICallback("unitStatus", function(data)
     blips.disable()
     if data.code ~= "10-7" then
@@ -144,7 +144,7 @@ RegisterNUICallback("unitStatus", function(data)
     TriggerServerEvent("ND_MDT:setUnitStatus", data.status, data.code)
 end)
 
--- sets the unit attached or detached from a call.
+-- Sets the unit attached or detached from a call.
 RegisterNUICallback("unitRespondToCall", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     TriggerServerEvent("ND_MDT:unitRespondToCall", tonumber(data.id))
@@ -154,7 +154,7 @@ function weaponSearch(searchBy, search)
     local weaponPage = false
     if searchBy == "owner" then weaponPage = true end
 
-    -- returns retrived names and character information from the server and adds it on the ui.
+    -- Returns retrieved names and character information from the server and adds it on the UI.
     lib.callback("ND_MDT:weaponSerialSearch", false, function(result)
         -- print(json.encode(result,{indent=true}))
         if not result or not next(result) then
@@ -351,11 +351,11 @@ lib.callback.register("ND_MDT:employeeRequestInvite", function(playerInviting, d
     return alert == "confirm"
 end)
 
--- triggers a server event to retrive names based on search.
+-- Triggers a server event to retrieve names based on search.
 RegisterNUICallback("nameSearch", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
 
-    -- returns retrived names and character information from the server and adds it on the ui.
+    -- Returns retrieved names and character information from the server and adds it on the ui.
     if not data.id then
         lib.callback("ND_MDT:nameSearch", false, function(result)
             nameSearched(result)
@@ -377,7 +377,7 @@ RegisterNUICallback("viewVehicles", function(data)
     local vehPage = false
     if data.searchBy == "owner" then vehPage = true end
 
-    -- retrived vehicles from the server and adds it on the ui.
+    -- Retrieve vehicles from the server and add them to the UI.
     lib.callback("ND_MDT:viewVehicles", false, function(result)
         -- print(json.encode(result, {indent = true}))
         if not result or not next(result) then
@@ -408,7 +408,7 @@ RegisterNUICallback("viewRecords", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     changedLicences = {}
 
-    -- retrive records from the server and adds it on the ui.
+    -- Retrieve records from the server and add them to the UI.
     lib.callback("ND_MDT:viewRecords", false, function(result)
         result.citizen = citizenData[data.id]
         if not result.citizen then
@@ -445,7 +445,7 @@ RegisterNUICallback("saveRecords", function(data)
     changedLicences = {}
 end)
 
--- Trigger a server event and send the text and unit number form the live chat message the client sends.
+-- Trigger a server event and send the text and unit number from the live chat message the client sends.
 RegisterNUICallback("sendLiveChat", function(data)
     PlaySoundFrontend(-1, "PIN_BUTTON", "ATM_SOUNDS", 1)
     local playerInfo = Bridge.getPlayerInfo()
@@ -485,7 +485,7 @@ local function removeResponseBlipAndPoint()
     responseBlipCall = 0
 end
 
--- returns all 911 calls from the server and updates them on the ui.
+-- Returns all 911 calls from the server and updates them on the UI.
 RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls, blipInfo, notification)
     if not display911Calls(emeregencyCalls) then return end
 
@@ -552,7 +552,7 @@ RegisterNetEvent("ND_MDT:update911Calls", function(emeregencyCalls, blipInfo, no
     responseBlipPoint = point
 end)
 
--- returns all active units from the server and updates the status on the ui.
+-- Returns all active units from the server and updates the status on the UI.
 RegisterNetEvent("ND_MDT:updateUnitStatus", function(units)
     displayUnits(units)
 end)
@@ -678,7 +678,7 @@ local function isInputValid(input)
     return true
 end
 
--- triggers a server event with the 911 call information.
+-- Triggers a server event with the 911 call information.
 RegisterCommand("911", function(source, args, rawCommand)
     local input = lib.inputDialog("Create a 911 call", {
         {type = "textarea", label = "Message", required = true},
