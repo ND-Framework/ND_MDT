@@ -5,11 +5,6 @@ local resourceName = cache.resource
 local chargesList = json.decode(LoadResourceFile(resourceName, "/config/charges.json"))[1]
 require("modules.plates.server")
 
--- Currently just used to unequip any weapons the player is holding when the MDT is opened.
-RegisterNetEvent("ND_MDT:MDTOpened", function()
-    TriggerClientEvent('ox_inventory:disarm', source, true)
-end)
-
 -- retrive characters from the database based on client searches.
 lib.callback.register("ND_MDT:nameSearch", function(source, first, last)
     local src = source
