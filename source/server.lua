@@ -3,6 +3,7 @@ local emeregencyCalls = {}
 local activeUnits = {}
 local resourceName = cache.resource
 local chargesList = json.decode(LoadResourceFile(resourceName, "/config/charges.json"))[1]
+local lastPanicTime = 0
 require("modules.plates.server")
 
 -- retrive characters from the database based on client searches.
@@ -42,6 +43,14 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
 
     if statusCode ~= "10-99" then return end
 
+    local currTime = os.time()
+
+    if currTime - lastPanicTime < config.panicCooldown then
+        local remainingTime = config.panicCooldown - (currTime - lastPanicTime)
+        TriggerClientEvent("ND_MDT:panicOnCooldown", src, remainingTime)
+        return
+    end
+
     local location, postal = lib.callback.await("ND_MDT:getStreet", src)
     if not location then return end
 
@@ -53,6 +62,7 @@ RegisterNetEvent("ND_MDT:setUnitStatus", function(unitStatus, statusCode)
         location = location,
         postal = postal
     })
+    lastPanicTime = currTime
 end)
 
 -- remove unit froma activeunits if they leave the server forgeting to go 10-7.
