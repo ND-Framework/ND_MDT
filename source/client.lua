@@ -31,7 +31,7 @@ function OpenMDT(status)
     end
 
     display = true
-    TriggerServerEvent("ND_MDT:MDTOpened")
+    TriggerEvent("ox_inventory:disarm", true)
     SetNuiFocus(true, true)
     SendNUIMessage({
         type = "display",
