@@ -1328,7 +1328,7 @@ window.addEventListener("message", function(event) {
                     
 
                     ${call.location && `
-                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p> <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${call.location}</p>
+                        <p class="rightPanelDashboard911CallsItemText"><i class="fas fa-map-marker-alt"></i> ${translation["Location"]}:</p> <p class="rightPanelDashboard911CallsItemTextLocation" style="margin-bottom: 8%; margin-top: 1%;">${escapeHtml(call.location)}</p>
                         <br>
                         <br>`
                     || ""}

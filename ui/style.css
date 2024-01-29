@@ -326,6 +326,7 @@ button {
 }
 .rightPanelDashboardActiveUnitsItemTextUnits, .rightPanelDashboardActiveUnitsItemTextCallsign, .rightPanelDashboard911CallsItemTextDescription, .rightPanelDashboard911CallsItemText, .rightPanelDashboard911CallsItemTextLocation, .rightPanelDashboard911CallsItemTextCaller {
     display: inline;
+    overflow-wrap: break-word;
 }
 .rightPanelDashboard911CallsItemRespond {
     width: auto;
