@@ -1,6 +1,15 @@
 local NDCore = exports["ND_Core"]
 local Bridge = {}
 
+SetTimeout(500, function()
+    NDCore:loadSQL({
+        "bridge/nd/database/bolos.sql",
+        "bridge/nd/database/records.sql",
+        "bridge/nd/database/reports.sql",
+        "bridge/nd/database/weapons.sql"
+    })
+end)
+
 local function getPlayerSource(id)
     local playerSource = false
     local players = NDCore:getPlayers("id", id)
