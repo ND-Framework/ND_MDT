@@ -2,7 +2,7 @@
 
 author "Andyyy7666"
 description "ND Framework MDT For LEO and FIRE"
-version "1.0.0"
+version "1.1.0"
 
 fx_version "cerulean"
 game "gta5"
