@@ -645,6 +645,8 @@ RegisterNetEvent("ND_MDT:removeReport", function(id, reportType)
 end)
 
 RegisterNetEvent("ND_MDT:panic", function(info)
+    local playerInfo = Bridge.getPlayerInfo()
+    if not Bridge.hasAccess(playerInfo.job) then return end
     SendNUIMessage(info)
 end)
 
