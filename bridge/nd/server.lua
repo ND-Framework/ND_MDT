@@ -183,6 +183,10 @@ end
 ---@param id number
 ---@return table
 function Bridge.getProperties(id)
+    if GetResourceState("ND_Properties") ~= "started" then
+        return {} -- todo: udate ND_Properties for ND V2
+    end
+
     local addresses = {}
     local result = MySQL.query.await("SELECT address FROM nd_properties WHERE owner = ?", {id})
     if not result or not result[1] then return addresses end
