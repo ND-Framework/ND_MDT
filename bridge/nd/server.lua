@@ -87,6 +87,8 @@ function Bridge.characterSearch(source, characterSearched)
     if not item then
         local result = MySQL.query.await("SELECT * FROM nd_characters WHERE charid = ?", {characterSearched})
         local item = result and result[1]
+        if not item then return end
+
         local metadata = json.decode(item.metadata)
         profiles[item.charid] = {
             firstName = item.firstname,
@@ -219,7 +221,7 @@ function Bridge.getLicenses(id)
     ]]
 
     local result = MySQL.query.await("SELECT `metadata` FROM nd_characters WHERE charid = ?", {id})
-    local metadata = result and result[1] and json.decode(result[1].metadata)
+    local metadata = result and result[1] and json.decode(result[1].metadata) or {}
     return metadata.licenses or {}
 end
 
