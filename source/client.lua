@@ -661,10 +661,10 @@ end)
 
 local function getPlayerPostal()
     local postal = false
-    if GetResourceState("nearest-postal") == "started" then
-        postal = exports["nearest-postal"]:getPostal()
-    elseif GetResourceState("ModernHUD") == "started" then
+    if GetResourceState("ModernHUD") == "started" then
         postal = exports["ModernHUD"]:getPostal()
+    elseif GetResourceState("nearest-postal") == "started" then
+        postal = exports["nearest-postal"]:getPostal()
     end
     return postal
 end
