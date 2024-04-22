@@ -61,4 +61,16 @@ function Bridge.getRanks(job)
     return options, job
 end
 
+---comment
+---@param table any
+---@return table
+function Bridge.FillInVehData(table)
+    for k, v in pairs(table) do
+        table[k].model = GetDisplayNameFromVehicleModel(v.model)
+        table[k].make = GetMakeNameFromVehicleModel(v.model)
+        table[k].class = VehicleClasses?[GetVehicleClassFromName(v.model)]
+    end
+    return table
+end
+
 return Bridge

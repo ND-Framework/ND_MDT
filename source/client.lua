@@ -403,6 +403,11 @@ RegisterNUICallback("viewVehicles", function(data)
             end
             return
         end
+
+        if Bridge.FillInVehData then
+            result = Bridge.FillInVehData(result)
+        end
+
         SendNUIMessage({
             type = "viewVehicles",
             found = true,
