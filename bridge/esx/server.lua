@@ -556,21 +556,21 @@ function Bridge.removeEmployeeJob(src, charid)
     if targetPlayer then
         local targetJob = targetPlayer.getJob()
         if not isAdmin and jobInfo.rank <= targetJob.rank then
-            return false, "You can only update lower rank employees!"
+            return false, "You can only fire lower rank employees!"
         end
 
         targetPlayer.setJob("unemployed", 0)
         return true
     end
 
-    local result = MySQL.query.await("SELECT `groups` FROM nd_characters WHERE charid = ?", {charid})
+    local result = MySQL.query.await("SELECT `job`, `job_grade` FROM users WHERE identifier = ?", {charid})
     local info = result[1]
     if not info then
         return false, "Employee not found"
     end
 
     local rows = MySQL.update.await(
-        'UPDATE `users` SET `job_grade` = 0 AND `job` = "unemployed" WHERE `identifier` = @identifier',
+        'UPDATE `users` SET `job_grade` = 0, `job` = "unemployed" WHERE `identifier` = @identifier',
         {
             ["@identifier"] = charid,
         }
