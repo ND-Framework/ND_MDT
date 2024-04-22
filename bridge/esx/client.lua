@@ -21,7 +21,7 @@ function Bridge.getPlayerInfo()
         lastName = xPlayer.lastName or "",
         job = xPlayer?.job?.name or "",
         jobLabel = xPlayer.job?.label or "",
-        callsign = xPlayer.callsign or "",
+        callsign = xPlayer?.metadata?.callsign or "",
         img = "user.jpg",
         isBoss = isBoss,
     }

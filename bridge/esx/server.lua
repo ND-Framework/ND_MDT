@@ -126,7 +126,7 @@ function Bridge.getPlayerInfo(src)
         lastName = xPlayer.get("lastName") or "",
         job = xPlayer.getJob().name or "",
         jobLabel = xPlayer.getJob().label or "",
-        callsign = xPlayer.get("callsign") or "",
+        callsign = xPlayer.getMeta("callsign") or "",
         img = "user.jpg",
         characterId = xPlayer.getIdentifier()
     }
@@ -333,7 +333,7 @@ end
 ---@param value any
 function Bridge.updatePlayerMetadata(source, characterId, key, value)
     local xPlayer = ESX.GetPlayerFromId(source)
-    xPlayer.set(key, value)
+    xPlayer.setMeta(key, value)
 end
 
 function Bridge.getRecords(id)
@@ -351,7 +351,7 @@ local function filterEmployeeSearch(player, metadata, search)
         toSearch = ("%s %s %s"):format(
             (player.get("firstName") or ""):lower(),
             (player.get("lastName") or ""):lower(),
-            (player.get("callsign") and tostring(player.get("callsign")) or ""):lower()
+            (player.getMeta("callsign") and tostring(player.getMeta("callsign")) or ""):lower()
         )
     else
         toSearch = ("%s %s %s"):format(
@@ -389,7 +389,7 @@ function Bridge.viewEmployees(src, search)
                 first = xPly.get("firstName"),
                 last = xPly.get("lastName"),
                 img = nil,
-                callsign = xPly.get("callsign"),
+                callsign = xPly.getMeta("callsign"),
                 job = job,
                 jobInfo = jobInfo,
                 dob = xPly.get("dateofbirth"),
@@ -454,8 +454,8 @@ function Bridge.employeeUpdateCallsign(src, charid, callsign)
             return false, "You can only update lower rank employees!"
         end
 
-        targetPlayer.set("callsign", callsign)
-        print("callsign targetPlayer", targetPlayer.get("callsign"))
+        targetPlayer.setMeta("callsign", callsign)
+        print("callsign targetPlayer", targetPlayer.getMeta("callsign"))
         return callsign
     end
 
