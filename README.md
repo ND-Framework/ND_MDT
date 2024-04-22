@@ -95,6 +95,7 @@ Still to do:
   * Custom Phone Functions
   * Custom Property Functions
   * Custom Billing Functions
+  * Adding a user profile picture to the DB
 -> For the time being there is no Default billing system integrated, it is present but commented as esx_billing requires a destination for the money. You can activate it in: `bridge/esx/server.lua:288`
 
 
