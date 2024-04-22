@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `nd_mdt_weapons` (
-	`character` INT(11) DEFAULT NULL,
+	`character` VARCHAR(60) DEFAULT NULL,
 	`weapon` VARCHAR(50) DEFAULT NULL,
 	`serial` VARCHAR(50) DEFAULT NULL,
 	`owner_name` VARCHAR(100) DEFAULT NULL,
