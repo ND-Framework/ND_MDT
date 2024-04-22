@@ -324,7 +324,6 @@ function Bridge.getPlayerImage(characterId)
     local result = MySQL.query.await(
         "SELECT `image` FROM `users` WHERE identifier = ?", {characterId}
     )
-    local player = findCharacterById(characterId) or NDCore:fetchCharacter(characterId)
     return result?[1]?.image or nil
 end
 
@@ -348,7 +347,6 @@ local function filterEmployeeSearch(player, metadata, search)
     local toSearch
 
     if player.get then
-        print(json.encode(player.variables, {indent=4}))
         toSearch = ("%s %s %s"):format(
             (player.get("firstName") or ""):lower(),
             (player.get("lastName") or ""):lower(),
@@ -441,49 +439,49 @@ function Bridge.employeeUpdateCallsign(src, charid, callsign)
         return false, "Incorrect callsign"
     end
 
-    charid = tonumber(charid)
     if not charid then
         return false, "Employee not found!"
     end
 
-    local characterMetadata = nil
-    local characterGroups = nil
-    local result = MySQL.query.await("SELECT * FROM users")
-    for i=1, #result do
-        local info = result[i]
-        local metadata = json.decode(info.metadata) or {}
-        if metadata.callsign == callsign then
-            return false, "This callsign is already used."
-        end
-        if info.identifier == charid then
-            characterMetadata = metadata
-            characterGroups = json.decode(info.groups) or {}
-        end
-    end
 
     local isAdmin = xPlayer?.admin
-    local jobInfo = xPlayer.job
+    local _, jobInfo = ConvertJobToJobInfo(xPlayer.job.name, nil)
     local targetPlayer = findCharacterById(charid)
+
     if targetPlayer then
-        local targetJob = targetPlayer.job
-        if not isAdmin and jobInfo.job.grade <= targetJob.job.grade then
+        if not isAdmin and not (xPlayer.getIdentifier() == charid or xPlayer.job.grade > targetPlayer?.job?.grade) then
             return false, "You can only update lower rank employees!"
         end
 
         targetPlayer.set("callsign", callsign)
+        print("callsign targetPlayer", targetPlayer.get("callsign"))
         return callsign
-    elseif not characterMetadata then
+    end
+
+
+    local result = MySQL.query.await("SELECT `metadata`, `job_grade` FROM users WHERE identifier = ?", {charid})
+    local metadata, grade = json.decode(result?[1]?.metadata), result?[1]?.grade
+
+    if not metadata then
         return false, "Employee not found"
     end
 
-    local jobRank = xPlayer?.job?.grade_label
-
-    if not jobRank then
-        return false, "An issue occured, try again later."
+    if not isAdmin and not xPlayer.job.grade > grade then
+        return false, "You can only update lower rank employees!"
     end
 
-    if not isAdmin and jobInfo.rank <= jobRank then
-        return false, "You can only update lower rank employees!"
+    metadata.callsign = callsign
+
+    local rows = MySQL.update.await(
+        "UPDATE users SET metadata = @metadata WHERE identifier = @identifier",
+        {
+            ["@metadata"] = json.encode(metadata),
+            ["@identifier"] = charid,
+        }
+    )
+
+    if rows ~= 1 then
+        return false, "An issue occured, try again later."
     end
 
     return callsign
