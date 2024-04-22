@@ -1,35 +1,30 @@
-local NDCore = exports["ND_Core"]
+local ESX = exports["es_extended"]:getSharedObject()
 local Bridge = {}
 
 ---@return table
 function Bridge.getPlayerInfo()
-    local player = NDCore:getPlayer() or {}
+    local xPlayer = ESX.GetPlayerData() or {}
+
     return {
-        firstName = player.firstname or "",
-        lastName = player.lastname or "",
-        job = player.job or "",
-        jobLabel = player.jobInfo?.label or player.job or "",
-        callsign = player.metadata.callsign or "",
-        img = player.metadata.img or "user.jpg",
-        isBoss = player.jobInfo?.isBoss
+        firstName = xPlayer.firstName or "",
+        lastName = xPlayer.lastName or "",
+        job = xPlayer?.job?.name or "",
+        jobLabel = xPlayer.job?.label or "",
+        callsign = xPlayer.callsign or "",
+        img = "user.jpg",
+        isBoss = true
     }
 end
 
----@param job string
+---@param job string|table
 ---@return boolean
 function Bridge.hasAccess(job)
-    return config.policeAccess[job] or config.fireAccess[job]
+    return config.policeAccess[job?.name or job] or config.fireAccess[job?.name or job]
 end
 
 ---@return string
 function Bridge.rankName()
-    local player = NDCore:getPlayer()
-    for _, group in pairs(player.groups) do
-        if group.isJob then
-            return group.rankName or ""
-        end
-    end
-    return ""
+    return ESX.GetPlayerData().job.grade_label
 end
 
 ---@param id number
@@ -50,15 +45,16 @@ function Bridge.getCitizenInfo(id, info)
 end
 
 function Bridge.getRanks(job)
-    local groups = NDCore:getConfig("groups") or {}
-    local ranks = groups[job]?.ranks
+    print("Bridge.getRanks", json.encode(job, {indent=4}))
+    local ranks = lib.callback.await("ND_MDT:getRanks", false, job)
+
     if not ranks then return end
 
     local options = {}
-    for i=1, #ranks do
+    for k, v in pairs(ranks) do
         options[#options+1] = {
-            value = i,
-            label = ranks[i]
+            value = k,
+            label = v.label
         }
     end
 
