@@ -97,8 +97,8 @@ end
 function Bridge.getPlayerInfo(src)
     local xPlayer = ESX.GetPlayerFromId(src) or {}
     return {
-        firstName = xPlayer.get("firstname") or "",
-        lastName = xPlayer.get("lastname") or "",
+        firstName = xPlayer.get("firstName") or "",
+        lastName = xPlayer.get("lastName") or "",
         job = xPlayer.getJob().name or "",
         jobLabel = xPlayer.getJob().label or "",
         callsign = xPlayer.get("callsign") or "",
@@ -323,6 +323,7 @@ local function filterEmployeeSearch(player, metadata, search)
     local toSearch
 
     if player.get then
+        print(json.encode(player.variables, {indent=4}))
         toSearch = ("%s %s %s"):format(
             (player.get("firstName") or ""):lower(),
             (player.get("lastName") or ""):lower(),
@@ -361,8 +362,8 @@ function Bridge.viewEmployees(src, search)
             employees[#employees+1] = {
                 source = xPly.playerId,
                 charId = xPly.identifier,
-                first = xPly.get("firstname"),
-                last = xPly.get("lastname"),
+                first = xPly.get("firstName"),
+                last = xPly.get("lastName"),
                 img = nil,
                 callsign = xPly.get("callsign"),
                 job = job,
