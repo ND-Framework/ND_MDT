@@ -540,7 +540,7 @@ function Bridge.updateEmployeeRank(src, update)
 end
 
 function Bridge.removeEmployeeJob(src, charid)
-    local xPlayer = NDCore:getPlayer(src)
+    local xPlayer = ESX.GetPlayerFromId(src)
     if not xPlayer then
         return false, "An issue occured try again later!"
     end
@@ -559,7 +559,7 @@ function Bridge.removeEmployeeJob(src, charid)
             return false, "You can only update lower rank employees!"
         end
 
-        targetPlayer.setJob("unemployed")
+        targetPlayer.setJob("unemployed", 0)
         return true
     end
 
@@ -585,10 +585,10 @@ end
 
 function Bridge.invitePlayerToJob(src, target)
     local xPlayer = ESX.GetPlayerFromId(src)
-    if not xPlayer.job then return end
+    if not xPlayer?.job then return end
 
     local targetPlayer = ESX.GetPlayerFromId(target)
-    targetPlayer.setJob(xPlayer.job.name)
+    targetPlayer.setJob(xPlayer.job.name, 0)
     return true
 end
 
@@ -596,13 +596,5 @@ end
 lib.callback.register("ND_MDT:getRanks", function (src, jobName)
     return ESX.GetJobs()[jobName]?.grades
 end)
-
-if GetResourceState("ox_inventory") then
-
-else
-    ESX.RegisterUsableItem("mdt", function (playerId)
-        TriggerClientEvent("ND_MDT:UsedTablet", playerId)
-    end)
-end
 
 return Bridge
