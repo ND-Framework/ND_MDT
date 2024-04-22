@@ -135,12 +135,12 @@ end
 local function getVehicleCharacter(owner)
     local item = findCharacterById(owner)
     if not item then
-        local result = MySQL.query.await("SELECT * FROM nd_characters WHERE charid = ?", {owner})
+        local result = MySQL.query.await("SELECT * FROM users WHERE identifier = ?", {owner})
         item = result and result[1]
     end
     return item and {
-        firstName = item.firstname,
-        lastName = item.lastname,
+        firstName = item.firstname or item.get("firstName") or "unknown",
+        lastName = item.lastname or item.get("lastName") or "unknown",
         characterId = item.identifier
     }
 end
@@ -162,8 +162,8 @@ local function queryDatabaseVehicles(find, findData)
                 --[[ Isn't available as default ESX ]]
             make = nil,
                 --[[ Needs a custom function to determine name from hash ]]
-            model = item.model,
-            plate = item.plate,
+            model = props.model,
+            plate = props.plate,
                 --[[ Isn't available as default ESX ]]
             class = nil,
                 --[[ Depends on DB & Vehicle Scripts but isn't available as default ]]
@@ -194,6 +194,7 @@ function Bridge.viewVehicles(src, searchBy, data)
             vehicles[k] = v
         end
     end
+
     return vehicles
 end
 
@@ -486,9 +487,6 @@ function Bridge.employeeUpdateCallsign(src, charid, callsign)
 
     return callsign
 end
-
---[[ /\ Already Converted BUT untested  /\ ]]
---[[ \/ Needs to be Converted           \/ ]]
 
 function Bridge.updateEmployeeRank(src, update)
     local xPlayer = ESX.GetPlayerFromId(src)
