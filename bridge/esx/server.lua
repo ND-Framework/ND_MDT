@@ -354,7 +354,7 @@ function Bridge.viewEmployees(src, search)
 
         local xPly = ESX.GetPlayerFromIdentifier(info.identifier)
         if xPly then
-            local job, jobInfo = xPly.job.name, xPly.job
+            local job, jobInfo = ConvertJobToJobInfo(ESX.GetJobs()[xPly.job.name], xPly.job.grade)
             if not config.policeAccess[job] then goto next end
 
             if not filterEmployeeSearch(xPly, nil, search or "") then goto next end
@@ -376,17 +376,7 @@ function Bridge.viewEmployees(src, search)
             goto next
         end
 
-        local jobObject, gradeObject = ESX.Jobs[info.job], ESX.Jobs[info.job].grades[tostring(info.job_grade)]
-
-        local job, jobInfo = jobObject.name, {
-            id = jobObject.id,
-            name = jobObject.name,
-            label = jobObject.label,
-
-            grade = tonumber(info.job_grade),
-            grade_name = gradeObject.name,
-            grade_label = gradeObject.label,
-        }
+        local job, jobInfo = ConvertJobToJobInfo(ESX.GetJobs()[info.job], tostring(info.job_grade))
 
         if not config.policeAccess[job] then goto next end
 
