@@ -29,7 +29,7 @@ local function queryDatabaseProfiles(first, last)
                 firstName = item.firstname,
                 lastName = item.lastname,
                 dob = item.dateofbirth,
-                gender = item.sex,
+                gender = (item.sex == "m" and "Male") or (item.sex == "f" and "Female") or "Other",
                 phone = item?.phonenumber or nil,
                 id = getPlayerSource(item.identifier),
                 img = item?.image or nil,
@@ -82,7 +82,7 @@ function Bridge.characterSearch(source, characterSearched)
         firstName = item.firstname,
         lastName = item.lastname,
         dob = item.dateofbirth,
-        gender = item.sex,
+        gender = (item.sex == "m" and "Male") or (item.sex == "f" and "Female") or "Other",
         phone = item?.phonenumber or nil,
         id = getPlayerSource(item.identifier),
         img = item?.image or nil,
@@ -369,7 +369,7 @@ function Bridge.viewEmployees(src, search)
                 job = job,
                 jobInfo = jobInfo,
                 dob = xPly.get("dateofbirth"),
-                gender = xPly.get("sex"),
+                gender = (xPly.get("sex") == "m" and "Male") or (xPly.get("sex") == "f" and "Female") or "Other",
                     --[[ Create a custom function for getting the phone number ]]
                 phone = nil
             }
@@ -401,7 +401,7 @@ function Bridge.viewEmployees(src, search)
             job = job,
             jobInfo = jobInfo,
             dob = info.dateofbirth,
-            gender = info.sex,
+            gender = (info.sex == "m" and "Male") or (info.sex == "f" and "Female") or "Other",
             phone = info.phonenumber
         }
 
