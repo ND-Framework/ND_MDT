@@ -5,6 +5,17 @@ local Bridge = {}
 function Bridge.getPlayerInfo()
     local xPlayer = ESX.GetPlayerData() or {}
 
+    local isBoss
+    if xPlayer?.job?.name then
+        ESX.TriggerServerCallback("esx_society:isBoss", function (bool)
+            isBoss = bool
+        end, xPlayer?.job?.name)
+    end
+
+    while isBoss == nil do
+        Citizen.Wait(50)
+    end
+
     return {
         firstName = xPlayer.firstName or "",
         lastName = xPlayer.lastName or "",
@@ -12,7 +23,7 @@ function Bridge.getPlayerInfo()
         jobLabel = xPlayer.job?.label or "",
         callsign = xPlayer.callsign or "",
         img = "user.jpg",
-        isBoss = true
+        isBoss = isBoss,
     }
 end
 
