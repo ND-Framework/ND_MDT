@@ -1,5 +1,4 @@
 ALTER TABLE `users`
-    ADD COLUMN `phonnumber` VARCHAR(15) NULL DEFAULT NULL,
     ADD COLUMN `image` LONGTEXT NULL DEFAULT NULL;
 
 ALTER TABLE `user_licenses`
