@@ -319,33 +319,27 @@ function Bridge.getRecords(id)
     return json.decode(result[1].records), true
 end
 
-local function getPermsFromGroups(groups)
-    for name, group in pairs(groups) do
-        if group.isJob then
-            return name, group
-        end
-    end
-end
-
 local function filterEmployeeSearch(player, metadata, search)
-    local toSearch = ("%s %s %s"):format(
-        (player.get("firstname") or ""):lower(),
-        (player.get("lastname") or ""):lower(),
-        (player.get("callsign") and tostring(player.get("callsign")) or ""):lower()
-    )
+    local toSearch
+
+    if player.get then
+        toSearch = ("%s %s %s"):format(
+            (player.get("firstName") or ""):lower(),
+            (player.get("lastName") or ""):lower(),
+            (player.get("callsign") and tostring(player.get("callsign")) or ""):lower()
+        )
+    else
+        toSearch = ("%s %s %s"):format(
+            (player.firstname or ""):lower(),
+            (player.lastname or ""):lower(),
+            ((json.decode(player.metadata)?.callsign) or ""):lower()
+        )
+    end
 
     if toSearch:find(search:lower()) then
         return true
     end
 end
-
--- local function getPlayerSourceFromPlayers(players, id)
---     for src, info in pairs(players) do
---         if info.id == id then
---             return src
---         end
---     end
--- end
 
 function Bridge.viewEmployees(src, search)
     local xPlayer = ESX.GetPlayerFromId(src)
@@ -381,7 +375,7 @@ function Bridge.viewEmployees(src, search)
             goto next
         end
 
-        local jobObject, gradeObject = ESX.Jobs[info.job], ESX.Jobs[info.job].grades[info.job_grade]
+        local jobObject, gradeObject = ESX.Jobs[info.job], ESX.Jobs[info.job].grades[tostring(info.job_grade)]
 
         local job, jobInfo = jobObject.name, {
             id = jobObject.id,
@@ -391,10 +385,6 @@ function Bridge.viewEmployees(src, search)
             grade = tonumber(info.job_grade),
             grade_name = gradeObject.name,
             grade_label = gradeObject.label,
-            grade_salary = gradeObject.salary,
-
-            skin_male = gradeObject.skin_male and json.decode(gradeObject.skin_male) or {},
-            skin_female = gradeObject.skin_female and json.decode(gradeObject.skin_female) or {},
         }
 
         if not config.policeAccess[job] then goto next end
