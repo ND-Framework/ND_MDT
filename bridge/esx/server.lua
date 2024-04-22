@@ -1,7 +1,7 @@
 local ESX = exports["es_extended"]:getSharedObject()
 local Bridge = {}
 
---[[ NEEDS TO BE ]]
+--[[ NEEDS TO BE CREATED ]]
 -- SetTimeout(500, function()
 --     NDCore:loadSQL({
 --         "bridge/nd/database/bolos.sql",
@@ -10,6 +10,31 @@ local Bridge = {}
 --         "bridge/nd/database/weapons.sql"
 --     })
 -- end)
+
+---Convert ESX Job to ND_MDT format
+---@param job table ESX Job Array
+---@param rank integer|nil Grade number
+---@return nil
+---@return table
+function ConvertJobToJobInfo(job, rank)
+
+    if type(job) == "string" then
+        job = ESX.GetJobs()[job]
+    end
+
+    local grades = {}
+
+    for k, v in pairs(job.grades) do
+        grades[tonumber(k)] = v.label
+    end
+
+    return job.name, {
+        label = job.label,
+        ranks = grades,
+        rankName = rank and grades[tonumber(rank)] or nil
+    }
+
+end
 
 local function getPlayerSource(id)
     local xPlayer = ESX.GetPlayerFromIdentifier(id)
