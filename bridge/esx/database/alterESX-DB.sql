@@ -10,4 +10,5 @@ ALTER TABLE `user_licenses`
 ALTER TABLE `owned_vehicles`
     ADD COLUMN `stolen` INT(11) DEFAULT '0';
 
-INSERT INTO `esx-legacy-scripting-server`.`items` (`name`, `label`, `weight`, `rare`) VALUES ('mdt-tablet', 'Mobile Data Terminal', 2, 1);
+INSERT INTO `items` (`name`, `label`, `weight`, `rare`) VALUES
+	('mdt-tablet', 'Mobile Data Terminal', 2, 1);
