@@ -487,26 +487,25 @@ end
 --[[ \/ Needs to be Converted           \/ ]]
 
 function Bridge.updateEmployeeRank(src, update)
-    local player = NDCore:getPlayer(src)
-    if not player then
+    local xPlayer = ESX.GetPlayerFromId(src)
+    if not xPlayer then
         return false, "An issue occured try again later!"
     end
 
-    local isAdmin = player.getGroup("admin") ~= nil
-    local _, jobInfo = player.getJob()
-    if not isAdmin and jobInfo.rank <= update.newRank then
+    local isAdmin = xPlayer.admin
+    local _, jobInfo = ConvertJobToJobInfo(ESX.GetJobs()[xPlayer.job.name], xPlayer.job.grade)
+    if not isAdmin and jobInfo.grade <= update.newRank then
         return false, "You can't set employees higher rank than you!"
     end
 
-    local groups = NDCore:getConfig("groups")
-    local groupRank = tonumber(update.newRank)
+    local groups = ESX.GetJobs()
     local groupInfo = groups[update.job]
-    local rankLabel = groupRank and groupInfo and groupInfo.ranks?[groupRank]
+    local rankLabel = update.newRank and groupInfo and groupInfo.grades?[update.newRank]?.label
     if not rankLabel then
         return false, "Rank not found!"
     end
 
-    if not tonumber(update.charid) then
+    if not update.charid then
         return false, "Employee no found!"
     end
 
@@ -521,61 +520,37 @@ function Bridge.updateEmployeeRank(src, update)
         return rankLabel
     end
 
-    local result = MySQL.query.await("SELECT `groups` FROM nd_characters WHERE charid = ?", {update.charid})
-    local info = result[1]
-    if not info then
+    local rows = MySQL.update.await(
+        'UPDATE `users` SET `job_grade` = @grade WHERE `identifier` = @identifier',
+        {
+            ["@grade"] = update.newRank,
+            ["@identifier"] = update.charid,
+        }
+    )
+
+    if rows == 0 then
         return false, "Employee no found!"
     end
-
-    local playerGroups = json.decode(info.groups) or {}
-    local bossRank = groupInfo and groupInfo.minimumBossRank
-    local groupName = update.job
-    local jobRank = nil
-
-    for name, group in pairs(playerGroups) do
-        if group.isJob and groupName == name then
-            jobRank = group.rank
-            group.label = groupInfo and groupInfo.label or name
-            group.rankName = rankLabel
-            group.rank = groupRank
-            group.isBoss = bossRank and groupRank >= bossRank
-            break
-        end
-    end
-
-    if not jobRank then
-        return false, "An issue occured, try again later."
-    end
-
-    if not isAdmin and jobInfo.rank <= jobRank then
-        return false, "You can only update lower rank employees!"
-    end
-
-    MySQL.update.await("UPDATE nd_characters SET `groups` = ? WHERE charid = ?", {
-        json.encode(playerGroups),
-        update.charid
-    })
 
     return rankLabel
 end
 
 function Bridge.removeEmployeeJob(src, charid)
-    local player = NDCore:getPlayer(src)
-    if not player then
+    local xPlayer = NDCore:getPlayer(src)
+    if not xPlayer then
         return false, "An issue occured try again later!"
     end
 
-    charid = tonumber(charid)
     if not charid then
         return false, "Employee not found!"
     end
 
-    local isAdmin = player.getGroup("admin") ~= nil
-    local _, jobInfo = player.getJob()
+    local isAdmin = xPlayer.admin
+    local _, jobInfo = ConvertJobToJobInfo(ESX.GetJobs()[xPlayer.job.name], xPlayer.job.grade)
 
     local targetPlayer = findCharacterById(charid)
     if targetPlayer then
-        local _, targetJob = targetPlayer.getJob()
+        local targetJob = targetPlayer.getJob()
         if not isAdmin and jobInfo.rank <= targetJob.rank then
             return false, "You can only update lower rank employees!"
         end
@@ -590,46 +565,40 @@ function Bridge.removeEmployeeJob(src, charid)
         return false, "Employee not found"
     end
 
-    local groupName = nil
-    local playerGroups = json.decode(info.groups) or {}
-    local jobRank = nil
+    local rows = MySQL.update.await(
+        'UPDATE `users` SET `job_grade` = 0 AND `job` = "unemployed" WHERE `identifier` = @identifier',
+        {
+            ["@identifier"] = charid,
+        }
+    )
 
-    for name, group in pairs(playerGroups) do
-        if group.isJob then
-            groupName = name
-            jobRank = group.rank
-            break
-        end
+    if rows == 0 then
+        return false, "Employee no found!"
     end
 
-    if not groupName then
-        return false, "An issue occured, try again later."
-    end
-
-    if not jobRank then
-        return false, "An issue occured, try again later."
-    end
-
-    if not isAdmin and jobInfo.rank <= jobRank then
-        return false, "You can only update lower rank employees!"
-    end
-
-    playerGroups[groupName] = nil
-
-    MySQL.update.await("UPDATE nd_characters SET `groups` = ? WHERE charid = ?", {
-        json.encode(playerGroups),
-        charid
-    })
     return true
 end
 
 function Bridge.invitePlayerToJob(src, target)
-    local player = NDCore:getPlayer(src)
-    if not player.job then return end
+    local xPlayer = ESX.GetPlayerFromId(src)
+    if not xPlayer.job then return end
 
-    local targetPlayer = NDCore:getPlayer(target)
-    targetPlayer.setJob(player.job)
+    local targetPlayer = ESX.GetPlayerFromId(target)
+    targetPlayer.setJob(xPlayer.job.name)
     return true
+end
+
+--[[ Xtra Functions ]]
+lib.callback.register("ND_MDT:getRanks", function (src, jobName)
+    return ESX.GetJobs()[jobName]?.grades
+end)
+
+if GetResourceState("ox_inventory") then
+
+else
+    ESX.RegisterUsableItem("mdt", function (playerId)
+        TriggerClientEvent("ND_MDT:UsedTablet", playerId)
+    end)
 end
 
 return Bridge
