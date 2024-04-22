@@ -7,5 +7,7 @@ ALTER TABLE `user_licenses`
 	ADD COLUMN `identifier` VARCHAR(50) NOT NULL DEFAULT UUID_SHORT() AFTER `issued`,
 	ADD UNIQUE INDEX `identifier` (`identifier`);
 
-ALTER TABLE `users`
+ALTER TABLE `owned_vehicles`
     ADD COLUMN `stolen` INT(11) DEFAULT '0';
+
+INSERT INTO `esx-legacy-scripting-server`.`items` (`name`, `label`, `weight`, `rare`) VALUES ('mdt-tablet', 'Mobile Data Terminal', 2, 1);
