@@ -93,8 +93,8 @@ end
 ---@param characterSearched number
 ---@return table|nil
 function Bridge.characterSearch(source, characterSearched)
-    local player = NDCore:getPlayer(source)
-    if not config.policeAccess[player.job] then return false end
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if not config.policeAccess[xPlayer.job.name] then return nil end
 
     local profiles = {}
 
