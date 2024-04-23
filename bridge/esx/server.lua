@@ -292,11 +292,11 @@ function Bridge.createInvoice(characterId, fine)
     -- end
 end
 
----@param id number
+---@param id string In this case it's the vehicles plate
 ---@param stolen boolean
----@param plate string
+---@param plate string Is nil as it doesn't function in the same method
 function Bridge.vehicleStolen(id, stolen, plate)
-    MySQL.query("UPDATE owned_vehicles SET stolen = ? WHERE plate = ?", {stolen and 1 or 0, plate})
+    MySQL.query("UPDATE owned_vehicles SET stolen = ? WHERE plate = ?", {stolen and 1 or 0, id})
 end
 
 ---@return table
