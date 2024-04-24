@@ -261,9 +261,6 @@ end
 ---@param licenseIdentifier string
 ---@param newLicenseStatus string
 function Bridge.editPlayerLicense(characterId, licenseIdentifier, newLicenseStatus)
-
-    print("editPlayerLicense", characterId, licenseIdentifier, newLicenseStatus)
-
     MySQL.update.await(
         "UPDATE user_licenses SET status = @status WHERE identifier = @identifier AND owner = @owner",
         {
