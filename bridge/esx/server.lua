@@ -250,7 +250,7 @@ function Bridge.getLicenses(id)
             status = result[i]?.status,
             issued = result[i]?.issued,
             expires = nil,
-            identifier = result[i]?.type or result[i],
+            identifier = result[i]?.identifier or result[i].type,
         }
     end
 
@@ -262,12 +262,14 @@ end
 ---@param newLicenseStatus string
 function Bridge.editPlayerLicense(characterId, licenseIdentifier, newLicenseStatus)
 
+    print("editPlayerLicense", characterId, licenseIdentifier, newLicenseStatus)
+
     MySQL.update.await(
         "UPDATE user_licenses SET status = @status WHERE identifier = @identifier AND owner = @owner",
         {
-            ["@owner"] = characterId,
+            ["@owner"]      = characterId,
             ["@identifier"] = licenseIdentifier,
-            ["@status"] = newLicenseStatus,
+            ["@status"]     = newLicenseStatus,
         }
     )
 end
