@@ -40,7 +40,7 @@ local function plateCheck(plate)
     if stolenPlatesList[plate] then return true end
 
     for k, v in pairs(stolenPlatesList) do
-        if k:gsub(" ", "") == plate:gsub(" ", "") then
+        if Bridge.ComparePlates(k, plate) then
             return true
         end
     end
@@ -48,7 +48,6 @@ end
 
 RegisterNetEvent("wk:onPlateScanned", function(cam, plate, index)
     local src = source
-    TriggerClientEvent("esx:showNotification", src, "Scanned Plate: "..plate, 'info')
     if plateCheck(plate) then
         exports["wk_wars2x"]:TogglePlateLock(src, cam, true, true)
     end
