@@ -607,4 +607,8 @@ function Bridge.invitePlayerToJob(src, target)
     return true
 end
 
+function Bridge.ComparePlates(plate1, plate2)
+    return plate1:gsub("0", "O") == plate2:gsub("0", "O")
+end
+
 return Bridge

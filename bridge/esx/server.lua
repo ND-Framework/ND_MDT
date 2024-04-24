@@ -589,6 +589,10 @@ function Bridge.invitePlayerToJob(src, target)
     return true
 end
 
+function Bridge.ComparePlates(plate1, plate2)
+    return plate1:gsub(" ", "") == plate2:gsub(" ", "")
+end
+
 --[[ Xtra Functions ]]
 lib.callback.register("ND_MDT:getRanks", function (src, jobName)
     return ESX.GetJobs()[jobName]?.grades
