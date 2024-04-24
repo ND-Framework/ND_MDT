@@ -36,11 +36,11 @@ end)
 
 local function plateCheck(plate)
     plate = plate:upper()
+
     if stolenPlatesList[plate] then return true end
 
-    for i=1, #stolenPlatesList do
-        local plt = stolenPlatesList[i]
-        if plt:gsub("0", "O") == plate:gsub("0", "O") then
+    for k, v in pairs(stolenPlatesList) do
+        if k:gsub(" ", "") == plate:gsub(" ", "") then
             return true
         end
     end
@@ -48,6 +48,7 @@ end
 
 RegisterNetEvent("wk:onPlateScanned", function(cam, plate, index)
     local src = source
+    TriggerClientEvent("esx:showNotification", src, "Scanned Plate: "..plate, 'info')
     if plateCheck(plate) then
         exports["wk_wars2x"]:TogglePlateLock(src, cam, true, true)
     end
