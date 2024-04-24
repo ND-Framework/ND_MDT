@@ -469,7 +469,7 @@ $(document).on("click", ".plateSearchResultButton", function() {
 });
 
 function formatDate(timeStamp) {
-    const date = new Date(timeStamp*1000);
+    const date = new Date(timeStamp < 1000000000000 ? timeStamp * 1000 : timeStamp);
     return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
 };
 
