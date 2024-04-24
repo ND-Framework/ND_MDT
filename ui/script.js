@@ -663,12 +663,12 @@ function createRecordsPage(data) {
                         </select>
                     </div>
                     <div class="recordsLicenseContainer">
-                        <p class="recordsLicenseBig">${translation["Issued"]}:</p>
-                        <p class="recordsLicenseSmall">${formatDate(data.licenses[i].issued)}</p>
+                        <p class="recordsLicenseBig">${data.licenses[i].issued !== undefined ? (translation["Issued"] + ":") : ""}</p>
+                        <p class="recordsLicenseSmall">${data.licenses[i].issued !== undefined ? formatDate(data.licenses[i].issued) : ""}</p>
                     </div>
                     <div class="recordsLicenseContainer">
-                        <p class="recordsLicenseBig">${translation["Expires"]}:</p>
-                        <p class="recordsLicenseSmall">${formatDate(data.licenses[i].expires)}</p>
+                        <p class="recordsLicenseBig">${data.licenses[i].expires !== undefined ? (translation["Expires"] + ":") : ""}</p>
+                        <p class="recordsLicenseSmall">${data.licenses[i].expires !== undefined ? formatDate(data.licenses[i].expires) : ""}</p>
                     </div>
                 </div>
             `);
