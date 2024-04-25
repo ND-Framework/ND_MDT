@@ -47,6 +47,13 @@ function OpenMDT(status)
     PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", 1)
 end
 
+---@return boolean display Is tablet Open 
+function isOpen()
+    return display
+end
+
+exports("isMDTOpen", isOpen)
+
 function displayUnits(units)
     local playerInfo = Bridge.getPlayerInfo()
     if not Bridge.hasAccess(playerInfo.job) then return end
@@ -396,6 +403,11 @@ RegisterNUICallback("viewVehicles", function(data)
             end
             return
         end
+
+        if Bridge.FillInVehData then
+            result = Bridge.FillInVehData(result)
+        end
+
         SendNUIMessage({
             type = "viewVehicles",
             found = true,

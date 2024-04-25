@@ -36,11 +36,11 @@ end)
 
 local function plateCheck(plate)
     plate = plate:upper()
+
     if stolenPlatesList[plate] then return true end
 
-    for i=1, #stolenPlatesList do
-        local plt = stolenPlatesList[i]
-        if plt:gsub("0", "O") == plate:gsub("0", "O") then
+    for k, v in pairs(stolenPlatesList) do
+        if Bridge.ComparePlates(k, plate) then
             return true
         end
     end

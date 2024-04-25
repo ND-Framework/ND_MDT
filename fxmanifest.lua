@@ -25,6 +25,7 @@ shared_scripts {
     "@ox_lib/init.lua",
     "config/config.lua",
     "config/charges.json",
+    "bridge/**/shared.lua",
     "source/shared.lua"
 }
 server_scripts {

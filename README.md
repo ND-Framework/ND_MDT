@@ -89,6 +89,16 @@ exports["ND_MDT"]:createDispatch({
     * Fire & hire new employees
 
 
+## ESX Support by [Maximus7474](https://github.com/Maximus7474)
+**IMPORTANT** use the SQL files in `bridge/esx/database` if not the resource will not work.
+Still to do:
+  * Custom Phone Functions
+  * Custom Property Functions
+  * Custom Billing Functions
+  * Adding a user profile picture to the DB
+-> For the time being there is no Default billing system integrated, it is present but commented as esx_billing requires a destination for the money. You can activate it in: `bridge/esx/server.lua:288`
+
+
 ## Video preview:
 [![mdt-thumbnail-youtube](https://github.com/ND-Framework/ND_MDT/assets/86536434/7b3df9ad-c205-4fa9-bbe1-9353cfc7c0ca)](https://youtu.be/NcTIdCN4VR0?si=k6OPmumDNQ27_LjO)
 
