@@ -3,6 +3,7 @@
 config = {
     -- Jobs that has access to the police version mdt.
     policeAccess = {
+        ["police"] = true, --[[ DEFAULT ESX JOB NAME ]]
         ["sahp"] = true,
         ["lspd"] = true,
         ["bcso"] = true
@@ -16,6 +17,7 @@ config = {
     
     -- blip colors.
     vehicleBlips = {
+        ["police"] = 3,
         ["sahp"] = 3,
         ["lspd"] = 3,
         ["bcso"] = 3,

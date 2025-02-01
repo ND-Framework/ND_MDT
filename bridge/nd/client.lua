@@ -1,3 +1,5 @@
+--[[ NEEDS TO BE CONVERTED ]]
+
 local NDCore = exports["ND_Core"]
 local Bridge = {}
 

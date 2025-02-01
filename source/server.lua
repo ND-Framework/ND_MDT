@@ -239,6 +239,29 @@ exports.ox_inventory:registerHook("createItem", function(payload)
     return metadata
 end)
 
+---Save a weapon to the MDT weapons DB
+---@param playerID number Player Server ID
+---@param weaponLabel string Name of the weapon eg: Combat Pistol
+---@param serialNumber string Serial Number of the weapon
+local function registerWeapon(playerID, weaponLabel, serialNumber)
+    if playerID == nil or weaponLabel == nil or serialNumber == nil then
+        print('[^4WARNING^7] Missing parameters for ^8registerWeapon()^8', string.format("ID: %s, Label: %s, Serial: %s", tostring(playerID) or "nil", weaponLabel or "nil", serialNumber or "nil"))
+        return
+    end
+    local player = Bridge.getPlayerInfo(playerID)
+    MySQL.insert(
+        "INSERT INTO `nd_mdt_weapons` (`character`, `weapon`, `serial`, `owner_name`) VALUES (?, ?, ?, ?)",
+        {
+            player.characterId,
+            weaponLabel,
+            serialNumber,
+            player.firstName .. " " .. player.lastName
+        }
+    )
+end
+
+exports("registerWeapon", registerWeapon)
+
 -- retrive weapons based on serial number.
 lib.callback.register("ND_MDT:weaponSerialSearch", function(source, searchBy, search)
     local player = Bridge.getPlayerInfo(source)
